@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bootstrap Table</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <!-- CSS DataTables -->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css"
+    />
+    <style>
+      /* Custom CSS for table */
+      .dataTables_wrapper {
+        overflow-x: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container mt-5">
+      <h3>Thông báo cảnh báo hộ cá nhân đã quá hạn thời gian đóng tiền</h3>
+      <div class="form-group">
+        <label for="start-time">Thời gian bắt đầu:</label>
+        <input type="datetime-local" id="start-time" class="form-control" />
+      </div>
+      <div class="form-group">
+        <label for="end-time">Thời gian kết thúc:</label>
+        <input type="datetime-local" id="end-time" class="form-control" />
+      </div>
+      <div class="form-group d-flex align-center">
+        <input
+          type="checkbox"
+          id="select-all"
+          style="width: 25px; height: 25px"
+        />
+        Chọn tất cả
+      </div>
+      <table id="myTable" class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Tên hộ gia đình</th>
+            <th scope="col">Mã hộ gia đình</th>
+            <th scope="col">Địa chỉ</th>
+            <th scope="col">Số nước cũ(m<sup>3</sup>)</th>
+            <th scope="col">Số nước mới(m<sup>3</sup>)</th>
+            <th scope="col">Số nước sử dụng(m<sup>3</sup>)</th>
+            <th scope="col">Hạn đóng</th>
+            <th scope="col">Thành tiền(đồng)</th>
+            <th scope="col">Trạng thái</th>
+            <th scope="col">Select</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th class="info-1" scope="row">1</th>
+            <td class="info-1">Nguyễn</td>
+            <td class="info-1">12345</td>
+            <td class="info-1">255, nguyễn văn trỗi</td>
+            <td class="info-1">100</td>
+            <td class="info-1">150</td>
+            <td class="info-1">50</td>
+            <td class="info-1">04/04/2024</td>
+            <td class="info-1">50000</td>
+            <td class="info-1">Chưa thanh toán</td>
+            <td>
+              <input
+                type="checkbox"
+                class="select-checkbox"
+                style="width: 25px; height: 25px"
+              />
+            </td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <th colspan="4">Tổng</th>
+            <th id="old_water"></th>
+            <th id="new_water"></th>
+            <th id="final_water"></th>
+            <th></th>
+            <th id="total_amount"></th>
+            <th></th>
+            <th></th>
+          </tr>
+        </tfoot>
+      </table>
+      <button
+        type="button"
+        class="btn btn-primary mb-4"
+        id="submit-btn"
+        data-toggle="modal"
+        data-target="#confirmModal"
+      >
+        Gửi
+      </button>
+    </div>
+    <div
+      class="modal fade"
+      id="confirmModal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="confirmModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="confirmModalLabel">Xác nhận gửi</h5>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            Bạn có chắc chắn muốn gửi hóa đơn này không?
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Hủy
+            </button>
+            <button type="button" class="btn btn-primary" id="confirm-send-btn">
+              Xác nhận
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <!-- DataTables JavaScript -->
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+      $(document).ready(function () {
+        $("#myTable").DataTable({
+          paging: true, // Hiển thị phân trang
+          searching: true, // Cho phép tìm kiếm
+          ordering: true, // Cho phép sắp xếp
+          info: true, // Hiển thị thông tin bảng
+          order: [[0, "asc"]], // Sắp xếp mặc định theo cột thứ nhất (index 0)
+          drawCallback: function () {
+            calculateSum();
+          },
+          language: {
+            url: "https://cdn.datatables.net/plug-ins/1.10.24/i18n/Vietnamese.json",
+          },
+        });
+
+        // Xử lý sự kiện khi checkbox "Chọn tất cả" được thay đổi
+        $("#select-all").change(function () {
+          $(".select-checkbox").prop("checked", $(this).prop("checked"));
+        });
+
+        // Xử lý sự kiện khi các checkbox trong bảng được thay đổi
+        $(".select-checkbox").change(function () {
+          // Nếu tất cả các checkbox được chọn, kiểm tra checkbox "Chọn tất cả"
+          $("#select-all").prop(
+            "checked",
+            $(".select-checkbox:checked").length ===
+              $(".select-checkbox").length
+          );
+        });
+
+        // Xử lý sự kiện khi nút gửi được nhấn
+        $("#submit-btn").click(function () {
+          $("#confirmModal").modal("show");
+        });
+
+        $("#confirm-send-btn").click(function () {
+          var selectedItems = [];
+          $(".select-checkbox:checked").each(function () {
+            selectedItems.push($(this).closest("tr").find("td:eq(2)").text());
+          });
+          console.log(selectedItems);
+
+          $("#confirmModal").modal("hide");
+        });
+
+        // Xử lý sự kiện khi nút thanh toán được nhấn
+        $("#submit-btn-pay").click(function () {
+          var selectedItems = [];
+          $(".select-checkbox:checked").each(function () {
+            selectedItems.push($(this).closest("tr").find("td:eq(2)").text()); // Lấy giá trị của cột mã hộ gia đình
+          });
+          console.log(selectedItems);
+        });
+
+        $(".info-1").click(function () {
+          console.log(1);
+          window.open("/send-mail/before_payment/detail-info.html", "_self");
+        });
+
+        function calculateSum() {
+          var sumSoNuocCu = 0;
+          var sumSoNuocMoi = 0;
+          var sumSoNuocSuDung = 0;
+          var sumThanhTien = 0;
+
+          $("#myTable tbody tr").each(function () {
+            sumSoNuocCu += parseFloat($(this).find("td:eq(3)").text());
+            sumSoNuocMoi += parseFloat($(this).find("td:eq(4)").text());
+            sumSoNuocSuDung += parseFloat($(this).find("td:eq(5)").text());
+            sumThanhTien += parseFloat($(this).find("td:eq(7)").text());
+          });
+
+          $("#old_water").text(sumSoNuocCu.toFixed(2));
+          $("#new_water").text(sumSoNuocMoi.toFixed(2));
+          $("#final_water").text(sumSoNuocSuDung.toFixed(2));
+          $("#total_amount").text(sumThanhTien.toFixed(2));
+        }
+      });
+    </script>
+  </body>
+</html>
