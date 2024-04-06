@@ -7,9 +7,22 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        ddl-auto: true
 
   datasource:
     url: jdbc:postgresql://localhost:5432/chat_app
     username: postgres
-    password: 101119
+    password: ${DATASOURCE_PASSWORD}
     driver-class-name: org.postgresql.Driver
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${USERNAME}
+    password: ${PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
