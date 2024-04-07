@@ -23,9 +23,12 @@ public class BillEntity {
     private String description;
     private String billCode;
     private BigDecimal price;
-    private Boolean status;
+    private String status;
     private Long startNumber;
     private Long endNumber;
     private Long employeeId;
+    private Long customerId;
     private Long apartmentId;
+    private Integer month;
+    private Integer year;
 }
