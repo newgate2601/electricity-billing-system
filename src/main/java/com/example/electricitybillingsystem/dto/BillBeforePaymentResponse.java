@@ -1,7 +1,5 @@
 package com.example.electricitybillingsystem.dto;
 
-import com.example.electricitybillingsystem.entity.CustomerEntity;
-import com.example.electricitybillingsystem.entity.TaxEntity;
 import lombok.*;
 
 import java.time.OffsetDateTime;

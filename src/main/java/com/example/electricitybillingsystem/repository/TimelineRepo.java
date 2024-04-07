@@ -1,6 +1,6 @@
 package com.example.electricitybillingsystem.repository;
 
-import com.example.electricitybillingsystem.entity.TimelineEntity;
+import com.example.electricitybillingsystem.model.TimelineEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

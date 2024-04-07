@@ -1,4 +1,4 @@
-package com.example.electricitybillingsystem.entity;
+package com.example.electricitybillingsystem.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,10 +1,10 @@
-package com.example.electricitybillingsystem.services;
+package com.example.electricitybillingsystem.service;
 
 import com.example.electricitybillingsystem.dto.BillBeforePaymentResponse;
 import com.example.electricitybillingsystem.dto.DepartmentDTO;
 import com.example.electricitybillingsystem.dto.TaxBillDTO;
-import com.example.electricitybillingsystem.entity.*;
 import com.example.electricitybillingsystem.mapper.BillMapper;
+import com.example.electricitybillingsystem.model.*;
 import com.example.electricitybillingsystem.repository.*;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;

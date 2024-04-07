@@ -1,12 +1,12 @@
 package com.example.electricitybillingsystem.repository;
 
-import com.example.electricitybillingsystem.model.TieredPricing;
+import com.example.electricitybillingsystem.model.TieredPricingEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface TieredPricingRepository extends JpaRepository<TieredPricing, Long> {
+public interface TieredPricingRepository extends JpaRepository<TieredPricingEntity, Long> {
 
-    List<TieredPricing> findAllByServiceId(Long serviceId);
+    List<TieredPricingEntity> findAllById(Long serviceId);
 
 }

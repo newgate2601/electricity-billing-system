@@ -1,6 +1,6 @@
 package com.example.electricitybillingsystem.service;
 
-import com.example.electricitybillingsystem.model.TieredPricing;
+import com.example.electricitybillingsystem.model.TieredPricingEntity;
 import com.example.electricitybillingsystem.repository.TieredPricingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,8 +12,8 @@ import java.util.List;
 public class TieredPricingService {
     private final TieredPricingRepository tieredPricingRepository;
 
-    List<TieredPricing> getAllByServiceId(Long id) {
-        return tieredPricingRepository.findAllByServiceId(id);
+    List<TieredPricingEntity> getAllByServiceId(Long id) {
+        return tieredPricingRepository.findAllById(id);
     }
 
 }

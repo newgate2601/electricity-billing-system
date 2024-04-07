@@ -1,4 +1,4 @@
-package com.example.electricitybillingsystem.entity;
+package com.example.electricitybillingsystem.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,7 +9,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Entity
 @Table(name = "tbl_tiered_pricing")
-public class TieredPricingEntity {
+public class TieredPricingEntity extends BaseEnt{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

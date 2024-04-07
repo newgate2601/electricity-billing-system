@@ -1,6 +1,6 @@
 package com.example.electricitybillingsystem.repository;
 
-import com.example.electricitybillingsystem.entity.CustomerEntity;
+import com.example.electricitybillingsystem.model.CustomerEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

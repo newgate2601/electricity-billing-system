@@ -1,14 +1,12 @@
-package com.example.electricitybillingsystem.controllers;
+package com.example.electricitybillingsystem.controller;
 
-import com.example.electricitybillingsystem.entity.BillEntity;
-import com.example.electricitybillingsystem.services.BillService;
-import com.example.electricitybillingsystem.services.EmailService;
+import com.example.electricitybillingsystem.service.BillService;
+import com.example.electricitybillingsystem.service.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
 import java.io.UnsupportedEncodingException;
-import java.util.List;
 import java.util.Map;
 
 @RestController

@@ -1,4 +1,4 @@
-package com.example.electricitybillingsystem.entity;
+package com.example.electricitybillingsystem.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,17 +13,15 @@ import java.time.OffsetDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "tbl_employee")
-public class EmployeeEntity {
+@Table(name = "tbl_customer")
+public class CustomerEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String username;
-    private String password;
     private String name;
     private OffsetDateTime birthday;
-    private Integer phone;
-    private String email;
+    private String phone;
     private String note;
-    private String role;
+    private String email;
 }

@@ -1,8 +1,8 @@
 package com.example.electricitybillingsystem.dto;
 
-import com.example.electricitybillingsystem.entity.AddressEntity;
-import com.example.electricitybillingsystem.entity.CustomerEntity;
-import com.example.electricitybillingsystem.entity.TimelineEntity;
+import com.example.electricitybillingsystem.model.AddressEntity;
+import com.example.electricitybillingsystem.model.CustomerEntity;
+import com.example.electricitybillingsystem.model.TimelineEntity;
 import lombok.*;
 
 import java.util.List;

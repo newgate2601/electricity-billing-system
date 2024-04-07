@@ -1,6 +1,6 @@
 package com.example.electricitybillingsystem.vo.response;
 
-import com.example.electricitybillingsystem.model.TieredPricing;
+import com.example.electricitybillingsystem.model.TieredPricingEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,6 +18,6 @@ public class WaterServiceResponse {
 
     private String description;
 
-    private List<TieredPricing> prices;
+    private List<TieredPricingEntity> prices;
 
 }

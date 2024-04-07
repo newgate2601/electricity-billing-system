@@ -1,7 +1,7 @@
 package com.example.electricitybillingsystem.mapper;
 
 import com.example.electricitybillingsystem.dto.BillBeforePaymentResponse;
-import com.example.electricitybillingsystem.entity.BillEntity;
+import com.example.electricitybillingsystem.model.BillEntity;
 import org.mapstruct.Mapper;
 
 @Mapper
