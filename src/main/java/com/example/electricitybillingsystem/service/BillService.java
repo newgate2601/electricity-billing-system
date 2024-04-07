@@ -1,8 +1,8 @@
 package com.example.electricitybillingsystem.service;
 
-import com.example.electricitybillingsystem.dto.BillBeforePaymentResponse;
-import com.example.electricitybillingsystem.dto.ApartmentDTO;
-import com.example.electricitybillingsystem.dto.TaxBillDTO;
+import com.example.electricitybillingsystem.vo.dto.ApartmentDTO;
+import com.example.electricitybillingsystem.vo.dto.BillBeforePaymentResponse;
+import com.example.electricitybillingsystem.vo.dto.TaxBillDTO;
 import com.example.electricitybillingsystem.mapper.BillMapper;
 import com.example.electricitybillingsystem.model.*;
 import com.example.electricitybillingsystem.repository.*;

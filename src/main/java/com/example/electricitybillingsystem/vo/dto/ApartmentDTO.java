@@ -1,4 +1,4 @@
-package com.example.electricitybillingsystem.dto;
+package com.example.electricitybillingsystem.vo.dto;
 
 import com.example.electricitybillingsystem.model.AddressEntity;
 import com.example.electricitybillingsystem.model.CustomerEntity;

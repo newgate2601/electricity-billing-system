@@ -1,4 +1,4 @@
-package com.example.electricitybillingsystem.dto;
+package com.example.electricitybillingsystem.vo.dto;
 
 import lombok.*;
 
