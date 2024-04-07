@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface TaxRepo extends JpaRepository<TaxEntity, Long> {
+public interface TaxRepository extends JpaRepository<TaxEntity, Long> {
     List<TaxEntity> findByIsStatus(Boolean status);
 
     @Modifying

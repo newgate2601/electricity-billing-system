@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface TimelineRepo extends JpaRepository<TimelineEntity, Long> {
+public interface TimelineRepository extends JpaRepository<TimelineEntity, Long> {
     List<TimelineEntity> findAllByApartmentId(Long apartmentId);
 }
