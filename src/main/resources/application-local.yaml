@@ -7,10 +7,11 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        ddl-auto: true
+    hibernate:
+      ddl-auto: update
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/chat_app
+    url: jdbc:postgresql://localhost:5432/water_management
     username: postgres
     password: ${DATASOURCE_PASSWORD}
     driver-class-name: org.postgresql.Driver
