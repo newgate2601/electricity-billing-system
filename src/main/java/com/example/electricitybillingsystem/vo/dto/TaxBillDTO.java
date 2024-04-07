@@ -1,6 +1,8 @@
-package com.example.electricitybillingsystem.dto;
+package com.example.electricitybillingsystem.vo.dto;
 
 import lombok.*;
+
+import java.math.BigDecimal;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -9,5 +11,5 @@ import lombok.*;
 @Builder
 public class TaxBillDTO {
     private String name;
-    private float price;
+    private BigDecimal price;
 }

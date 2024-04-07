@@ -1,7 +1,7 @@
 package com.example.electricitybillingsystem.controller;
 
-import com.example.electricitybillingsystem.dto.BillBeforePaymentResponse;
 import com.example.electricitybillingsystem.service.BillService;
+import com.example.electricitybillingsystem.vo.dto.BillBeforePaymentResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
