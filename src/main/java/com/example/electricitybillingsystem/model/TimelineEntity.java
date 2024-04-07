@@ -17,5 +17,5 @@ public class TimelineEntity {
     private Long startNumber;
     private Long endNumber;
     private OffsetDateTime submitTime;
-    private Long departmentId;
+    private Long apartmentId;
 }

@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
 @Getter
@@ -21,10 +22,13 @@ public class BillEntity {
     private OffsetDateTime submitTime;
     private String description;
     private String billCode;
-    private Double price;
-    private Boolean status;
+    private BigDecimal price;
+    private String status;
     private Long startNumber;
     private Long endNumber;
     private Long employeeId;
-    private Long departmentId;
+    private Long customerId;
+    private Long apartmentId;
+    private Integer month;
+    private Integer year;
 }

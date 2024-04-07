@@ -4,16 +4,17 @@ create table tbl_bill
     submit_time   timestamp,
     description   varchar,
     home_code     varchar,
-    price         decimal(10, 2),
+    price         numeric,
     status        varchar,
-    start_number  bigserial,
-    end_number    bigserial,
-    tax_VAT       decimal(10, 2),
-    tax_BVMT      decimal(10, 2),
-    employee_id   bigserial,
-    department_id bigserial,
-    customer_id   bigserial
-)
+    start_number  BIGINT,
+    end_number    BIGINT,
+    employee_id   BIGINT,
+    department_id BIGINT,
+    customer_id   BIGINT,
+    month INTEGER,
+    year INTEGER
+);
+
 create table tbl_customer
 (
     id       bigserial primary key,
@@ -23,6 +24,7 @@ create table tbl_customer
     note     varchar,
     email    varchar
 );
+
 create table tbl_employee
 (
     id       bigserial primary key,

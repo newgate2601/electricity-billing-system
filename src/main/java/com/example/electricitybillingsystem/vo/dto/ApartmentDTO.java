@@ -1,4 +1,4 @@
-package com.example.electricitybillingsystem.dto;
+package com.example.electricitybillingsystem.vo.dto;
 
 import com.example.electricitybillingsystem.model.AddressEntity;
 import com.example.electricitybillingsystem.model.CustomerEntity;
@@ -12,7 +12,7 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-public class DepartmentDTO {
+public class ApartmentDTO {
     private Long id;
     private String des;
     private AddressEntity addressEntity;

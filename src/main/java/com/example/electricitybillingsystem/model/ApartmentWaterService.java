@@ -12,13 +12,12 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "tbl_department")
-public class DepartmentEntity {
+@Table(name = "tbl_apartment_water_service")
+public class ApartmentWaterService {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String code;
-    private String description;
-    private Long customerId;
-    private Long addressId;
+
+    private Long apartmentId;
+    private Long waterServiceId;
 }

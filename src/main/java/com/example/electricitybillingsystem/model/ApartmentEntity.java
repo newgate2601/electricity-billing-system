@@ -1,24 +1,24 @@
 package com.example.electricitybillingsystem.model;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
-import java.math.BigDecimal;
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "tbl_tax_bill")
-@Builder
-@AllArgsConstructor
-public class TaxBillEntity {
+@Table(name = "tbl_apartment")
+public class ApartmentEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long billId;
-    private Long taxId;
-    private BigDecimal price;
+    private String code;
+    private String description;
+    private Long customerId;
+    private Long addressId;
 }
