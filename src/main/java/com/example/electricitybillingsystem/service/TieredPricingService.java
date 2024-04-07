@@ -26,7 +26,7 @@ public class TieredPricingService {
     private final WaterServiceRepository waterServiceRepository;
 
 
-    List<TieredPricingEntity> getAllByServiceId(Long id) {
+    public List<TieredPricingEntity> getAllByServiceId(Long id) {
         return tieredPricingRepository.findAllById(id);
     }
 
@@ -62,7 +62,7 @@ public class TieredPricingService {
     }
 
     @Transactional
-    public void updateAllStatusToFalse(){
+    public void updateAllStatusToFalse() {
         tieredPricingRepository.updateAllStatusToFalse();
     }
 }

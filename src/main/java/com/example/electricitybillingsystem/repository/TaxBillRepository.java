@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface TaxBillRepo extends JpaRepository<TaxBillEntity, Long> {
+public interface TaxBillRepository extends JpaRepository<TaxBillEntity, Long> {
     List<TaxBillEntity> findAllByBillId(Long id);
 }

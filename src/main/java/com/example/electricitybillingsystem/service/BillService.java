@@ -25,9 +25,9 @@ public class BillService {
     private final ApartmentRepository apartmentRepository;
     private final AddressRepository addressRepository;
     private final CustomerRepository customerRepository;
-    private final TimelineRepo timelineRepo;
-    private final TaxBillRepo taxBillRepo;
-    private final TaxRepo taxRepo;
+    private final TimelineRepository timelineRepository;
+    private final TaxBillRepository taxBillRepository;
+    private final TaxRepository taxRepository;
 
 
     @Transactional(readOnly = true)
@@ -42,13 +42,13 @@ public class BillService {
                             .orElseThrow(() -> new RuntimeException("NOT FOUND ADDRESS"));
                     CustomerEntity customerEntity = customerRepository.findById(apartmentEntity.getCustomerId())
                             .orElseThrow(() -> new RuntimeException("NOT FOUND USER"));
-                    List<TimelineEntity> timelineEntities = timelineRepo.findAllByApartmentId(apartmentEntity.getId());
+                    List<TimelineEntity> timelineEntities = timelineRepository.findAllByApartmentId(apartmentEntity.getId());
 
-                    List<TaxBillEntity> taxBillEntities = taxBillRepo.findAllByBillId(billEntity.getId());
+                    List<TaxBillEntity> taxBillEntities = taxBillRepository.findAllByBillId(billEntity.getId());
                     List<TaxBillDTO> taxBillDTOS = new ArrayList<>();
 
                     taxBillEntities.forEach(taxBillEntity -> {
-                        Optional<TaxEntity> taxEntity = taxRepo.findById(taxBillEntity.getTaxId());
+                        Optional<TaxEntity> taxEntity = taxRepository.findById(taxBillEntity.getTaxId());
                         String taxName = taxEntity.get().getName();
 
                         TaxBillDTO taxBillDTO = TaxBillDTO.builder()
