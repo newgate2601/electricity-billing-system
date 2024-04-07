@@ -9,4 +9,6 @@ public interface TieredPricingRepository extends JpaRepository<TieredPricingEnti
 
     List<TieredPricingEntity> findAllById(Long serviceId);
 
+    void deleteTieredPricingEntitiesByIdIn(List<Long> ids);
+
 }

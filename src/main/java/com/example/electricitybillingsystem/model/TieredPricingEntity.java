@@ -12,15 +12,20 @@ import java.math.BigDecimal;
 @Entity
 @EqualsAndHashCode(callSuper = true)
 @Table(name = "tbl_tiered_pricing")
-public class TieredPricingEntity extends BaseEnt{
+public class TieredPricingEntity extends BaseEnt {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private BigDecimal price;
-    private String name;
+
+    private BigDecimal value;
+
     private Long startNumber;
+
     private Long endNumber;
+
     private Boolean status;
+
     private Long electricityServiceId;
 
 }
