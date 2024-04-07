@@ -8,8 +8,8 @@ import javax.persistence.*;
 @Data
 @NoArgsConstructor
 @Entity
-@Table(name = "tbl_electricity_service")
-public class ElectricityServiceEntity {
+@Table(name = "tbl_water_service")
+public class WaterServiceEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
