@@ -1,6 +1,6 @@
 package com.example.electricitybillingsystem.controllers;
 
-import com.example.electricitybillingsystem.models.Bill;
+import com.example.electricitybillingsystem.entity.BillEntity;
 import com.example.electricitybillingsystem.services.BillService;
 import com.example.electricitybillingsystem.services.EmailService;
 import lombok.RequiredArgsConstructor;
@@ -35,8 +35,4 @@ public class SendEmailController {
         }
     }
 
-    @GetMapping("/getAllBill")
-    public List<Bill> getBill() {
-        return billService.getAllBill();
-    }
 }

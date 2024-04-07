@@ -1,7 +1,8 @@
-package com.example.electricitybillingsystem.controller;
+package com.example.electricitybillingsystem.controllers;
 
 import com.example.electricitybillingsystem.dto.BillBeforePaymentResponse;
-import com.example.electricitybillingsystem.service.BillService;
+import com.example.electricitybillingsystem.entity.BillEntity;
+import com.example.electricitybillingsystem.services.BillService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,4 +22,5 @@ public class BillController {
     public Page<BillBeforePaymentResponse> getAllBillBeforePayment(@RequestParam(required = false) Pageable pageable){
         return billService.getAllBillBeforePayment(pageable);
     }
+
 }

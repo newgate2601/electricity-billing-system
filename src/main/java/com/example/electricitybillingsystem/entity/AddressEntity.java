@@ -23,4 +23,5 @@ public class AddressEntity {
     private String ward;
     private String district;
     private String city;
+    private Long departmentId;
 }

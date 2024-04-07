@@ -1,24 +1,23 @@
 package com.example.electricitybillingsystem.entity;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.*;
 
-@Getter
-@Setter
-@AllArgsConstructor
+@Data
 @NoArgsConstructor
 @Entity
-@Table(name = "tbl_department")
-public class DepartmentEntity {
+@Table(name = "tbl_tax_bill")
+@Builder
+@AllArgsConstructor
+public class TaxBillEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String code;
-    private String description;
-    private Long customerId;
-    private Long addressId;
+    private Long billId;
+    private Long taxId;
+    private float price;
 }

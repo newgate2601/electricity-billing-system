@@ -1,9 +1,11 @@
 package com.example.electricitybillingsystem.dto;
 
+import com.example.electricitybillingsystem.entity.CustomerEntity;
+import com.example.electricitybillingsystem.entity.TaxEntity;
 import lombok.*;
 
-import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -11,14 +13,13 @@ import java.time.OffsetDateTime;
 @Setter
 @Builder
 public class BillBeforePaymentResponse {
-    private Long id;
-    private String nameCustomer;
-//    private String departmentName;
-    private String homeCode;
-    private String address;
+    private OffsetDateTime submitTime;
+    private String description;
+    private String billCode;
+    private Double price;
+    private Boolean status;
     private Long startNumber;
     private Long endNumber;
-    private Long userNumber;
-    private Double price;
-    private String status;
+    private List<TaxBillDTO> taxs;
+    private DepartmentDTO department;
 }

@@ -22,7 +22,7 @@ public class EmployeeEntity {
     private String password;
     private String name;
     private OffsetDateTime birthday;
-    private String phone;
+    private Integer phone;
     private String email;
     private String note;
     private String role;

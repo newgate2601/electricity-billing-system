@@ -1,30 +1,21 @@
 package com.example.electricitybillingsystem.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.OffsetDateTime;
 
-@Getter
-@Setter
-@AllArgsConstructor
+@Data
 @NoArgsConstructor
 @Entity
-@Table(name = "tbl_bill")
-public class BillEntity {
+@Table(name = "tbl_timeline_entity")
+public class TimelineEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private OffsetDateTime submitTime;
-    private String description;
-    private String billCode;
-    private Double price;
-    private Boolean status;
     private Long startNumber;
     private Long endNumber;
-    private Long employeeId;
+    private OffsetDateTime submitTime;
     private Long departmentId;
 }
