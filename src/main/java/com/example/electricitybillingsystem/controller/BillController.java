@@ -17,15 +17,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/bill")
 public class BillController {
     private final BillService billService;
-//    @Operation(summary = "get all bill before payment")
-//    @GetMapping("/list")
-//    public Page<BillBeforePaymentResponse> getAllBillBeforePayment(@RequestParam(required = false) Pageable pageable){
-//        return billService.getAllBillBeforePayment(pageable);
-//    }
+    @Operation(summary = "get all bill before payment")
+    @GetMapping("/list/before")
+    public Page<BillBeforePaymentResponse> getAllBillBeforePayment(
+            @RequestParam Integer year,
+            @RequestParam Integer month,
+            @RequestParam(required = false) Pageable pageable){
+        return billService.getAllBillBeforePayment(year, month, pageable);
+    }
 
     @Operation(summary = "get all bill after payment")
     @GetMapping("/list/after")
-    public Page<BillAfterPaymentResponse> getAllBillBeforePayment(
+    public Page<BillAfterPaymentResponse> getAllBillAfterPayment(
             @RequestParam Integer year,
             @RequestParam Integer month,
             @RequestParam(required = false) Pageable pageable){
