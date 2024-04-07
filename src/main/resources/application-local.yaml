@@ -11,9 +11,9 @@ spring:
       ddl-auto: update
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/water_management
+    url: jdbc:postgresql://localhost:5432/system_water
     username: postgres
-    password: ${DATASOURCE_PASSWORD}
+    password: 09122002
     driver-class-name: org.postgresql.Driver
 
   mail:
