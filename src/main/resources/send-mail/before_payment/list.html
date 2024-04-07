@@ -40,28 +40,17 @@
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <th class="info-1" scope="row">1</th>
-          <td class="info-1">Nguyễn</td>
-          <td class="info-1">12345</td>
-          <td class="info-1">255, nguyễn văn trỗi</td>
-          <td class="info-1">100</td>
-          <td class="info-1">150</td>
-          <td class="info-1">50</td>
-          <td class="info-1">04/04/2024</td>
-          <td class="info-1">50000</td>
-          <td class="info-1">Chưa thanh toán</td>
-          <td>
-            <input type="checkbox" class="select-checkbox" style="width: 25px; height: 25px" />
-          </td>
-        </tr>
+        <!-- Dữ liệu từ API sẽ được điền vào đây -->
       </tbody>
       <tfoot>
         <tr>
           <th colspan="4">Tổng</th>
-          <th id="old_water"></th>
+          <!-- <th id="old_water"></th>
           <th id="new_water"></th>
-          <th id="final_water"></th>
+          <th id="final_water"></th> -->
+          <th></th>
+          <th></th>
+          <th></th>
           <th></th>
           <th id="total_amount"></th>
           <th></th>
@@ -103,8 +92,9 @@
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
   <script>
     $(document).ready(function () {
-      $("#myTable").DataTable({
+      var table = $("#myTable").DataTable({
         paging: true, // Hiển thị phân trang
+        pageLength: 1, // Số dòng trên mỗi trang
         searching: true, // Cho phép tìm kiếm
         ordering: true, // Cho phép sắp xếp
         info: true, // Hiển thị thông tin bảng
@@ -116,6 +106,30 @@
           url: "https://cdn.datatables.net/plug-ins/1.10.24/i18n/Vietnamese.json",
         },
       });
+
+      // Gửi yêu cầu đến API
+      fetch('http://localhost:8086/api/v1/bill/list?page=0&size=10&sort=string')
+        .then(response => response.json())
+        .then(data => {
+          console.log("===>>>", data.content)
+          data.content.forEach((item, index) => {
+            var row = `<tr>
+                        <td>${index + 1}</td>
+                        <td>${item.apartment.customerEntity.name}</td>
+                        <td>${item.billCode}</td>
+                        <td>${item.apartment.addressEntity.homeNumber}, ${item.apartment.addressEntity.streetName}, ${item.apartment.addressEntity.ward}, ${item.apartment.addressEntity.district}, ${item.apartment.addressEntity.city}</td>
+                        <td>${item.startNumber}</td>
+                        <td>${item.endNumber}</td>
+                        <td>${item.endNumber - item.startNumber}</td>
+                        <td>${item.timelineEntities?.[0]?.submitTime}</td>
+                        <td>${item.price}</td>
+                        <td>${item.status ? 'Đã thanh toán' : 'Chưa thanh toán'}</td>
+                        <td><input type="checkbox" class="select-checkbox" style="width: 25px; height: 25px" /></td>
+                    </tr>`;
+            table.row.add($(row)).draw();
+          });
+        })
+        .catch(error => console.error('Error:', error));
 
       // Xử lý sự kiện khi checkbox "Chọn tất cả" được thay đổi
       $("#select-all").change(function () {
