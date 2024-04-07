@@ -1,5 +1,6 @@
 package com.example.electricitybillingsystem.service;
 
+import com.example.electricitybillingsystem.common.Common;
 import com.example.electricitybillingsystem.dto.BillBeforePaymentResponse;
 import com.example.electricitybillingsystem.dto.DepartmentDTO;
 import com.example.electricitybillingsystem.dto.TaxBillDTO;
@@ -36,12 +37,12 @@ public class BillService {
         return billEntities.map(
                 billEntity -> {
                     DepartmentEntity departmentEntity = departmentRepository.findById(billEntity.getDepartmentId())
-                            .orElseThrow(() -> new RuntimeException("NOT FOUND DEPARTMENT"));
+                            .orElseThrow(() -> new RuntimeException(Common.NOT_FOUND_RECORD));
 
                     AddressEntity addressEntity = addressRepository.findById(departmentEntity.getAddressId())
-                            .orElseThrow(() -> new RuntimeException("NOT FOUND ADDRESS"));
+                            .orElseThrow(() -> new RuntimeException(Common.NOT_FOUND_RECORD));
                     CustomerEntity customerEntity = customerRepository.findById(departmentEntity.getCustomerId())
-                            .orElseThrow(() -> new RuntimeException("NOT FOUND USER"));
+                            .orElseThrow(() -> new RuntimeException(Common.NOT_FOUND_RECORD));
                     List<TimelineEntity> timelineEntities = timelineRepo.findAllByDepartmentId(departmentEntity.getId());
 
                     List<TaxBillEntity> taxBillEntities = taxBillRepo.findAllByBillId(billEntity.getId());
@@ -76,5 +77,6 @@ public class BillService {
                 }
         );
     }
+
 
 }
