@@ -1,7 +1,7 @@
 package com.example.electricitybillingsystem.controller;
 
-import com.example.electricitybillingsystem.dto.BillAfterPaymentResponse;
-import com.example.electricitybillingsystem.dto.BillBeforePaymentResponse;
+import com.example.electricitybillingsystem.vo.dto.BillAfterPaymentResponse;
+import com.example.electricitybillingsystem.vo.dto.BillBeforePaymentResponse;
 import com.example.electricitybillingsystem.service.BillService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;

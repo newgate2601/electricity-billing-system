@@ -14,6 +14,6 @@ public interface TimelineRepo extends JpaRepository<TimelineEntity, Long> {
     @Query("SELECT t FROM TimelineEntity t " +
             "WHERE FUNCTION('YEAR', t.submitTime) = :year " +
             "AND FUNCTION('MONTH', t.submitTime) = :month " +
-            "AND t.departmentId = :departmentId")
-    List<TimelineEntity> findByMonthAndDepartmentIn(Integer year, Integer month, Collection<Long> departmentId);
+            "AND t.apartmentId IN :apartmentIds")
+    List<TimelineEntity> findAllByMonthAndDepartmentIn(Integer year, Integer month, Collection<Long> apartmentIds);
 }

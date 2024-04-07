@@ -1,10 +1,10 @@
 package com.example.electricitybillingsystem.service;
 
 import com.example.electricitybillingsystem.common.Common;
-import com.example.electricitybillingsystem.dto.BillAfterPaymentResponse;
-import com.example.electricitybillingsystem.dto.BillBeforePaymentResponse;
-import com.example.electricitybillingsystem.dto.DepartmentDTO;
-import com.example.electricitybillingsystem.dto.TaxBillDTO;
+import com.example.electricitybillingsystem.vo.dto.BillBeforePaymentResponse;
+import com.example.electricitybillingsystem.vo.dto.BillAfterPaymentResponse;
+import com.example.electricitybillingsystem.vo.dto.ApartmentDTO;
+import com.example.electricitybillingsystem.vo.dto.TaxBillDTO;
 import com.example.electricitybillingsystem.mapper.BillMapper;
 import com.example.electricitybillingsystem.model.*;
 import com.example.electricitybillingsystem.repository.*;
@@ -27,7 +27,7 @@ public class BillService {
     private final BillMapper billMapper;
 
     private final BillRepository billRepository;
-    private final DepartmentRepository departmentRepository;
+    private final ApartmentRepository apartmentRepository;
     private final AddressRepository addressRepository;
     private final CustomerRepository customerRepository;
     private final TimelineRepo timelineRepo;
@@ -37,23 +37,23 @@ public class BillService {
 
     public Page<BillBeforePaymentResponse> getAllBillBeforePayment(Integer year, Integer month, Pageable pageable) {
         Page<BillEntity> billEntities = billRepository.findAllByStatus(false, pageable);
-        List<Long> departmentIds = billEntities.stream().map(BillEntity::getDepartmentId).collect(Collectors.toList());
-        List<DepartmentEntity> departmentEntities = departmentRepository.findAllByIdIn(departmentIds);
+        List<Long> departmentIds = billEntities.stream().map(BillEntity::getApartmentId).collect(Collectors.toList());
+        List<ApartmentEntity> departmentEntities = apartmentRepository.findAllByIdIn(departmentIds);
 
         Map<Long, AddressEntity> addressEntityMap = addressRepository.findAllByIdIn(
-                departmentEntities.stream().map(DepartmentEntity::getAddressId).collect(Collectors.toList())
+                departmentEntities.stream().map(ApartmentEntity::getAddressId).collect(Collectors.toList())
         ).stream().collect(Collectors.toMap(AddressEntity::getId, Function.identity()));
 
         Map<Long, CustomerEntity> customerEntityMap = customerRepository.findAllByIdIn(
-                departmentEntities.stream().map(DepartmentEntity::getCustomerId).collect(Collectors.toList())
+                departmentEntities.stream().map(ApartmentEntity::getCustomerId).collect(Collectors.toList())
         ).stream().collect(Collectors.toMap(CustomerEntity::getId, Function.identity()));
 
-        Map<Long, TimelineEntity> timelineEntityMap = timelineRepo.findByMonthAndDepartmentIn(year, month, departmentIds)
-                .stream().collect(Collectors.toMap(TimelineEntity::getDepartmentId, Function.identity()));
+        Map<Long, TimelineEntity> timelineEntityMap = timelineRepo.findAllByMonthAndDepartmentIn(year, month, departmentIds)
+                .stream().collect(Collectors.toMap(TimelineEntity::getApartmentId, Function.identity()));
 
-        List<DepartmentDTO> departmentDTOS = departmentEntities.stream().map(
+        List<ApartmentDTO> departmentDTOS = departmentEntities.stream().map(
                 departmentEntity -> {
-                    return DepartmentDTO.builder()
+                    return ApartmentDTO.builder()
                             .id(departmentEntity.getId())
                             .addressEntity(addressEntityMap.get(departmentEntity.getAddressId()))
                             .des(departmentEntity.getDescription())
@@ -63,18 +63,19 @@ public class BillService {
                 }
         ).collect(Collectors.toList());
 
-        Map<Long, DepartmentDTO> departmentDTOMap = departmentDTOS.stream().collect(Collectors.toMap(
-                DepartmentDTO::getId, Function.identity()
+        Map<Long, ApartmentDTO> departmentDTOMap = departmentDTOS.stream().collect(Collectors.toMap(
+                ApartmentDTO::getId, Function.identity()
         ));
 
         Map<Long, List<Long>> taxBillMap = taxBillRepo.findAllByBillIdIn(
                 billEntities.stream().map(BillEntity::getId).collect(Collectors.toList())
         ).stream().collect(Collectors.groupingBy(TaxBillEntity::getBillId,
                 Collectors.mapping(TaxBillEntity::getTaxId, Collectors.toList())));
+        // taxBillMap bill_id = 1 ,  tax_id = 1,2
         return billEntities.map(
                 billEntity -> {
                     BillBeforePaymentResponse billBeforePaymentResponse = billMapper.getResponseFromEntity(billEntity);
-                    billBeforePaymentResponse.setDepartment(departmentDTOMap.get(billEntity.getDepartmentId()));
+                    billBeforePaymentResponse.setApartment(departmentDTOMap.get(billEntity.getApartmentId()));
                     billBeforePaymentResponse.setTaxs(taxRepo.findAllByIdIn(taxBillMap.get(billEntity.getId())).stream()
                             .map(taxEntity ->  {
                                 return TaxBillDTO.builder()
@@ -90,23 +91,23 @@ public class BillService {
 
     public Page<BillAfterPaymentResponse> getAllBillAfterPayment(Integer year, Integer month, Pageable pageable) {
         Page<BillEntity> billEntities = billRepository.findAllByStatus(true, pageable);
-        List<Long> departmentIds = billEntities.stream().map(BillEntity::getDepartmentId).collect(Collectors.toList());
-        List<DepartmentEntity> departmentEntities = departmentRepository.findAllByIdIn(departmentIds);
+        List<Long> departmentIds = billEntities.stream().map(BillEntity::getApartmentId).collect(Collectors.toList());
+        List<ApartmentEntity> departmentEntities = apartmentRepository.findAllByIdIn(departmentIds);
 
         Map<Long, AddressEntity> addressEntityMap = addressRepository.findAllByIdIn(
-                departmentEntities.stream().map(DepartmentEntity::getAddressId).collect(Collectors.toList())
+                departmentEntities.stream().map(ApartmentEntity::getAddressId).collect(Collectors.toList())
         ).stream().collect(Collectors.toMap(AddressEntity::getId, Function.identity()));
 
         Map<Long, CustomerEntity> customerEntityMap = customerRepository.findAllByIdIn(
-                departmentEntities.stream().map(DepartmentEntity::getCustomerId).collect(Collectors.toList())
+                departmentEntities.stream().map(ApartmentEntity::getCustomerId).collect(Collectors.toList())
         ).stream().collect(Collectors.toMap(CustomerEntity::getId, Function.identity()));
 
-        Map<Long, TimelineEntity> timelineEntityMap = timelineRepo.findByMonthAndDepartmentIn(year, month, departmentIds)
-                .stream().collect(Collectors.toMap(TimelineEntity::getDepartmentId, Function.identity()));
+        Map<Long, TimelineEntity> timelineEntityMap = timelineRepo.findAllByMonthAndDepartmentIn(year, month, departmentIds)
+                .stream().collect(Collectors.toMap(TimelineEntity::getApartmentId, Function.identity()));
 
-        List<DepartmentDTO> departmentDTOS = departmentEntities.stream().map(
+        List<ApartmentDTO> departmentDTOS = departmentEntities.stream().map(
                 departmentEntity -> {
-                    return DepartmentDTO.builder()
+                    return ApartmentDTO.builder()
                             .id(departmentEntity.getId())
                             .addressEntity(addressEntityMap.get(departmentEntity.getAddressId()))
                             .des(departmentEntity.getDescription())
@@ -116,8 +117,8 @@ public class BillService {
                 }
         ).collect(Collectors.toList());
 
-        Map<Long, DepartmentDTO> departmentDTOMap = departmentDTOS.stream().collect(Collectors.toMap(
-                DepartmentDTO::getId, Function.identity()
+        Map<Long, ApartmentDTO> departmentDTOMap = departmentDTOS.stream().collect(Collectors.toMap(
+                ApartmentDTO::getId, Function.identity()
         ));
 
         Map<Long, List<Long>> taxBillMap = taxBillRepo.findAllByBillIdIn(
@@ -127,7 +128,7 @@ public class BillService {
         return billEntities.map(
                 billEntity -> {
                     BillAfterPaymentResponse billAfterPaymentResponse = billMapper.getResponseAfterFromEntity(billEntity);
-                    billAfterPaymentResponse.setDepartment(departmentDTOMap.get(billEntity.getDepartmentId()));
+                    billAfterPaymentResponse.setDepartment(departmentDTOMap.get(billEntity.getApartmentId()));
                     billAfterPaymentResponse.setTaxs(taxRepo.findAllByIdIn(taxBillMap.get(billEntity.getId())).stream()
                             .map(taxEntity ->  {
                                 return TaxBillDTO.builder()
