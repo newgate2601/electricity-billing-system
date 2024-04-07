@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 
 @Data
 @NoArgsConstructor
@@ -19,5 +20,5 @@ public class TaxBillEntity {
     private Long id;
     private Long billId;
     private Long taxId;
-    private float price;
+    private BigDecimal price;
 }

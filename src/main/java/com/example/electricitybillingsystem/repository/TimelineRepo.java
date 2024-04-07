@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface TimelineRepo extends JpaRepository<TimelineEntity, Long> {
-    List<TimelineEntity> findAllByDepartmentId(Long departmentId);
+    List<TimelineEntity> findAllByApartmentId(Long apartmentId);
 }

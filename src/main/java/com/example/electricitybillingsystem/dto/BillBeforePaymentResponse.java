@@ -19,5 +19,5 @@ public class BillBeforePaymentResponse {
     private Long startNumber;
     private Long endNumber;
     private List<TaxBillDTO> taxs;
-    private DepartmentDTO department;
+    private ApartmentDTO apartment;
 }

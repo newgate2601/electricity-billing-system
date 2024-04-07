@@ -1,7 +1,7 @@
 package com.example.electricitybillingsystem.service;
 
 import com.example.electricitybillingsystem.dto.BillBeforePaymentResponse;
-import com.example.electricitybillingsystem.dto.DepartmentDTO;
+import com.example.electricitybillingsystem.dto.ApartmentDTO;
 import com.example.electricitybillingsystem.dto.TaxBillDTO;
 import com.example.electricitybillingsystem.mapper.BillMapper;
 import com.example.electricitybillingsystem.model.*;
@@ -22,7 +22,7 @@ public class BillService {
     private final BillMapper billMapper;
 
     private final BillRepository billRepository;
-    private final DepartmentRepository departmentRepository;
+    private final ApartmentRepository apartmentRepository;
     private final AddressRepository addressRepository;
     private final CustomerRepository customerRepository;
     private final TimelineRepo timelineRepo;
@@ -35,14 +35,14 @@ public class BillService {
         Page<BillEntity> billEntities = billRepository.findAllByStatus(false, pageable);
         return billEntities.map(
                 billEntity -> {
-                    DepartmentEntity departmentEntity = departmentRepository.findById(billEntity.getDepartmentId())
-                            .orElseThrow(() -> new RuntimeException("NOT FOUND DEPARTMENT"));
+                    ApartmentEntity apartmentEntity = apartmentRepository.findById(billEntity.getApartmentId())
+                            .orElseThrow(() -> new RuntimeException("NOT FOUND APARTMENT"));
 
-                    AddressEntity addressEntity = addressRepository.findById(departmentEntity.getAddressId())
+                    AddressEntity addressEntity = addressRepository.findById(apartmentEntity.getAddressId())
                             .orElseThrow(() -> new RuntimeException("NOT FOUND ADDRESS"));
-                    CustomerEntity customerEntity = customerRepository.findById(departmentEntity.getCustomerId())
+                    CustomerEntity customerEntity = customerRepository.findById(apartmentEntity.getCustomerId())
                             .orElseThrow(() -> new RuntimeException("NOT FOUND USER"));
-                    List<TimelineEntity> timelineEntities = timelineRepo.findAllByDepartmentId(departmentEntity.getId());
+                    List<TimelineEntity> timelineEntities = timelineRepo.findAllByApartmentId(apartmentEntity.getId());
 
                     List<TaxBillEntity> taxBillEntities = taxBillRepo.findAllByBillId(billEntity.getId());
                     List<TaxBillDTO> taxBillDTOS = new ArrayList<>();
@@ -58,9 +58,9 @@ public class BillService {
                         taxBillDTOS.add(taxBillDTO);
                     });
 
-                    DepartmentDTO departmentDTO = DepartmentDTO.builder()
-                            .id(departmentEntity.getId())
-                            .des(departmentEntity.getDescription())
+                    ApartmentDTO apartmentDTO = ApartmentDTO.builder()
+                            .id(apartmentEntity.getId())
+                            .des(apartmentEntity.getDescription())
                             .addressEntity(addressEntity)
                             .customerEntity(customerEntity)
                             .timelineEntities(timelineEntities).build();
@@ -70,7 +70,7 @@ public class BillService {
                     billBeforePaymentResponse
                             .setTaxs(taxBillDTOS);
                     billBeforePaymentResponse
-                            .setDepartment(departmentDTO);
+                            .setApartment(apartmentDTO);
 
                     return billBeforePaymentResponse;
                 }

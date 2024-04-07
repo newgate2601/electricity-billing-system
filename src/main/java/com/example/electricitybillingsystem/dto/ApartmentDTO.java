@@ -12,7 +12,7 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-public class DepartmentDTO {
+public class ApartmentDTO {
     private Long id;
     private String des;
     private AddressEntity addressEntity;
