@@ -10,10 +10,11 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Entity
 @Table(name = "tbl_tax")
-public class TaxEntity {
+public class TaxEntity extends BaseEnt{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private BigDecimal tax;
+    private Boolean isStatus;
 }

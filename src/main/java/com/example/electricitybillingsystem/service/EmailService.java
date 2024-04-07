@@ -1,5 +1,6 @@
 package com.example.electricitybillingsystem.service;
 
+import com.example.electricitybillingsystem.model.CustomerEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -8,12 +9,14 @@ import org.springframework.mail.javamail.JavaMailSender;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class EmailService {
 
     private final JavaMailSender mailSender;
+    private final AddressService addressService;
 
     public void sendEmail(String email, String subject, String content) throws MessagingException, UnsupportedEncodingException {
         MimeMessage message = mailSender.createMimeMessage();
@@ -27,4 +30,9 @@ public class EmailService {
 
         mailSender.send(message);
     }
+
+    public List<CustomerEntity> sendEmailTurnOffWater(String ward){
+        return addressService.getAllCustomerByWard(ward);
+    }
+
 }

@@ -20,7 +20,7 @@ public class TieredPricingEntity extends BaseEnt{
     private String name;
     private Long startNumber;
     private Long endNumber;
-    private Boolean status;
     private Long electricityServiceId;
+    private Boolean isStatus;
 
 }
