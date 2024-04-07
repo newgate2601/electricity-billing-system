@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
+
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/v1/bill")
@@ -23,14 +25,18 @@ public class BillController {
 
     @Operation(summary = "get all bill before payment")
     @GetMapping("/list")
-    public Page<BillBeforePaymentResponse> getAllBillBeforePayment(@RequestParam(required = false) Pageable pageable){
+    public Page<BillBeforePaymentResponse> getAllBillBeforePayment(@RequestParam(required = false) Pageable pageable) {
         return billService.getAllBillBeforePayment(pageable);
     }
 
-
     @Operation(summary = "notification adjust service pricing")
     @GetMapping("/adjust-pricing")
-    public AdjustPricingResponse getAllAdjustPricing(){
+    public AdjustPricingResponse getAllAdjustPricing() {
         return tieredPricingService.getAllByStatus();
+    }
+
+    @GetMapping
+    public BigDecimal bigDecimal() {
+        return billService.intoMoney(1L, 1L, 20L);
     }
 }

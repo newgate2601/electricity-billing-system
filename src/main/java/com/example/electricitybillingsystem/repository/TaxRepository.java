@@ -12,6 +12,7 @@ import java.util.List;
 public interface TaxRepository extends JpaRepository<TaxEntity, Long> {
     List<TaxEntity> findByIsStatus(Boolean status);
 
+    List<TaxEntity> findAllByIdIn(List<Long> ids);
     @Modifying
     @Query("UPDATE TaxEntity e SET e.isStatus = false")
     void updateAllStatusToFalse();
