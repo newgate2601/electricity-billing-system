@@ -1,5 +1,6 @@
 package com.example.electricitybillingsystem.controller;
 
+import com.example.electricitybillingsystem.dto.BillAfterPaymentResponse;
 import com.example.electricitybillingsystem.dto.BillBeforePaymentResponse;
 import com.example.electricitybillingsystem.service.BillService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,10 +17,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/bill")
 public class BillController {
     private final BillService billService;
-    @Operation(summary = "get all bill before payment")
-    @GetMapping("/list")
-    public Page<BillBeforePaymentResponse> getAllBillBeforePayment(@RequestParam(required = false) Pageable pageable){
-        return billService.getAllBillBeforePayment(pageable);
-    }
+//    @Operation(summary = "get all bill before payment")
+//    @GetMapping("/list")
+//    public Page<BillBeforePaymentResponse> getAllBillBeforePayment(@RequestParam(required = false) Pageable pageable){
+//        return billService.getAllBillBeforePayment(pageable);
+//    }
 
+    @Operation(summary = "get all bill after payment")
+    @GetMapping("/list/after")
+    public Page<BillAfterPaymentResponse> getAllBillBeforePayment(
+            @RequestParam Integer year,
+            @RequestParam Integer month,
+            @RequestParam(required = false) Pageable pageable){
+        return billService.getAllBillAfterPayment(year, month, pageable);
+    }
 }

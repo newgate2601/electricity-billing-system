@@ -17,5 +17,5 @@ public class DepartmentDTO {
     private String des;
     private AddressEntity addressEntity;
     private CustomerEntity customerEntity;
-    private List<TimelineEntity> timelineEntities;
+    private TimelineEntity timelineEntities;
 }
