@@ -2,6 +2,7 @@ package com.example.electricitybillingsystem.controller;
 
 import com.example.electricitybillingsystem.service.BillService;
 import com.example.electricitybillingsystem.service.TieredPricingService;
+import com.example.electricitybillingsystem.vo.dto.BillAfterPaymentResponse;
 import com.example.electricitybillingsystem.vo.dto.BillBeforePaymentResponse;
 import com.example.electricitybillingsystem.vo.response.AdjustPricingResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,6 +28,11 @@ public class BillController {
         return billService.getAllBillBeforePayment(pageable);
     }
 
+    @Operation(summary = "get all bill after payment")
+    @GetMapping("/list/after")
+    public Page<BillAfterPaymentResponse> getAllBillAfterPayment(@RequestParam(required = false) Pageable pageable){
+        return billService.getAllBillAfterPayment(pageable);
+    }
 
     @Operation(summary = "notification adjust service pricing")
     @GetMapping("/adjust-pricing")
