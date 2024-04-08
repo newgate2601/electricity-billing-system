@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface TieredPricingRepository extends JpaRepository<TieredPricingEntity, Long> {
 
-    List<TieredPricingEntity> findAllById(Long serviceId);
+    List<TieredPricingEntity> findAllByElectricityServiceId(Long serviceId);
 
     void deleteTieredPricingEntitiesByIdIn(List<Long> ids);
 

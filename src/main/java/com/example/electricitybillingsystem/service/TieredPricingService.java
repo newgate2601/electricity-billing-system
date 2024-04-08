@@ -6,6 +6,7 @@ import com.example.electricitybillingsystem.vo.request.UpdatePriceRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
@@ -14,14 +15,12 @@ public class TieredPricingService {
     private final TieredPricingRepository tieredPricingRepository;
 
     List<TieredPricingEntity> getAllByServiceId(Long id) {
-        return tieredPricingRepository.findAllById(id);
+        return tieredPricingRepository.findAllByElectricityServiceId(id);
     }
 
+    @Transactional
     public Object updatePrice(UpdatePriceRequest request) {
-        tieredPricingRepository.deleteTieredPricingEntitiesByIdIn(
-                request.getCurrentPrices().stream()
-                        .map(TieredPricingEntity::getId)
-                        .filter(id -> request.getNewPrices().stream().filter(newPrice -> newPrice.getId().equals(id)).toList().isEmpty()).toList());
+        tieredPricingRepository.deleteTieredPricingEntitiesByIdIn(request.getCurrentPrices().stream().map(TieredPricingEntity::getId).toList());
         tieredPricingRepository.saveAll(request.getNewPrices());
         return true;
     }
