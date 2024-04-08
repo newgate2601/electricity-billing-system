@@ -145,7 +145,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
       $(document).ready(function () {
-        $("#myTable").DataTable({
+        const table = $("#myTable").DataTable({
           paging: true, // Hiển thị phân trang
           searching: true, // Cho phép tìm kiếm
           ordering: true, // Cho phép sắp xếp
@@ -157,6 +157,13 @@
           language: {
             url: "https://cdn.datatables.net/plug-ins/1.10.24/i18n/Vietnamese.json",
           },
+        });
+
+        table.on("init.dt", function () {
+          const searchInput = document.querySelector('input[type="search"]');
+          if (searchInput) {
+            searchInput.focus();
+          }
         });
 
         // Xử lý sự kiện khi checkbox "Chọn tất cả" được thay đổi

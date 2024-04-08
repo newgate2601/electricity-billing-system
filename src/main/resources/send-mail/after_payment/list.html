@@ -165,6 +165,13 @@
           },
         });
 
+        table.on("init.dt", function () {
+          const searchInput = document.querySelector('input[type="search"]');
+          if (searchInput) {
+            searchInput.focus();
+          }
+        });
+
         // Xử lý sự kiện khi checkbox "Chọn tất cả" được thay đổi
         $("#select-all").change(function () {
           $(".select-checkbox").prop("checked", $(this).prop("checked"));
@@ -201,7 +208,10 @@
 
         $(".info-1").click(function () {
           console.log(1);
-          window.open("http://127.0.0.1:5500/electricity-billing-system/src/main/resources/send-mail/after_payment/detail-info.html", "_self");
+          window.open(
+            "http://127.0.0.1:5500/electricity-billing-system/src/main/resources/send-mail/after_payment/detail-info.html",
+            "_self"
+          );
         });
 
         $("#search-btn").click(function () {

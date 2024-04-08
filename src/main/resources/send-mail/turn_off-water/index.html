@@ -107,12 +107,9 @@
             alert("Bạn phải chọn thời gian bắt đầu và kết thúc!");
             return;
           }
+
           const currentTime = new Date();
-          console.log(
-            new Date(startTime) < currentTime,
-            new Date(endTime) < currentTime,
-            new Date(startTime) >= new Date(endTime)
-          );
+
           if (
             new Date(startTime) < currentTime ||
             new Date(endTime) < currentTime ||
@@ -143,6 +140,8 @@
           alert(text);
           location.reload();
         });
+
+        $("#start-time").focus();
       });
     </script>
   </body>
