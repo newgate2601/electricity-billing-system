@@ -23,7 +23,6 @@ public class BillController {
     private final BillService billService;
     private final TieredPricingService tieredPricingService;
 
-
     @Operation(summary = "get all bill before payment")
     @GetMapping("/list")
     public Page<BillBeforePaymentResponse> getAllBillBeforePayment(@RequestParam(required = false) Pageable pageable) {
@@ -43,8 +42,8 @@ public class BillController {
     }
 
     @Operation(summary = "get detail bill")
-    @GetMapping
-    public List<DetailBillResponse> bigDecimal() {
-        return billService.intoMoney(1L, 1L, 20L);
+    @GetMapping("/detail/bill")
+    public List<DetailBillResponse> bigDecimal(@RequestParam Long billId) {
+        return billService.intoMoney(billId);
     }
 }

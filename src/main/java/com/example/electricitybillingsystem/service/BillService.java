@@ -11,9 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -125,7 +125,9 @@ public class BillService {
     }
 
     @Transactional(readOnly = true)
-    public List<DetailBillResponse> intoMoney(Long billId, Long timelineStartNumber, Long timelineEndNumber) {
+    public List<DetailBillResponse> intoMoney(Long billId) {
+        Long timelineStartNumber = billRepository.findById(billId).get().getStartNumber();
+        Long timelineEndNumber  = billRepository.findById(billId).get().getEndNumber();
         List<TaxEntity> taxEntities = taxService.getAllTaxByBillId(billId);
         List<TieredPricingHistory> tieredPricingHistories = tieredPricingHistoryService.getAllTieredPricingHistoryByBillId(billId);
 
@@ -138,27 +140,26 @@ public class BillService {
             }
             return -1;
         });
-        DetailBillResponse detailBillResponse = new DetailBillResponse();
+
         List<DetailBillResponse> detailBillResponses = new ArrayList<>();
 
         Long usedNumber = timelineEndNumber - timelineStartNumber; // 10 - 5  = 5 , 60 - 10 = 50
         BigDecimal finalPrice = BigDecimal.ZERO; // 0
         for (TieredPricingHistory item : tieredPricingHistories) { // 0-10
+            DetailBillResponse detailBillResponse = new DetailBillResponse();
             if (usedNumber <= item.getEndNumber()) {
                 Long used = Math.min(usedNumber, item.getEndNumber()) - item.getStartNumber() + 1;
-                System.out.println(used);
                 finalPrice = finalPrice.add(new BigDecimal(used).multiply(item.getPrice()));
-                System.out.println(finalPrice);
                 detailBillResponse.setUseWaterNumner(used);
+                detailBillResponse.setPiceWater(item.getPrice());
                 detailBillResponse.setCost(finalPrice);
                 detailBillResponses.add(detailBillResponse);
                 break;
             } else {
                 Long used = item.getEndNumber() - item.getStartNumber() + 1;
-                System.out.println(used);
                 finalPrice = finalPrice.add(new BigDecimal(used).multiply(item.getPrice()));
-                System.out.println(finalPrice);
                 detailBillResponse.setUseWaterNumner(used);
+                detailBillResponse.setPiceWater(item.getPrice());
                 detailBillResponse.setCost(finalPrice);
                 detailBillResponses.add(detailBillResponse);
                 usedNumber -= used;
@@ -166,9 +167,15 @@ public class BillService {
         }
 
         for(TaxEntity item : taxEntities){
+            DetailBillResponse detailBillResponse = new DetailBillResponse();
             finalPrice = finalPrice.add(finalPrice.multiply(item.getTax()));
+            detailBillResponse.setCost(finalPrice);
+            detailBillResponse.setTaxName(item.getName());
+            detailBillResponse.setPriceTax(item.getTax());
+            detailBillResponses.add(detailBillResponse);
         }
 
         return detailBillResponses;
     }
+
 }

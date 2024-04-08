@@ -11,5 +11,8 @@ import java.math.BigDecimal;
 @Builder
 public class DetailBillResponse {
     private Long useWaterNumner;
+    private BigDecimal piceWater;
     private BigDecimal cost;
+    private String taxName;
+    private BigDecimal priceTax;
 }
