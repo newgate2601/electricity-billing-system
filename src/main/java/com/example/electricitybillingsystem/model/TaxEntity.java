@@ -11,9 +11,13 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "tbl_tax")
 public class TaxEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
+
     private BigDecimal tax;
+
 }

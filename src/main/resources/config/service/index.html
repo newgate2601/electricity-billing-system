@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-semibold mb-8">Danh sách các dịch vụ nước</h1>
+
+        <!-- List of Water Services -->
+        <ul id="service-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></ul>
+    </div>
+
+    <script>
+        const getAllService = async () => {
+            const res = await fetch("http://localhost:8080/water-service/all")
+            const data = await res.json()
+            data.forEach((service) => {
+                const listContainer = document.querySelector("#service-list")
+                listContainer.innerHTML = ''
+                listContainer.innerHTML +=
+                    `<li class="bg-white rounded-lg p-6 shadow-md">
+                        <a href="update/index.html?id=${service.id}">
+                            <h2 class="text-xl font-semibold mb-4">${service.name}</h2>
+                            <p class="text-gray-700">${service.des}</p>
+                        </a>
+                    </li>`
+            })
+        }
+
+        getAllService()
+    </script>
+</body>
+
+</html>

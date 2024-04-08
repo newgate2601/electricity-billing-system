@@ -15,10 +15,15 @@ import java.math.BigDecimal;
 @Builder
 @AllArgsConstructor
 public class TaxBillEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private Long billId;
+
     private Long taxId;
-    private BigDecimal price;
+
+    private BigDecimal tax;
+
 }

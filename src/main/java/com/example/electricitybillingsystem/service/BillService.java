@@ -54,7 +54,7 @@ public class BillService {
 
                         TaxBillDTO taxBillDTO = TaxBillDTO.builder()
                                 .name(taxName)
-                                .price(taxBillEntity.getPrice())
+                                .price(taxBillEntity.getTax())
                                 .build();
                         taxBillDTOS.add(taxBillDTO);
                     });

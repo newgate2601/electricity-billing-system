@@ -2,13 +2,13 @@ package com.example.electricitybillingsystem.mapper;
 
 import com.example.electricitybillingsystem.model.WaterServiceEntity;
 import com.example.electricitybillingsystem.vo.response.WaterServiceResponse;
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-04-07T15:36:54+0700",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 11.0.21 (Oracle Corporation)"
+    date = "2024-04-08T11:13:10+0700",
+    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.38.0.v20240325-1403, environment: Java 17.0.10 (Eclipse Adoptium)"
 )
 @Component
 public class WaterServiceMapperImpl implements WaterServiceMapper {
