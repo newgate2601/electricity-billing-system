@@ -22,7 +22,7 @@ public class TieredPricingHistoryService {
             return null;
         }
 
-        List<Long> ids = tieredPricingHistoryBills.stream().map(TieredPricingHistoryBill::getBillId).collect(Collectors.toList());
+        List<Long> ids = tieredPricingHistoryBills.stream().map(TieredPricingHistoryBill::getTieredPricingHistoryId).collect(Collectors.toList());
         if(ids==null || ids.size()==0){
             return null;
         }

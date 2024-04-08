@@ -99,21 +99,26 @@ public class BillService {
         Long usedNumber = timelineEndNumber - timelineStartNumber;
         BigDecimal finalPrice = BigDecimal.ZERO;
         for (TieredPricingHistory item : tieredPricingHistories) {
-            if (usedNumber <= item.getEndNumber()) {
-                Long used = Math.min(usedNumber, item.getEndNumber()) - item.getStartNumber() + 1;
+            Long endNumber = item.getEndNumber();
+            if (endNumber == null) {
+                endNumber = Long.MAX_VALUE;
+            }
+            if (usedNumber <= endNumber) {
+                Long used = usedNumber;
                 finalPrice = finalPrice.add(new BigDecimal(used).multiply(item.getPrice()));
                 break;
             } else {
-                Long used = item.getEndNumber() - item.getStartNumber() + 1;
+                Long used = endNumber - item.getStartNumber() + 1;
                 finalPrice = finalPrice.add(new BigDecimal(used).multiply(item.getPrice()));
                 usedNumber -= used;
             }
         }
 
-        for(TaxEntity item : taxEntities){
-            finalPrice = finalPrice.add(finalPrice.multiply(item.getTax()));
+        BigDecimal totalTax = BigDecimal.ZERO;
+        for (TaxEntity item : taxEntities) {
+            totalTax = totalTax.add(finalPrice.multiply(item.getTax().divide(new BigDecimal(100))));
         }
 
-        return finalPrice;
+        return finalPrice.add(totalTax);
     }
 }
