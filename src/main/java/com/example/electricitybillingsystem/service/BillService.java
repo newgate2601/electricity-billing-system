@@ -1,9 +1,6 @@
 package com.example.electricitybillingsystem.service;
 
-import com.example.electricitybillingsystem.vo.dto.ApartmentDTO;
-import com.example.electricitybillingsystem.vo.dto.BillAfterPaymentResponse;
-import com.example.electricitybillingsystem.vo.dto.BillBeforePaymentResponse;
-import com.example.electricitybillingsystem.vo.dto.TaxBillDTO;
+import com.example.electricitybillingsystem.vo.dto.*;
 import com.example.electricitybillingsystem.mapper.BillMapper;
 import com.example.electricitybillingsystem.model.*;
 import com.example.electricitybillingsystem.repository.*;
@@ -128,9 +125,10 @@ public class BillService {
     }
 
     @Transactional(readOnly = true)
-    public BigDecimal intoMoney(Long billId, Long timelineStartNumber, Long timelineEndNumber) {
+    public List<DetailBillResponse> intoMoney(Long billId, Long timelineStartNumber, Long timelineEndNumber) {
         List<TaxEntity> taxEntities = taxService.getAllTaxByBillId(billId);
         List<TieredPricingHistory> tieredPricingHistories = tieredPricingHistoryService.getAllTieredPricingHistoryByBillId(billId);
+
         tieredPricingHistories.sort((o1, o2) -> {
             if (o1.getStartNumber() > o2.getStartNumber()) {
                 return 1;
@@ -140,18 +138,29 @@ public class BillService {
             }
             return -1;
         });
+        DetailBillResponse detailBillResponse = new DetailBillResponse();
+        List<DetailBillResponse> detailBillResponses = new ArrayList<>();
 
-
-        Long usedNumber = timelineEndNumber - timelineStartNumber;
-        BigDecimal finalPrice = BigDecimal.ZERO;
-        for (TieredPricingHistory item : tieredPricingHistories) {
+        Long usedNumber = timelineEndNumber - timelineStartNumber; // 10 - 5  = 5 , 60 - 10 = 50
+        BigDecimal finalPrice = BigDecimal.ZERO; // 0
+        for (TieredPricingHistory item : tieredPricingHistories) { // 0-10
             if (usedNumber <= item.getEndNumber()) {
                 Long used = Math.min(usedNumber, item.getEndNumber()) - item.getStartNumber() + 1;
+                System.out.println(used);
                 finalPrice = finalPrice.add(new BigDecimal(used).multiply(item.getPrice()));
+                System.out.println(finalPrice);
+                detailBillResponse.setUseWaterNumner(used);
+                detailBillResponse.setCost(finalPrice);
+                detailBillResponses.add(detailBillResponse);
                 break;
             } else {
                 Long used = item.getEndNumber() - item.getStartNumber() + 1;
+                System.out.println(used);
                 finalPrice = finalPrice.add(new BigDecimal(used).multiply(item.getPrice()));
+                System.out.println(finalPrice);
+                detailBillResponse.setUseWaterNumner(used);
+                detailBillResponse.setCost(finalPrice);
+                detailBillResponses.add(detailBillResponse);
                 usedNumber -= used;
             }
         }
@@ -160,6 +169,6 @@ public class BillService {
             finalPrice = finalPrice.add(finalPrice.multiply(item.getTax()));
         }
 
-        return finalPrice;
+        return detailBillResponses;
     }
 }

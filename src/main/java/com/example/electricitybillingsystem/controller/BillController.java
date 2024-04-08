@@ -4,6 +4,7 @@ import com.example.electricitybillingsystem.service.BillService;
 import com.example.electricitybillingsystem.service.TieredPricingService;
 import com.example.electricitybillingsystem.vo.dto.BillAfterPaymentResponse;
 import com.example.electricitybillingsystem.vo.dto.BillBeforePaymentResponse;
+import com.example.electricitybillingsystem.vo.dto.DetailBillResponse;
 import com.example.electricitybillingsystem.vo.response.AdjustPricingResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @RestController
 @AllArgsConstructor
@@ -40,8 +42,9 @@ public class BillController {
         return tieredPricingService.getAllByStatus();
     }
 
+    @Operation(summary = "get detail bill")
     @GetMapping
-    public BigDecimal bigDecimal() {
+    public List<DetailBillResponse> bigDecimal() {
         return billService.intoMoney(1L, 1L, 20L);
     }
 }
