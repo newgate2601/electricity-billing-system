@@ -10,17 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import com.example.electricitybillingsystem.model.TaxEntity;
-import com.example.electricitybillingsystem.repository.TaxRepo;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class TaxService {
-    private final TaxRepo taxRepo;
+    private final TaxRepository taxRepo;
 
     public List<TaxEntity> getAll() {
         return taxRepo.findAll();

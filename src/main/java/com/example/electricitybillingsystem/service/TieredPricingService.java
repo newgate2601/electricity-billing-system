@@ -13,11 +13,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +25,7 @@ public class TieredPricingService {
     private final TaxService taxService;
     private final WaterServiceRepository waterServiceRepository;
 
-    List<TieredPricingEntity> getAllByServiceId(Long id) {
+    public List<TieredPricingEntity> getAllByServiceId(Long id) {
         return tieredPricingRepository.findAllByElectricityServiceId(id);
     }
 
@@ -36,9 +34,6 @@ public class TieredPricingService {
         tieredPricingRepository.deleteTieredPricingEntitiesByIdIn(request.getCurrentPrices().stream().map(TieredPricingEntity::getId).toList());
         tieredPricingRepository.saveAll(request.getNewPrices());
         return true;
-
-    public List<TieredPricingEntity> getAllByServiceId(Long id) {
-        return tieredPricingRepository.findAllById(id);
     }
 
     @Transactional(readOnly = true)

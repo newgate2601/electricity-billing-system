@@ -15,6 +15,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/v1/bill")
@@ -30,11 +32,11 @@ public class BillController {
     public Page<BillBeforePaymentResponse> getAllBillBeforePayment(@RequestParam(required = false) Pageable pageable) {
         return billService.getAllBillBeforePayment(pageable);
     }
-    @Operation(summary = "get all bill over time")
-    @GetMapping("/list/over-time")
-    public Page<BillAfterPaymentResponse> getAllBillOverTime(@RequestParam(required = false) Pageable pageable){
-        return billService.getAllBillOverTime(pageable);
-    }
+//    @Operation(summary = "get all bill over time")
+//    @GetMapping("/list/over-time")
+//    public Page<BillAfterPaymentResponse> getAllBillOverTime(@RequestParam(required = false) Pageable pageable){
+//        return billService.getAllBillOverTime(pageable);
+//    }
 
     @Operation(summary = "get all bill after payment")
     @GetMapping("/list/after")
