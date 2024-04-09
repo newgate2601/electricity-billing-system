@@ -11,6 +11,7 @@ import java.util.List;
 @Setter
 @Builder
 public class BillBeforePaymentResponse {
+    private Long id;
     private OffsetDateTime submitTime;
     private String description;
     private String billCode;

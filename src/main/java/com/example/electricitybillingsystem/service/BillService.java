@@ -166,7 +166,7 @@ public class BillService {
 
                 break;
             } else {
-                Long used = endNumber - item.getStartNumber() + 1;
+                Long used = endNumber - item.getStartNumber();
                 finalPrice = finalPrice.add(new BigDecimal(used).multiply(item.getPrice()));
                 detailBillResponse.setWaterConsumption(used);
                 detailBillResponse.setPiceWater(item.getPrice());

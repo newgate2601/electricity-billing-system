@@ -27,5 +27,6 @@ public class BillEntity {
     private Long startNumber;
     private Long endNumber;
     private Long employeeId;
+    private Long customerId;
     private Long apartmentId;
 }

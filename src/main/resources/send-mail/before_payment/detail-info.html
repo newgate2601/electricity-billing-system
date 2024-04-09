@@ -121,8 +121,19 @@
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
   <script>
     $(document).ready(function () {
+
+      // Hàm để lấy tham số URL theo tên
+      function getUrlParameter(name) {
+        name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+        var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+        var results = regex.exec(location.search);
+        return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+      }
+
+      var billId = getUrlParameter('billId');
+
       // Gửi yêu cầu API để lấy dữ liệu hóa đơn chi tiết
-      fetch('http://localhost:8086/api/v1/bill/detail/bill?billId=2')
+      fetch('http://localhost:8086/api/v1/bill/detail/bill?billId=' + billId)
         .then(response => response.json())
         .then(data => {
           let totalCost = 0; // Khởi tạo biến tổng tiền hàng

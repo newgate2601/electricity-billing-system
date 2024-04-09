@@ -6,8 +6,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
+import java.util.List;
+
 @Repository
 public interface BillRepository extends JpaRepository<BillEntity, Long> {
 
     Page<BillEntity> findAllByStatus(Boolean status, Pageable pageable);
+    List<BillEntity> findAllByIdIn(Collection<Long> billIds);
 }

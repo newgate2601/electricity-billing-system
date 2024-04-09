@@ -12,7 +12,7 @@ import java.util.List;
 @Getter
 @Setter
 public class BillAfterPaymentResponse {
-
+    private Long id;
     private OffsetDateTime submitTime;
     private String description;
     private String billCode;
