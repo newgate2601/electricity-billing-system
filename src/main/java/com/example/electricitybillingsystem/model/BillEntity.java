@@ -20,10 +20,11 @@ public class BillEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private OffsetDateTime submitTime;
+    private OffsetDateTime limitedTime;
     private String description;
     private String billCode;
     private BigDecimal price;
-    private String status;
+    private Boolean status;
     private Long startNumber;
     private Long endNumber;
     private Long employeeId;

@@ -152,7 +152,7 @@
             const row = `<tr>
                       <td>${index + 1}</td>
                       <td>${item.apartment.customerEntity.name}</td>
-                      <td>${item.billCode}</td>
+                      <td class='infor-${index}'>${item.apartment.codeHome}</td>
                       <td>${item.apartment.addressEntity.homeNumber}, ${item.apartment.addressEntity.streetName}, ${item.apartment.addressEntity.ward}, ${item.apartment.addressEntity.district}, ${item.apartment.addressEntity.city}</td>
                       <td>${item.startNumber}</td>
                       <td>${item.endNumber}</td>
@@ -170,7 +170,8 @@
           console.log(data.content)
           data.content.forEach((item, index) => {
             $(`.infor-${index}`).click(function () {
-              const customer = { ...item.apartment?.customerEntity, billCode: item.billCode, submitTime: item.submitTime };
+              const customer = { ...item.apartment?.customerEntity, codeHome: item.apartment.codeHome, billCode: item.billCode, submitTime: item.submitTime, limitedTime: item.limitedTime };
+
               sessionStorage.setItem('customer', JSON.stringify(customer))
               window.open(`http://127.0.0.1:5500/src/main/resources/send-mail/before_payment/detail-info.html?billId=${item.id}`, '_self')
             });

@@ -104,15 +104,16 @@
       });
 
       // Lấy dữ liệu ban đầu
-      fetch('http://localhost:8086/api/v1/bill/list?page=0&size=10&sort=string')
+      fetch('http://localhost:8080/api/v1/bill/list?page=0&size=10&sort=string')
         .then(response => response.json())
         .then(data => {
+
           // Xử lý dữ liệu và thêm vào bảng
           data.content.forEach((item, index) => {
             var row = `<tr>
                     <td class='infor-${index}'>${item.id}</td>
                     <td class='infor-${index}'>${item.apartment.customerEntity.name}</td>
-                    <td class='infor-${index}'>${item.billCode}</td>
+                    <td class='infor-${index}'>${item.apartment.codeHome}</td>
                     <td class='infor-${index}'>${item.apartment.addressEntity.homeNumber}, ${item.apartment.addressEntity.streetName}, ${item.apartment.addressEntity.ward}, ${item.apartment.addressEntity.district}, ${item.apartment.addressEntity.city}</td>
                     <td class='infor-${index}'>${item.startNumber}</td>
                     <td class='infor-${index}'>${item.endNumber}</td>
@@ -131,7 +132,8 @@
           console.log(data.content)
           data.content.forEach((item, index) => {
             $(`.infor-${index}`).click(function () {
-              const customer = { ...item.apartment?.customerEntity, billCode: item.billCode, submitTime: item.submitTime };
+              const customer = { ...item.apartment?.customerEntity, codeHome: item.apartment.codeHome, billCode: item.billCode, submitTime: item.submitTime, limitedTime: item.limitedTime };
+
 
               sessionStorage.setItem('customer', JSON.stringify(customer))
               window.open(`http://127.0.0.1:5500/src/main/resources/send-mail/before_payment/detail-info.html?billId=${item.id}`, '_self')

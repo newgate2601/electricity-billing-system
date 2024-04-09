@@ -13,12 +13,17 @@
     <h4>Bảng hóa đơn chi tiết</h4>
     <div class="row">
       <div class="col-lg-6">
+        <p><span class="font-weight-bold">Mã hóa đơn:</span> <span id="billCode"></span></p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-6">
         <p><span class="font-weight-bold">Tên hộ gia đình:</span> <span id="name"></span></p>
       </div>
     </div>
     <div class="row">
       <div class="col">
-        <p><span class="font-weight-bold">Mã hộ gia đình:</span> <span id="billCode"></span></p>
+        <p><span class="font-weight-bold">Mã hộ gia đình:</span> <span id="codeHome"></span></p>
       </div>
     </div>
     <div class="row">
@@ -32,16 +37,8 @@
     <div class="row">
       <div class="col">
         <p>
-          <span class="font-weight-bold">Thời gian tạo:</span>
-          <span>04/04/2024</span>
-        </p>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col">
-        <p>
           <span class="font-weight-bold">Hạn đóng:</span>
-          <span id="submitTime">04/04/2024</span>
+          <span id="limitedTime"></span>
         </p>
       </div>
     </div>
@@ -180,8 +177,9 @@
 
       const customer = JSON.parse(sessionStorage.getItem('customer'))
       $('#name').text(customer.name || '');
-      $("#billCode").text(customer.billCode || '');
-      $("#submitTime").text(customer.submitTime || '');
+      $("#codeHome").text(customer.codeHome || '');
+      $("#limitedTime").text(customer.limitedTime || ''); // bỏ cái time tạo đi a ơi
+      $("#billCode").text(customer.billCode || ''); // bỏ cái time tạo đi a ơi
     });
   </script>
 </body>

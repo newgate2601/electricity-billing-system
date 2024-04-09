@@ -15,6 +15,7 @@ import java.util.List;
 public class ApartmentDTO {
     private Long id;
     private String des;
+    private String codeHome;
     private AddressEntity addressEntity;
     private CustomerEntity customerEntity;
     private List<TimelineEntity> timelineEntities;
