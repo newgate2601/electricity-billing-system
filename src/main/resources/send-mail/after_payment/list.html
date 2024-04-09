@@ -132,6 +132,17 @@
         },
       });
 
+        table.on("init.dt", function () {
+          const searchInput = document.querySelector('input[type="search"]');
+          if (searchInput) {
+            searchInput.focus();
+          }
+        });
+
+        // Xử lý sự kiện khi checkbox "Chọn tất cả" được thay đổi
+        $("#select-all").change(function () {
+          $(".select-checkbox").prop("checked", $(this).prop("checked"));
+        });
       // Gọi API
       fetch("http://localhost:8086/api/v1/bill/list/after?page=0&size=2&sort=string")
         .then((response) => response.json())
@@ -189,13 +200,22 @@
         console.log(selectedItems);
       });
 
-      $(".info-1").click(function () {
-        console.log(1);
-        window.open(
-          "http://127.0.0.1:5500/electricity-billing-system/src/main/resources/send-mail/after_payment/detail-info.html",
-          "_self"
-        );
-      });
+        $(".info-1").click(function () {
+          console.log(1);
+          window.open(
+            "http://127.0.0.1:5500/electricity-billing-system/src/main/resources/send-mail/after_payment/detail-info.html",
+            "_self"
+          );
+        });
+
+        $("#search-btn").click(function () {
+          const startTime = moment($("#start-time").val()).format("YYYY-MM-DD");
+          const endTime = moment($("#end-time").val()).format("YYYY-MM-DD");
+
+          // call api
+          console.log("Thời gian bắt đầu:", startTime);
+          console.log("Thời gian kết thúc:", endTime);
+        });
 
       function calculateSum() {
         let sumSoNuocCu = 0;

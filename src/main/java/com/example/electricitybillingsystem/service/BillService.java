@@ -126,8 +126,15 @@ public class BillService {
 
     @Transactional(readOnly = true)
     public List<DetailBillResponse> intoMoney(Long billId) {
+        List<DetailBillResponse> detailBillResponses = new ArrayList<>();
         Long timelineStartNumber = billRepository.findById(billId).get().getStartNumber();
         Long timelineEndNumber  = billRepository.findById(billId).get().getEndNumber();
+        Long usedWater = timelineEndNumber - timelineStartNumber;
+        detailBillResponses.add(DetailBillResponse.builder()
+                .oldNumber(timelineStartNumber)
+                .newNumber(timelineEndNumber)
+                .usedWater(usedWater)
+                .build());
         List<TaxEntity> taxEntities = taxService.getAllTaxByBillId(billId);
         List<TieredPricingHistory> tieredPricingHistories = tieredPricingHistoryService.getAllTieredPricingHistoryByBillId(billId);
 
@@ -141,40 +148,47 @@ public class BillService {
             return -1;
         });
 
-        List<DetailBillResponse> detailBillResponses = new ArrayList<>();
-
-        Long usedNumber = timelineEndNumber - timelineStartNumber; // 10 - 5  = 5 , 60 - 10 = 50
-        BigDecimal finalPrice = BigDecimal.ZERO; // 0
-        for (TieredPricingHistory item : tieredPricingHistories) { // 0-10
+        Long usedNumber = timelineEndNumber - timelineStartNumber;
+        BigDecimal finalPrice = BigDecimal.ZERO;
+        for (TieredPricingHistory item : tieredPricingHistories) {
             DetailBillResponse detailBillResponse = new DetailBillResponse();
-            if (usedNumber <= item.getEndNumber()) {
-                Long used = Math.min(usedNumber, item.getEndNumber()) - item.getStartNumber() + 1;
+            Long endNumber = item.getEndNumber();
+            if (endNumber == null) {
+                endNumber = Long.MAX_VALUE;
+            }
+            if (usedNumber <= endNumber) {
+                Long used = usedNumber;
                 finalPrice = finalPrice.add(new BigDecimal(used).multiply(item.getPrice()));
-                detailBillResponse.setUseWaterNumner(used);
+                detailBillResponse.setWaterConsumption(used);
                 detailBillResponse.setPiceWater(item.getPrice());
-                detailBillResponse.setCost(finalPrice);
+                detailBillResponse.setCost(new BigDecimal(used).multiply(item.getPrice()));
                 detailBillResponses.add(detailBillResponse);
+
                 break;
             } else {
-                Long used = item.getEndNumber() - item.getStartNumber() + 1;
+                Long used = endNumber - item.getStartNumber() + 1;
                 finalPrice = finalPrice.add(new BigDecimal(used).multiply(item.getPrice()));
-                detailBillResponse.setUseWaterNumner(used);
+                detailBillResponse.setWaterConsumption(used);
                 detailBillResponse.setPiceWater(item.getPrice());
-                detailBillResponse.setCost(finalPrice);
+                detailBillResponse.setCost(new BigDecimal(used).multiply(item.getPrice()));
                 detailBillResponses.add(detailBillResponse);
                 usedNumber -= used;
             }
         }
 
-        for(TaxEntity item : taxEntities){
+        BigDecimal totalTax = BigDecimal.ZERO;
+        for (TaxEntity item : taxEntities) {
             DetailBillResponse detailBillResponse = new DetailBillResponse();
-            finalPrice = finalPrice.add(finalPrice.multiply(item.getTax()));
-            detailBillResponse.setCost(finalPrice);
+            totalTax = totalTax.add(finalPrice.multiply(item.getTax().divide(new BigDecimal(100))));
+            detailBillResponse.setCost(finalPrice.multiply(item.getTax().divide(new BigDecimal(100))));
             detailBillResponse.setTaxName(item.getName());
             detailBillResponse.setPriceTax(item.getTax());
             detailBillResponses.add(detailBillResponse);
         }
-
+        finalPrice = finalPrice.add(totalTax);
+        DetailBillResponse detailBillResponse = new DetailBillResponse();
+        detailBillResponse.setFinalPrice(finalPrice);
+        detailBillResponses.add(detailBillResponse);
         return detailBillResponses;
     }
 

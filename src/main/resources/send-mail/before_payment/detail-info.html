@@ -1,193 +1,171 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Bootstrap Layout</title>
-    <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-    />
-  </head>
-  <body>
-    <div class="container mt-5">
-      <h4>Bảng hóa đơn chi tiết</h4>
-      <div class="row">
-        <div class="col-lg-6">
-          <p><span class="font-weight-bold">Tên hộ gia đình:</span> Nguyễn</p>
-        </div>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bootstrap Layout</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+</head>
+
+<body>
+  <div class="container mt-5">
+    <h4>Bảng hóa đơn chi tiết</h4>
+    <div class="row">
+      <div class="col-lg-6">
+        <p><span class="font-weight-bold">Tên hộ gia đình:</span> Nguyễn</p>
       </div>
-      <div class="row">
-        <div class="col">
-          <p><span class="font-weight-bold">Mã hộ gia đình:</span> 12345</p>
-        </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <p><span class="font-weight-bold">Mã hộ gia đình:</span> 12345</p>
       </div>
-      <div class="row">
-        <div class="col">
-          <p>
-            <span class="font-weight-bold">Trạng thái:</span>
-            <span>Đã thanh toán</span>
-          </p>
-        </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <p>
+          <span class="font-weight-bold">Trạng thái:</span>
+          <span>Chưa thanh toán</span>
+        </p>
       </div>
-      <div class="row">
-        <div class="col">
-          <p>
-            <span class="font-weight-bold">Thời gian tạo:</span>
-            <span>04/04/2024</span>
-          </p>
-        </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <p>
+          <span class="font-weight-bold">Thời gian tạo:</span>
+          <span>04/04/2024</span>
+        </p>
       </div>
-      <div class="row">
-        <div class="col">
-          <p>
-            <span class="font-weight-bold">Hạn đóng:</span>
-            <span>04/04/2024</span>
-          </p>
-        </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <p>
+          <span class="font-weight-bold">Hạn đóng:</span>
+          <span>04/04/2024</span>
+        </p>
       </div>
-      <div class="row mt-4">
-        <div class="col">
-          <table class="table" id="myTable">
-            <thead>
-              <tr>
-                <th scope="col">Số nước cũ(m<sup>3</sup>)</th>
-                <th scope="col">Số nước mới(m<sup>3</sup>)</th>
-                <th scope="col">Số nước sử dụng(m<sup>3</sup>)</th>
-                <th scope="col">Định mức tiêu thụ</th>
-                <th scope="col">Đơn giá</th>
-                <th scope="col">Thành tiền</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>100</td>
-                <td>150</td>
-                <td>50</td>
-                <td>200</td>
-                <td>1000</td>
-                <td>50000</td>
-              </tr>
-            </tbody>
-            <tfoot>
-              <tr>
-                <td colspan="5" class="font-weight-bold">Tổng tiền hàng</td>
-                <td class="font-weight-bold total_amount">0</td>
-              </tr>
-              <tr>
-                <td colspan="5" class="font-weight-bold">Thuế VAT (10%)</td>
-                <td class="font-weight-bold tax_vat">0</td>
-              </tr>
-              <tr>
-                <td colspan="5" class="font-weight-bold">Thuế BVMT (5%)</td>
-                <td class="font-weight-bold tax_bvmt">0</td>
-              </tr>
-              <tr>
-                <td colspan="5" class="font-weight-bold">
-                  Tổng cộng tiền thanh toán
-                </td>
-                <td class="font-weight-bold sumTotal" id="totalAmount">0</td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
+    </div>
+    <div class="row mt-4">
+      <div class="col">
+        <table class="table" id="myTable">
+          <thead>
+            <tr>
+              <th scope="col">Số nước cũ(m<sup>3</sup>)</th>
+              <th scope="col">Số nước mới(m<sup>3</sup>)</th>
+              <th scope="col">Số nước sử dụng(m<sup>3</sup>)</th>
+              <th scope="col">Định mức tiêu thụ(m<sup>3</sup>)</th>
+              <th scope="col">Đơn giá(Vnđ)</th>
+              <th scope="col">Thành tiền(Vnđ)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Data will be dynamically added here -->
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="5" class="font-weight-bold">Tổng tiền hàng(Vnđ)</td>
+              <td class="font-weight-bold total_amount">0</td>
+            </tr>
+            <tr>
+              <td colspan="5" class="font-weight-bold">Thuế VAT (10%)</td>
+              <td class="font-weight-bold tax_vat">0</td>
+            </tr>
+            <tr>
+              <td colspan="5" class="font-weight-bold">Thuế BVMT (5%)</td>
+              <td class="font-weight-bold tax_bvmt">0</td>
+            </tr>
+            <tr>
+              <td colspan="5" class="font-weight-bold">
+                Tổng cộng tiền thanh toán(Vnđ)
+              </td>
+              <td class="font-weight-bold sumTotal" id="totalAmount">0</td>
+            </tr>
+          </tfoot>
+        </table>
       </div>
-      <div class="row mb-4">
-        <div class="col">
-          <button
-            type="button"
-            class="btn btn-primary"
-            onclick="window.history.back()"
-          >
-            Quay lại
+    </div>
+    <div class="row mb-4">
+      <div class="col">
+        <button type="button" class="btn btn-primary" onclick="window.history.back()">
+          Quay lại
+        </button>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#confirmModal">
+          Gửi
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="confirmModalLabel">Xác nhận gửi</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
           </button>
-          <button
-            type="button"
-            class="btn btn-primary"
-            data-toggle="modal"
-            data-target="#confirmModal"
-          >
-            Gửi
+        </div>
+        <div class="modal-body">
+          Bạn có chắc chắn muốn gửi hóa đơn này không?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">
+            Hủy
           </button>
+          <button type="button" class="btn btn-primary">Xác nhận</button>
         </div>
       </div>
     </div>
-    <div
-      class="modal fade"
-      id="confirmModal"
-      tabindex="-1"
-      role="dialog"
-      aria-labelledby="confirmModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="confirmModalLabel">Xác nhận gửi</h5>
-            <button
-              type="button"
-              class="close"
-              data-dismiss="modal"
-              aria-label="Close"
-            >
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            Bạn có chắc chắn muốn gửi hóa đơn này không?
-          </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-dismiss="modal"
-            >
-              Hủy
-            </button>
-            <button type="button" class="btn btn-primary">Xác nhận</button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script>
-      $(document).ready(function () {
-        var totalAmount = 0;
-        // Lặp qua các hàng và tính tổng của cột "Thành tiền" cho các dòng "Đồng", "Thuế VAT", "Thuế BVMT"
-        $("#myTable tbody tr").each(function () {
-          var description = $(this).find("td:eq(0)").text().trim();
-          if (
-            description === "Tổng tiền hàng" ||
-            description === "Thuế VAT (10%)" ||
-            description === "Thuế BVMT (5%)"
-          ) {
-            totalAmount += parseInt($(this).find("td:eq(1)").text());
-          }
-        });
-        // Hiển thị tổng cộng trong cột "Tổng cộng tiền thanh toán"
-        $("#totalAmount").text(totalAmount);
+  </div>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script>
+    $(document).ready(function () {
+      // Gửi yêu cầu API để lấy dữ liệu hóa đơn chi tiết
+      fetch('http://localhost:8086/api/v1/bill/detail/bill?billId=2')
+        .then(response => response.json())
+        .then(data => {
+          let totalCost = 0; // Khởi tạo biến tổng tiền hàng
+          let vat = 0;
+          let bvmt = 0;
+          let finalCost = 0;
+          // Lặp qua mảng JSON để hiển thị dữ liệu vào bảng
+          data.forEach(detail => {
+            // Tính toán tổng tiền hàng
+            if (detail.cost !== null && detail.taxName == null) {
+              totalCost += detail.cost;
+            }
 
-        function calculateSum() {
-          let sumThanhTien = 0;
-
-          $("#myTable tbody tr").each(function () {
-            sumThanhTien += parseFloat($(this).find("td:eq(5)").text());
+            if (detail.taxName == "VAT") {
+              vat = detail.cost;
+            }
+            if (detail.taxName == "BVMT") {
+              thueBvmt = detail.cost;
+            }
+            if (detail.taxName == null) {
+              const row = `<tr>
+                <td>${detail.oldNumber !== null ? detail.oldNumber : ''}</td>
+                <td>${detail.newNumber !== null ? detail.newNumber : ''}</td>
+                <td>${detail.usedWater !== null ? detail.usedWater : ''}</td>
+                <td>${detail.waterConsumption !== null ? detail.waterConsumption : ''}</td>
+                <td>${detail.piceWater !== null ? detail.piceWater : ''}</td>
+                <td>${detail.cost !== null ? detail.cost : ''}</td>
+                </tr>`;
+              $('#myTable tbody').append(row);
+            }
           });
-          const thueVat = sumThanhTien.toFixed(2) * 0.1;
-          const thueBvmt = sumThanhTien.toFixed(2) * 0.05;
 
-          $(".total_amount").text(sumThanhTien.toFixed(2));
-          $(".tax_vat").text(thueVat.toFixed(2));
+          // Cập nhật tổng tiền hàng vào ô trong <tfoot>
+          $('.total_amount').text(totalCost.toFixed(2));
+          $(".tax_vat").text(vat.toFixed(2));
           $(".tax_bvmt").text(thueBvmt.toFixed(2));
           $(".sumTotal").text(
-            +sumThanhTien.toFixed(2) +
-              +thueVat.toFixed(2) +
-              +thueBvmt.toFixed(2)
+            (totalCost + vat + thueBvmt).toFixed(2)
           );
-        }
-        calculateSum();
-      });
-    </script>
-  </body>
+        })
+        .catch(error => console.error('Error fetching data:', error));
+    });
+  </script>
+</body>
+
 </html>

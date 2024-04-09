@@ -44,14 +44,10 @@
       </tbody>
       <tfoot>
         <tr>
-          <th colspan="4">Tổng</th>
+          <th colspan="8">Tổng</th>
           <!-- <th id="old_water"></th>
           <th id="new_water"></th>
           <th id="final_water"></th> -->
-          <th></th>
-          <th></th>
-          <th></th>
-          <th></th>
           <th id="total_amount"></th>
           <th></th>
           <th></th>
@@ -93,12 +89,12 @@
   <script>
     $(document).ready(function () {
       var table = $("#myTable").DataTable({
-        paging: true, // Hiển thị phân trang
-        pageLength: 1, // Số dòng trên mỗi trang
-        searching: true, // Cho phép tìm kiếm
-        ordering: true, // Cho phép sắp xếp
-        info: true, // Hiển thị thông tin bảng
-        order: [[0, "asc"]], // Sắp xếp mặc định theo cột thứ nhất (index 0)
+        paging: true,
+        pageLength: 10,
+        searching: true,
+        ordering: true,
+        info: true,
+        order: [[0, "asc"]],
         drawCallback: function () {
           calculateSum();
         },
@@ -107,25 +103,25 @@
         },
       });
 
-      // Gửi yêu cầu đến API
+      // Lấy dữ liệu ban đầu
       fetch('http://localhost:8086/api/v1/bill/list?page=0&size=10&sort=string')
         .then(response => response.json())
         .then(data => {
-          console.log("===>>>", data.content)
+          // Xử lý dữ liệu và thêm vào bảng
           data.content.forEach((item, index) => {
             var row = `<tr>
-                        <td>${index + 1}</td>
-                        <td>${item.apartment.customerEntity.name}</td>
-                        <td>${item.billCode}</td>
-                        <td>${item.apartment.addressEntity.homeNumber}, ${item.apartment.addressEntity.streetName}, ${item.apartment.addressEntity.ward}, ${item.apartment.addressEntity.district}, ${item.apartment.addressEntity.city}</td>
-                        <td>${item.startNumber}</td>
-                        <td>${item.endNumber}</td>
-                        <td>${item.endNumber - item.startNumber}</td>
-                        <td>${item.timelineEntities?.[0]?.submitTime}</td>
-                        <td>${item.price}</td>
-                        <td>${item.status ? 'Đã thanh toán' : 'Chưa thanh toán'}</td>
-                        <td><input type="checkbox" class="select-checkbox" style="width: 25px; height: 25px" /></td>
-                    </tr>`;
+                    <td>${index + 1}</td>
+                    <td>${item.apartment.customerEntity.name}</td>
+                    <td>${item.billCode}</td>
+                    <td>${item.apartment.addressEntity.homeNumber}, ${item.apartment.addressEntity.streetName}, ${item.apartment.addressEntity.ward}, ${item.apartment.addressEntity.district}, ${item.apartment.addressEntity.city}</td>
+                    <td>${item.startNumber}</td>
+                    <td>${item.endNumber}</td>
+                    <td>${item.endNumber - item.startNumber}</td>
+                    <td>${item.timelineEntities?.[0]?.submitTime}</td>
+                    <td>${item.price}</td>
+                    <td>${item.status ? 'Đã thanh toán' : 'Chưa thanh toán'}</td>
+                    <td><input type="checkbox" class="select-checkbox" style="width: 25px; height: 25px" /></td>
+                </tr>`;
             table.row.add($(row)).draw();
           });
         })
@@ -151,6 +147,7 @@
         $("#confirmModal").modal("show");
       });
 
+      // Xử lý sự kiện khi nút xác nhận gửi được nhấn
       $("#confirm-send-btn").click(function () {
         var selectedItems = [];
         $(".select-checkbox:checked").each(function () {
@@ -165,16 +162,17 @@
       $("#submit-btn-pay").click(function () {
         var selectedItems = [];
         $(".select-checkbox:checked").each(function () {
-          selectedItems.push($(this).closest("tr").find("td:eq(2)").text()); // Lấy giá trị của cột mã hộ gia đình
+          selectedItems.push($(this).closest("tr").find("td:eq(2)").text());
         });
         console.log(selectedItems);
       });
 
-      $(".info-1").click(function () {
-        console.log(1);
-        window.open("http://127.0.0.1:5500/electricity-billing-system/src/main/resources/send-mail/before_payment/detail-info.html", "_self");
+      // Xử lý sự kiện khi nút tìm kiếm được nhấn
+      $('#myTable_filter input[type="search"]').on('keyup', function () {
+        calculateSum(); // Cập nhật tổng tiền sau khi tìm kiếm
       });
 
+      // Hàm tính tổng tiền
       function calculateSum() {
         var sumSoNuocCu = 0;
         var sumSoNuocMoi = 0;
@@ -185,7 +183,7 @@
           sumSoNuocCu += parseFloat($(this).find("td:eq(3)").text());
           sumSoNuocMoi += parseFloat($(this).find("td:eq(4)").text());
           sumSoNuocSuDung += parseFloat($(this).find("td:eq(5)").text());
-          sumThanhTien += parseFloat($(this).find("td:eq(7)").text());
+          sumThanhTien += parseFloat($(this).find("td:eq(8)").text());
         });
 
         $("#old_water").text(sumSoNuocCu.toFixed(2));
@@ -194,6 +192,7 @@
         $("#total_amount").text(sumThanhTien.toFixed(2));
       }
     });
+
   </script>
 </body>
 

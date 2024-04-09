@@ -10,9 +10,13 @@ import java.math.BigDecimal;
 @Setter
 @Builder
 public class DetailBillResponse {
-    private Long useWaterNumner;
+    private Long oldNumber;
+    private Long newNumber;
+    private Long usedWater;
+    private Long waterConsumption;
     private BigDecimal piceWater;
     private BigDecimal cost;
     private String taxName;
     private BigDecimal priceTax;
+    private BigDecimal finalPrice;
 }
