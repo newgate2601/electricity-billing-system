@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Data Table </title>
+    <meta content="" name="description">
+    <meta content="Author" name="Nam">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- ========================================================= -->
+    <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/css/datatables.min.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" type="text/css"
+        href="https://cdn.datatables.net/buttons/1.7.1/css/buttons.dataTables.min.css">
+
+
+
+
+
+
+</head>
+
+
+<body>
+    <header class="header_part">
+        <h4>Danh sách hộ đã đóng tiền</h4>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="data_table">
+                        <table id="example" class="table table-striped table-bordered">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Tên chủ hộ</th>
+                                    <th>Ngày sinh</th>
+                                    <th>Địa chỉ</th>
+                                    <th>Mã hợp đồng</th>
+                                    <th>Số tiền đã đóng</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- =======  Data-Table  = End  ===================== -->
+        <!-- ============ Java Script Files  ================== -->
+
+
+        <!-- <script src="/assets/js/bootstrap.bundle.min.js"></script> -->
+        <script src="../assets/js/bootstrap.bundle.min.js"></script>
+        <script src="../assets/js/jquery-3.6.0.min.js"></script>
+        <script src="../assets/js/datatables.min.js"></script>
+        <script src="../assets/js/pdfmake.min.js"></script>
+        <script src="../assets/js/vfs_fonts.js"></script>
+        <!-- <script src="../assets/js/custom.js"></script> -->
+        <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+        <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdn.datatables.net/buttons/1.7.1/js/dataTables.buttons.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+        <script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.html5.min.js"></script>
+        <script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.print.min.js"></script>
+        <script>
+            $(document).ready(function () {
+                var table = $('#example').DataTable({
+                    dom: 'Bfrtip',
+                    ajax: {
+                        url: 'http://localhost:8080/api/v1/bill/list/after',
+                        dataSrc: 'content'
+                    },
+                    columns: [
+                        { data: 'apartment.customerEntity.name' },
+                        {
+                            data: 'apartment.customerEntity.birthday',
+                            render: function (data) {
+                                var date = new Date(data * 1000);
+                                return date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+                            }
+                        },
+                        { 
+                            data: 'apartment.addressEntity',
+                            render: function (data) {
+                                return "số nhà "+data.homeNumber+', '+ data.streetName + ', ' + data.ward + ', ' + data.district + ', ' + data.city;
+                            }
+                        },
+                        { data: 'billCode' },
+                        { data: 'price' }
+                    ],
+                    buttons: ['copy', 'csv', 'excel', 'pdf', 'print']
+                });
+        
+                table.buttons().container()
+                    .appendTo('#example_wrapper .col-md-6:eq(0)');
+            });
+        </script>
+
+
+
+
+</body>
+
+</html>
