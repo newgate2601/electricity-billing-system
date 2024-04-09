@@ -15,7 +15,8 @@ public interface BillRepository extends JpaRepository<BillEntity, Long> {
 
     Page<BillEntity> findAllByStatus(Boolean status, Pageable pageable);
     List<BillEntity> findAllByIdIn(Collection<Long> billIds);
-
-    @Query ("SELECT i FROM BillEntity i WHERE i.status = false AND EXTRACT(DAY FROM (CURRENT_TIMESTAMP - i.submitTime)) >= 7")
+    @Query ("SELECT i FROM BillEntity i WHERE i.status = false AND EXTRACT(DAY FROM (i.limitedTime - CURRENT_TIMESTAMP)) >=0")
+    Page<BillEntity> findAllBillBeforePayment(Pageable pageable);
+    @Query ("SELECT i FROM BillEntity i WHERE i.status = false AND EXTRACT(DAY FROM (CURRENT_TIMESTAMP - i.limitedTime)) >= 7")
         Page<BillEntity> findBillOverLimitedTime(Pageable pageable);
 }

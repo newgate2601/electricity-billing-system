@@ -79,7 +79,7 @@ public class BillService {
 
     @Transactional(readOnly = true)
     public Page<BillBeforePaymentResponse> getAllBillBeforePayment(Pageable pageable) {
-        Page<BillEntity> billEntities = billRepository.findAllByStatus(false, pageable);
+        Page<BillEntity> billEntities = billRepository.findAllBillBeforePayment( pageable);
         return billEntities.map(
                 billEntity -> {
                     ApartmentEntity apartmentEntity = apartmentRepository.findById(billEntity.getApartmentId())

@@ -14,6 +14,7 @@ import java.util.List;
 public class BillAfterPaymentResponse {
     private Long id;
     private OffsetDateTime submitTime;
+    private OffsetDateTime limitedTime;
     private String description;
     private String billCode;
     private Double price;
