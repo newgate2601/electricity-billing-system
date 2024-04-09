@@ -2,7 +2,11 @@ package com.example.electricitybillingsystem.controller;
 
 import com.example.electricitybillingsystem.phu.BillService2;
 import com.example.electricitybillingsystem.service.BillService;
+import com.example.electricitybillingsystem.service.TieredPricingService;
+import com.example.electricitybillingsystem.vo.dto.BillAfterPaymentResponse;
 import com.example.electricitybillingsystem.vo.dto.BillBeforePaymentResponse;
+import com.example.electricitybillingsystem.vo.dto.DetailBillResponse;
+import com.example.electricitybillingsystem.vo.response.AdjustPricingResponse;
 import com.example.electricitybillingsystem.vo.dto.BillResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
@@ -19,10 +23,23 @@ public class BillController {
     private final BillService billService;
     private final BillService2 billService2;
 
+    private final TieredPricingService tieredPricingService;
+
     @Operation(summary = "get all bill before payment")
     @GetMapping("/list")
-    public Page<BillBeforePaymentResponse> getAllBillBeforePayment(@RequestParam(required = false) Pageable pageable){
+    public Page<BillBeforePaymentResponse> getAllBillBeforePayment(@RequestParam(required = false) Pageable pageable) {
         return billService.getAllBillBeforePayment(pageable);
+    }
+    @Operation(summary = "get all bill over time")
+    @GetMapping("/list/over-time")
+    public Page<BillAfterPaymentResponse> getAllBillOverTime(@RequestParam(required = false) Pageable pageable){
+        return billService.getAllBillOverTime(pageable);
+    }
+
+    @Operation(summary = "get all bill after payment")
+    @GetMapping("/list/after")
+    public Page<BillAfterPaymentResponse> getAllBillAfterPayment(@RequestParam(required = false) Pageable pageable){
+        return billService.getAllBillAfterPayment(pageable);
     }
 
     @Operation(summary = "Theo dõi bill của khách hàng")
@@ -34,5 +51,16 @@ public class BillController {
                                        @RequestParam(required = false) String order,
                                        @ParameterObject Pageable pageable){
         return billService2.getBills(status, name, month, year, order, pageable);
+    }
+    @Operation(summary = "notification adjust service pricing")
+    @GetMapping("/adjust-pricing")
+    public AdjustPricingResponse getAllAdjustPricing() {
+        return tieredPricingService.getAllByStatus();
+    }
+
+    @Operation(summary = "get detail bill")
+    @GetMapping("/detail/bill")
+    public List<DetailBillResponse> bigDecimal(@RequestParam Long billId) {
+        return billService.intoMoney(billId);
     }
 }

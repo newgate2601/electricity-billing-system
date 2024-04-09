@@ -20,22 +20,10 @@
             <th scope="col">Số bắt đầu(m<sup>3</sup>)</th>
             <th scope="col">Số kết thúc(m<sup>3</sup>)</th>
             <th scope="col">Giá(đồng)</th>
+            <th scope="col">Tên dịch vụ</th>
           </tr>
         </thead>
-        <tbody>
-          <tr>
-            <td>1</td>
-            <td>100</td>
-            <td>150</td>
-            <td>50000</td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td>200</td>
-            <td>250</td>
-            <td>60000</td>
-          </tr>
-        </tbody>
+        <tbody id="table-body-tiered"></tbody>
       </table>
 
       <h4>Bảng thông tin thuế</h4>
@@ -43,22 +31,11 @@
         <thead>
           <tr>
             <th scope="col">STT</th>
-            <th scope="col">Thuế VAT(%)</th>
-            <th scope="col">Thuế BVMT(%)</th>
+            <th scope="col">Loại thuế</th>
+            <th scope="col">Giá(%)</th>
           </tr>
         </thead>
-        <tbody>
-          <tr>
-            <td>1</td>
-            <td>10</td>
-            <td>5</td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td>15</td>
-            <td>7</td>
-          </tr>
-        </tbody>
+        <tbody id="table-body-tax"></tbody>
       </table>
 
       <button
@@ -83,9 +60,7 @@
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="confirmModalLabel">
-              Xác nhận gửi
-            </h5>
+            <h5 class="modal-title" id="confirmModalLabel">Xác nhận gửi</h5>
             <button
               type="button"
               class="close"
@@ -106,7 +81,9 @@
             >
               Hủy
             </button>
-            <button type="button" class="btn btn-primary">Xác nhận</button>
+            <button type="button" class="btn btn-primary" id="submit-btn">
+              Xác nhận
+            </button>
           </div>
         </div>
       </div>
@@ -115,5 +92,116 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script>
+      $(document).ready(async function () {
+        const response = await fetch(
+          "http://localhost:8086/api/v1/bill/adjust-pricing"
+        );
+
+        const text = await response.text(); // Lấy dữ liệu phản hồi dưới dạng chuỗi
+        if (JSON.parse(text) == null) {
+          return;
+        }
+
+        const tableBodyTiered = $("#table-body-tiered");
+        const tieredPricingData = JSON.parse(text).tieredPricing || [];
+        $.each(tieredPricingData, function (index, item) {
+          const row = $("<tr>");
+          row.append($("<td style='padding: 8px;'>").text(index + 1));
+          row.append($("<td style='padding: 8px;'>").text(item.startNumber));
+          row.append($("<td style='padding: 8px;'>").text(item.endNumber));
+          row.append($("<td style='padding: 8px;'>").text(item.price));
+          row.append($("<td style='padding: 8px;'>").text(item.name));
+
+          tableBodyTiered.append(row);
+        });
+
+        const tableBodyTax = $("#table-body-tax");
+        const taxData = JSON.parse(text).taxs || [];
+        $.each(taxData, function (index, item) {
+          const row = $("<tr>");
+          row.append($("<td style='padding: 8px;'>").text(index + 1));
+          row.append(
+            $("<td style='padding: 8px;'>").text(item.name.toUpperCase())
+          );
+          row.append($("<td style='padding: 8px;'>").text(item.tax));
+
+          tableBodyTax.append(row);
+        });
+
+        $("#submit-btn").click(async function () {
+          if (tieredPricingData.length == 0 && taxData == 0) {
+            alert("Chưa có sự thay đổi nào");
+            return;
+          }
+
+          if (
+            tableBodyTiered.text().trim() == "" &&
+            tableBodyTax.text().trim() == ""
+          ) {
+            alert("Chưa có sự thay đổi nào");
+            $("#confirmModal").modal("hide");
+            return;
+          }
+
+          let formHTML = `<h2>Thông báo điều chỉnh giá</h2>
+      ${
+        tableBodyTiered.text().trim() != "" &&
+        `<h4>Bảng thông tin hóa đơn</h4>
+                  <table class="table mt-4" style="border-collapse: collapse; width: 100%;">
+                    <thead>
+                      <tr>
+                        <th style="padding: 8px; background-color: #f2f2f2;" scope="col">STT</th>
+                        <th style="padding: 8px; background-color: #f2f2f2;" scope="col">Số bắt đầu(m<sup>3</sup>)</th>
+                        <th style="padding: 8px; background-color: #f2f2f2;" scope="col">Số kết thúc(m<sup>3</sup>)</th>
+                        <th style="padding: 8px; background-color: #f2f2f2;" scope="col">Giá(đồng)</th>
+                        <th style="padding: 8px; background-color: #f2f2f2;" scope="col">Tên dịch vụ</th>
+                      </tr>
+                    </thead>
+                    ${tableBodyTiered.prop("outerHTML").trim()}
+                  </table>`
+      }
+
+      ${
+        tableBodyTax.text().trim() != "" &&
+        `<h4>Bảng thông tin thuế</h4>
+                  <table class="table mt-4" style="border-collapse: collapse; width: 100%;">
+                    <thead>
+                      <tr>
+                        <th style="border: 1px solid black; padding: 8px; background-color: #f2f2f2;" scope="col">STT</th>
+                        <th style="border: 1px solid black; padding: 8px; background-color: #f2f2f2;" scope="col">Loại thuế</th>
+                        <th style="border: 1px solid black; padding: 8px; background-color: #f2f2f2;" scope="col">Giá(%)</th>
+                      </tr>
+                    </thead>
+                    ${tableBodyTax.prop("outerHTML").trim()}
+                  </table>`
+      }`;
+
+          document.querySelector(".modal-body").innerText = "Đang gửi...";
+          document.querySelector(".btn").disabled = true;
+          const response = await fetch(
+            "http://localhost:8086/api/v1/sendEmail-adjustPrice",
+            {
+              method: "POST", // *GET, POST, PUT, DELETE, etc.
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ content: formHTML.trim() }), // body data type must match "Content-Type" header
+            }
+          );
+
+          const text = await response.text(); // Lấy dữ liệu phản hồi dưới dạng chuỗi
+          $("#confirmModal").modal("hide");
+
+          document.querySelector(".btn").disabled = false;
+          document.querySelector(".modal-body").innerText =
+            "Bạn có chắc chắn muốn gửi hóa đơn này không?";
+          $("#confirmModal").modal("hide");
+          alert(text);
+          location.reload();
+        });
+      });
+    </script>
   </body>
 </html>

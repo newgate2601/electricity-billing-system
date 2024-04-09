@@ -1,16 +1,17 @@
 package com.example.electricitybillingsystem.vo.dto;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.OffsetDateTime;
 import java.util.List;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-@Builder
-public class BillBeforePaymentResponse {
+public class BillAfterPaymentResponse {
     private Long id;
     private OffsetDateTime submitTime;
     private String description;

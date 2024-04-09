@@ -14,9 +14,28 @@
       <h4>Thông báo ngắt cung cấp nước</h4>
 
       <div class="form-group">
-        <label for="address">Địa chỉ:</label>
-        <select class="form-control" id="address">
-          <option value="ward">Phường</option>
+        <label for="ward">Phường:</label>
+        <select class="form-control" id="ward">
+          <option value="Nguyễn Trãi">Nguyễn Trãi</option>
+          <option value="Văn Quán">Văn Quán</option>
+          <option value="Phú La">Phú La</option>
+          <option value="Phúc La">Phúc La</option>
+          <option value="Hà Cầu">Hà Cầu</option>
+          <option value="Yên Nghĩa">Yên Nghĩa</option>
+          <option value="Quang Trung">Quang Trung</option>
+          <option value="La Khê">La Khê</option>
+          <option value="Phú Lãm">Phú Lãm</option>
+          <option value="Phú Lương">Phú Lương</option>
+          <option value="Lê Lợi">Lê Lợi</option>
+          <option value="Ô Cách">Ô Cách</option>
+          <option value="Mộ Lao">Mộ Lao</option>
+          <option value="Vạn Phúc">Vạn Phúc</option>
+          <option value="Văn Khê">Văn Khê</option>
+          <option value="Đồng Mai">Đồng Mai</option>
+          <option value="Biên Giang">Biên Giang</option>
+          <option value="Dương Nội">Dương Nội</option>
+          <option value="Hà Đông">Hà Đông</option>
+          <option value="Kiến Hưng">Kiến Hưng</option>
         </select>
       </div>
       <div class="form-group">
@@ -30,7 +49,6 @@
       <button
         type="button"
         class="btn btn-primary"
-        id="submit-btn"
         data-toggle="modal"
         data-target="#confirmModal"
       >
@@ -69,7 +87,9 @@
             >
               Hủy
             </button>
-            <button type="button" class="btn btn-primary">Xác nhận</button>
+            <button type="button" class="btn btn-primary" id="submit-btn">
+              Xác nhận
+            </button>
           </div>
         </div>
       </div>
@@ -78,17 +98,50 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
       $(document).ready(function () {
-        $("#submit-btn").click(function () {
-          const address = $("#address").val();
-          const date = $("#date").val();
-          const hour = $("#hour").val();
-          const minute = $("#minute").val();
+        $("#submit-btn").click(async function () {
+          const ward = $("#ward").val();
+          const startTime = $("#start-time").val();
+          const endTime = $("#end-time").val();
 
-          // Xử lý dữ liệu sau khi nhấn nút Gửi
-          console.log("Địa chỉ:", address);
-          console.log("Ngày:", date);
-          console.log("Thời gian:", hour + ":" + minute);
+          if (startTime == "" || endTime == "") {
+            alert("Bạn phải chọn thời gian bắt đầu và kết thúc!");
+            return;
+          }
+
+          const currentTime = new Date();
+
+          if (
+            new Date(startTime) < currentTime ||
+            new Date(endTime) < currentTime ||
+            new Date(startTime) >= new Date(endTime)
+          ) {
+            alert("Lỗi: Thời điểm không hợp lệ.");
+            return; // Dừng lại nếu có lỗi
+          }
+          document.querySelector(".modal-body").innerText = "Đang gửi...";
+          document.querySelector(".btn").disabled = true;
+          const response = await fetch(
+            "http://localhost:8086/api/v1/sendEmail-turnOffWater",
+            {
+              method: "POST", // *GET, POST, PUT, DELETE, etc.
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ ward, startTime, endTime }), // body data type must match "Content-Type" header
+            }
+          );
+
+          const text = await response.text(); // Lấy dữ liệu phản hồi dưới dạng chuỗi
+          $("#confirmModal").modal("hide");
+
+          document.querySelector(".btn").disabled = false;
+          document.querySelector(".modal-body").innerText =
+            "Bạn có chắc chắn muốn gửi hóa đơn này không?";
+          alert(text);
+          location.reload();
         });
+
+        $("#start-time").focus();
       });
     </script>
   </body>

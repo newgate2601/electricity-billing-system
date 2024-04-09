@@ -27,5 +27,6 @@ public class TieredPricingEntity extends BaseEnt {
     private Boolean status;
 
     private Long electricityServiceId;
+    private Boolean isStatus;
 
 }

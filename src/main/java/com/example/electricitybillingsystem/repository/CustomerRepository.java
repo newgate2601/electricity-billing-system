@@ -9,5 +9,7 @@ import java.util.List;
 
 @Repository
 public interface CustomerRepository extends JpaRepository<CustomerEntity, Long> {
+
+    List<CustomerEntity> findAllByIdIn(List<Long> customerIds);
     List<CustomerEntity> findAllByIdIn(Collection<Long> ids);
 }
