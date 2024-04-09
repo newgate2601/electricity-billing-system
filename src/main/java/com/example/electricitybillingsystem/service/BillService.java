@@ -31,6 +31,51 @@ public class BillService {
     private final TaxService taxService;
     private final TieredPricingHistoryService tieredPricingHistoryService;
 
+    @Transactional(readOnly = true)
+    public Page<BillAfterPaymentResponse> getAllBillOverTime(Pageable pageable) {
+        Page<BillEntity> billEntities = billRepository.findBillOverLimitedTime(pageable);
+        return billEntities.map(
+                billEntity -> {
+                    ApartmentEntity apartmentEntity = apartmentRepository.findById(billEntity.getApartmentId())
+                            .orElseThrow(() -> new RuntimeException("NOT FOUND APARTMENT"));
+
+                    AddressEntity addressEntity = addressRepository.findById(apartmentEntity.getAddressId())
+                            .orElseThrow(() -> new RuntimeException("NOT FOUND ADDRESS"));
+                    CustomerEntity customerEntity = customerRepository.findById(apartmentEntity.getCustomerId())
+                            .orElseThrow(() -> new RuntimeException("NOT FOUND USER"));
+                    List<TimelineEntity> timelineEntities = timelineRepository.findAllByApartmentId(apartmentEntity.getId());
+
+                    List<TaxBillEntity> taxBillEntities = taxBillRepository.findAllByBillId(billEntity.getId());
+                    List<TaxBillDTO> taxBillDTOS = new ArrayList<>();
+
+                    taxBillEntities.forEach(taxBillEntity -> {
+                        Optional<TaxEntity> taxEntity = taxRepository.findById(taxBillEntity.getTaxId());
+                        String taxName = taxEntity.get().getName();
+
+                        TaxBillDTO taxBillDTO = TaxBillDTO.builder()
+                                .name(taxName)
+                                .price(taxBillEntity.getPrice())
+                                .build();
+                        taxBillDTOS.add(taxBillDTO);
+                    });
+
+                    ApartmentDTO apartmentDTO = ApartmentDTO.builder()
+                            .id(apartmentEntity.getId())
+                            .des(apartmentEntity.getDescription())
+                            .addressEntity(addressEntity)
+                            .customerEntity(customerEntity)
+                            .timelineEntities(timelineEntities).build();
+
+
+                    BillAfterPaymentResponse billAfterPaymentResponse = billMapper.getResponseAfterFromEntity(billEntity);
+                    billAfterPaymentResponse.setTaxs(taxBillDTOS);
+                    billAfterPaymentResponse.setApartment(apartmentDTO);
+
+                    return billAfterPaymentResponse;
+                }
+        );
+    }
+
 
     @Transactional(readOnly = true)
     public Page<BillBeforePaymentResponse> getAllBillBeforePayment(Pageable pageable) {

@@ -132,17 +132,17 @@
         },
       });
 
-        table.on("init.dt", function () {
-          const searchInput = document.querySelector('input[type="search"]');
-          if (searchInput) {
-            searchInput.focus();
-          }
-        });
+      table.on("init.dt", function () {
+        const searchInput = document.querySelector('input[type="search"]');
+        if (searchInput) {
+          searchInput.focus();
+        }
+      });
 
-        // Xử lý sự kiện khi checkbox "Chọn tất cả" được thay đổi
-        $("#select-all").change(function () {
-          $(".select-checkbox").prop("checked", $(this).prop("checked"));
-        });
+      // Xử lý sự kiện khi checkbox "Chọn tất cả" được thay đổi
+      $("#select-all").change(function () {
+        $(".select-checkbox").prop("checked", $(this).prop("checked"));
+      });
       // Gọi API
       fetch("http://localhost:8086/api/v1/bill/list/after?page=0&size=2&sort=string")
         .then((response) => response.json())
@@ -163,6 +163,17 @@
                       <td><input type="checkbox" class="select-checkbox" style="width: 25px; height: 25px" /></td>
                     </tr>`;
             table.row.add($(row)).draw();
+          });
+          return data;
+        })
+        .then((data) => {
+          console.log(data.content)
+          data.content.forEach((item, index) => {
+            $(`.infor-${index}`).click(function () {
+              const customer = { ...item.apartment?.customerEntity, billCode: item.billCode, submitTime: item.submitTime };
+              sessionStorage.setItem('customer', JSON.stringify(customer))
+              window.open(`http://127.0.0.1:5500/src/main/resources/send-mail/before_payment/detail-info.html?billId=${item.id}`, '_self')
+            });
           });
         })
         .catch((error) => console.error("Error:", error));
@@ -200,22 +211,22 @@
         console.log(selectedItems);
       });
 
-        $(".info-1").click(function () {
-          console.log(1);
-          window.open(
-            "http://127.0.0.1:5500/electricity-billing-system/src/main/resources/send-mail/after_payment/detail-info.html",
-            "_self"
-          );
-        });
+      $(".info-1").click(function () {
+        console.log(1);
+        window.open(
+          "http://127.0.0.1:5500/electricity-billing-system/src/main/resources/send-mail/after_payment/detail-info.html",
+          "_self"
+        );
+      });
 
-        $("#search-btn").click(function () {
-          const startTime = moment($("#start-time").val()).format("YYYY-MM-DD");
-          const endTime = moment($("#end-time").val()).format("YYYY-MM-DD");
+      $("#search-btn").click(function () {
+        const startTime = moment($("#start-time").val()).format("YYYY-MM-DD");
+        const endTime = moment($("#end-time").val()).format("YYYY-MM-DD");
 
-          // call api
-          console.log("Thời gian bắt đầu:", startTime);
-          console.log("Thời gian kết thúc:", endTime);
-        });
+        // call api
+        console.log("Thời gian bắt đầu:", startTime);
+        console.log("Thời gian kết thúc:", endTime);
+      });
 
       function calculateSum() {
         let sumSoNuocCu = 0;

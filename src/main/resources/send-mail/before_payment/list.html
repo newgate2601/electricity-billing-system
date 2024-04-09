@@ -110,25 +110,32 @@
           // Xử lý dữ liệu và thêm vào bảng
           data.content.forEach((item, index) => {
             var row = `<tr>
-                    <td class='infor index'>${item.id}</td>
-                    <td class='infor'>${item.apartment.customerEntity.name}</td>
-                    <td class='infor'>${item.billCode}</td>
-                    <td class='infor'>${item.apartment.addressEntity.homeNumber}, ${item.apartment.addressEntity.streetName}, ${item.apartment.addressEntity.ward}, ${item.apartment.addressEntity.district}, ${item.apartment.addressEntity.city}</td>
-                    <td class='infor'>${item.startNumber}</td>
-                    <td class='infor'>${item.endNumber}</td>
-                    <td class='infor'>${item.endNumber - item.startNumber}</td>
-                    <td class='infor'>${item.timelineEntities?.[0]?.submitTime}</td>
-                    <td class='infor'>${item.price}</td>
-                    <td class='infor'>${item.status ? 'Đã thanh toán' : 'Chưa thanh toán'}</td>
-                    <td class='infor'><input type="checkbox" class="select-checkbox" style="width: 25px; height: 25px" /></td>
+                    <td class='infor-${index}'>${item.id}</td>
+                    <td class='infor-${index}'>${item.apartment.customerEntity.name}</td>
+                    <td class='infor-${index}'>${item.billCode}</td>
+                    <td class='infor-${index}'>${item.apartment.addressEntity.homeNumber}, ${item.apartment.addressEntity.streetName}, ${item.apartment.addressEntity.ward}, ${item.apartment.addressEntity.district}, ${item.apartment.addressEntity.city}</td>
+                    <td class='infor-${index}'>${item.startNumber}</td>
+                    <td class='infor-${index}'>${item.endNumber}</td>
+                    <td class='infor-${index}'>${item.endNumber - item.startNumber}</td>
+                    <td class='infor-${index}'>${item.timelineEntities?.[0]?.submitTime}</td>
+                    <td class='infor-${index}'>${item.price}</td>
+                    <td class='infor-${index}'>${item.status ? 'Đã thanh toán' : 'Chưa thanh toán'}</td>
+                    <td class='infor-${index}'><input type="checkbox" class="select-checkbox" style="width: 25px; height: 25px" /></td>
                 </tr>`;
             table.row.add($(row)).draw();
           });
-        })
-        .then(() => {
 
-          $('.infor').click(function () {
-            window.open('http://127.0.0.1:5500/src/main/resources/send-mail/before_payment/detail-info.html', '_self')
+          return data;
+        })
+        .then((data) => {
+          console.log(data.content)
+          data.content.forEach((item, index) => {
+            $(`.infor-${index}`).click(function () {
+              const customer = { ...item.apartment?.customerEntity, billCode: item.billCode, submitTime: item.submitTime };
+
+              sessionStorage.setItem('customer', JSON.stringify(customer))
+              window.open(`http://127.0.0.1:5500/src/main/resources/send-mail/before_payment/detail-info.html?billId=${item.id}`, '_self')
+            });
           });
         })
         .catch(error => console.error('Error:', error));
