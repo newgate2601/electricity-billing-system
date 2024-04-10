@@ -16,7 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -59,6 +61,16 @@ public class BillService2 {
                 .orderBy("price", order)
                 .getPage(pageable);
 
-        return bills.map(billMapper::getBillResponseBy);
+        Map<Long, CustomerEntity> customerEntityMap = customerRepository.findAllByIdIn(
+                bills.stream().map(BillEntity::getCustomerId).distinct().collect(Collectors.toList())
+        ).stream().collect(Collectors.toMap(CustomerEntity::getId, Function.identity()));
+
+        return bills.map(billEntity -> {
+            BillResponse billResponse = billMapper.getBillResponseBy(billEntity);
+            if (customerEntityMap.containsKey(billEntity.getCustomerId())){
+                billResponse.setCustomerName(customerEntityMap.get(billEntity.getCustomerId()).getName());
+            }
+            return billResponse;
+        });
     }
 }
