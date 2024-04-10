@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bill List</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    #billTable {
+      border-collapse: collapse;
+      width: 80%; /* Adjust the width as needed */
+    }
+
+    #billTable th, #billTable td {
+      border: 1px solid #ddd;
+      padding: 5px;
+      text-align: center;
+    }
+
+    #billTable th {
+      background-color: #f2f2f2;
+    }
+
+    #monthInput, #yearInput {
+      width: 40%;
+    }
+
+    #searchButton {
+      margin-top: 10px;
+    }
+
+    .content {
+      width: 80vw;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-content: space-around;
+    }
+
+    #billTable {
+      width: 100%
+    }
+
+    #sortSelect {
+      width: 80%
+    }
+
+    #status {
+      width: 80%
+    }
+  </style>
+</head>
+<body>
+<div class="content">
+  <table id="billTable">
+    <thead>
+    <tr>
+      <th colspan="1">Tháng</th>
+      <th colspan="1">Năm</th>
+      <th colspan="1">Sắp xếp theo Số tiền cần đóng</th>
+      <th colspan="1">Trạng thái KH</th>
+      <th colspan="2">Tên khách hàng</th>
+      <th colspan="1">Tìm kiếm</th>
+    </tr>
+    <tr>
+      <td colspan="1"><input type="number" id="monthInput" min="1" max="12"></td>
+      <td colspan="1"><input type="number" id="yearInput" min="2000" max="2025"></td>
+      <td colspan="1">
+        <select id="sortSelect">
+          <option value="asc">Tăng dần</option>
+          <option value="desc">Giảm dần</option>
+        </select>
+      </td>
+      <td colspan="1">
+        <select id="status">
+          <option value="DONE">Đã đóng</option>
+          <option value="NONE">Chưa đóng</option>
+        </select></td>
+      <td colspan="2"><input type="text" id="name"></td>
+      <td colspan="1">
+        <button id="searchButton">Tìm kiếm</button>
+      </td>
+    </tr>
+    </thead>
+  </table>
+  <table id="billTable">
+    <thead>
+    <tr>
+      <th>STT</th>
+      <th>Tên khách hàng</th>
+      <th>Số tiền cần đóng</th>
+      <th>Trạng thái đóng tiền</th>
+      <th>Hành động</th>
+    </tr>
+    </thead>
+    <tbody id="billTableBody">
+    <!-- Bill data will be dynamically populated here -->
+    </tbody>
+    <tbody> <!-- Added an empty row here -->
+    <tr>
+      <td colspan="5"></td>
+    </tr>
+    </tbody>
+    <tfoot>
+    <tr>
+      <td colspan="2">Tổng tiền cần đóng tháng này</td>
+      <td id="totalDue"></td>
+      <td colspan="2"></td>
+    </tr>
+    <tr>
+      <td colspan="2">Tổng tiền đã đóng tháng này</td>
+      <td id="totalPaid"></td>
+      <td colspan="2"></td>
+    </tr>
+    <tr>
+      <td colspan="2">Tổng tiền chưa đóng tháng này</td>
+      <td id="totalRemaining"></td>
+      <td colspan="2"></td>
+    </tr>
+    </tfoot>
+  </table>
+</div>
+
+<script>
+  const ENDPOINT = 'http://localhost:8080/api/v1/bill';
+
+  function search() {
+    const monthInput = document.getElementById("monthInput").value;
+    const yearInput = document.getElementById("yearInput").value;
+    const sort = document.getElementById("sortSelect").value;
+    const status = document.getElementById("status").value;
+    const name = document.getElementById("name").value;
+
+    const urlBill = new URL(ENDPOINT, window.location.origin);
+
+    if (monthInput !== "") {
+      urlBill.searchParams.append('month', monthInput);
+    }
+
+    if (yearInput !== "") {
+      urlBill.searchParams.append('year', yearInput);
+    }
+
+    if (name !== ""){
+      urlBill.searchParams.append('name', yearInput);
+    }
+
+    urlBill.searchParams.append('order', sort);
+    urlBill.searchParams.append('name', name);
+    urlBill.searchParams.append('status', status);
+
+    fetch(urlBill)
+            .then(response => {
+              if (!response.ok) {
+                throw new Error('Error system!!!');
+              }
+              return response.json();
+            })
+            .then(data => {
+              var billTableBody = document.getElementById('billTableBody');
+              var counter = 1;
+              var totalDue = 0;
+              var totalPaid = 0;
+
+              billTableBody.innerHTML = ''; // Clear previous data
+
+              data.content.forEach(function (bill) {
+                var actionButtons = '';
+                if (bill.status === 'DONE') {
+                  actionButtons = '<button onclick="viewDetail(' + bill.id + ')">Xem chi tiết</button>';
+                  totalPaid += bill.price;
+                } else if (bill.status === 'NONE') {
+                  actionButtons = '<button onclick="viewDetail(' + bill.id + ')">Chi tiết</button>' +
+                          '<button onclick="sendEmail(' + bill.id + ')">Gửi email</button>';
+                  totalDue += bill.price;
+                }
+
+                var row = '<tr>' +
+                        '<td>' + counter++ + '</td>' +
+                        '<td>' + (bill.customerName ? bill.customerName : 'N/A') + '</td>' +
+                        '<td>' + bill.price + '</td>' +
+                        '<td>' + bill.status + '</td>' +
+                        '<td>' + actionButtons + '</td>' +
+                        '</tr>';
+                billTableBody.innerHTML += row;
+              });
+
+              // Calculate remaining total
+              var totalRemaining = totalDue - totalPaid;
+
+              // Update totals in the table footer
+              document.getElementById('totalDue').innerText = totalDue;
+              document.getElementById('totalPaid').innerText = totalPaid;
+              document.getElementById('totalRemaining').innerText = totalRemaining;
+            })
+            .catch(error => {
+              console.error('Failed to fetch bill data:', error);
+            });
+  }
+
+  document.addEventListener("DOMContentLoaded", function() {
+    search();
+  });
+
+  document.getElementById("searchButton").addEventListener("click", function () {
+    search();
+  });
+
+  function viewDetail(billId) {
+    // Implement your logic to view detail for the given bill ID
+    console.log('View detail for bill ID:', billId);
+  }
+
+  function sendEmail(billId) {
+    // Implement your logic to send email for the given bill ID
+    console.log('Send email for bill ID:', billId);
+  }
+</script>
+</body>
+</html>
