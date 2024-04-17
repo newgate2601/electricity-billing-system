@@ -18,15 +18,12 @@
 
 
 
-
-
-
 </head>
 
 
 <body>
     <header class="header_part">
-        <h4>Danh sách hộ chưa đóng tiền</h4>
+        <h4>Danh sách hộ đã đóng tiền</h4>
 
         <div class="container">
             <div class="row">
@@ -38,36 +35,11 @@
                                     <th>Tên chủ hộ</th>
                                     <th>Ngày sinh</th>
                                     <th>Địa chỉ</th>
-                                    <!-- <th>Quê quán</th> -->
                                     <th>Mã hợp đồng</th>
-                                    <th>Số tiền còn nợ</th>
+                                    <th>Số tiền đã đóng</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- <tr>
-                                <td>Nguyen Van A</td>
-                                <td>2000-01-01</td>
-                                <td>123 ABC Street, Hanoi</td>
-                                <td>Hanoi</td>
-                                <td>001</td>
-                                <td>5000000</td>
-                            </tr>
-                            <tr>
-                                <td>Tran Thi B</td>
-                                <td>1990-02-02</td>
-                                <td>456 DEF Street, Ho Chi Minh City</td>
-                                <td>Ho Chi Minh City</td>
-                                <td>002</td>
-                                <td>3000000</td>
-                            </tr>
-                            <tr>
-                                <td>Le Van C</td>
-                                <td>1985-03-03</td>
-                                <td>789 GHI Street, Da Nang</td>
-                                <td>Da Nang</td>
-                                <td>003</td>
-                                <td>7000000</td>
-                            </tr> -->
                             </tbody>
                         </table>
                     </div>
@@ -98,7 +70,7 @@
                 var table = $('#example').DataTable({
                     dom: 'Bfrtip',
                     ajax: {
-                        url: 'http://localhost:8080/api/v1/bill/list',
+                        url: 'http://localhost:8080/api/v1/bill/list/after',
                         dataSrc: 'content'
                     },
                     columns: [
