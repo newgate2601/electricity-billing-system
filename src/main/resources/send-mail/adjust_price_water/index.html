@@ -1,154 +1,132 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Invoice Table</title>
-    <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-    />
-  </head>
-  <body>
-    <div class="container mt-5">
-      <h3>Thông báo điều chỉnh giá cả tiền nước</h3>
-      <h4>Bảng thông tin hóa đơn</h4>
-      <table class="table mt-4">
-        <thead>
-          <tr>
-            <th scope="col">STT</th>
-            <th scope="col">Số bắt đầu(m<sup>3</sup>)</th>
-            <th scope="col">Số kết thúc(m<sup>3</sup>)</th>
-            <th scope="col">Giá(đồng)</th>
-            <th scope="col">Tên dịch vụ</th>
-          </tr>
-        </thead>
-        <tbody id="table-body-tiered"></tbody>
-      </table>
 
-      <h4>Bảng thông tin thuế</h4>
-      <table class="table mt-4">
-        <thead>
-          <tr>
-            <th scope="col">STT</th>
-            <th scope="col">Loại thuế</th>
-            <th scope="col">Giá(%)</th>
-          </tr>
-        </thead>
-        <tbody id="table-body-tax"></tbody>
-      </table>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Invoice Table</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+</head>
 
-      <button
-        type="button"
-        class="btn btn-primary mt-4"
-        data-toggle="modal"
-        data-target="#confirmModal"
-      >
-        Gửi
-      </button>
-    </div>
+<body>
+  <div class="container mt-5">
+    <h3>Thông báo điều chỉnh giá cả tiền nước</h3>
+    <h4>Bảng thông tin hóa đơn</h4>
+    <table class="table mt-4">
+      <thead>
+        <tr>
+          <th scope="col">STT</th>
+          <th scope="col">Số bắt đầu(m<sup>3</sup>)</th>
+          <th scope="col">Số kết thúc(m<sup>3</sup>)</th>
+          <th scope="col">Giá(đồng)</th>
+          <th scope="col">Tên dịch vụ</th>
+        </tr>
+      </thead>
+      <tbody id="table-body-tiered"></tbody>
+    </table>
 
-    <!-- Modal -->
-    <div
-      class="modal fade"
-      id="confirmModal"
-      tabindex="-1"
-      role="dialog"
-      aria-labelledby="confirmModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="confirmModalLabel">Xác nhận gửi</h5>
-            <button
-              type="button"
-              class="close"
-              data-dismiss="modal"
-              aria-label="Close"
-            >
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            Bạn có chắc chắn muốn gửi hóa đơn này không?
-          </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-dismiss="modal"
-            >
-              Hủy
-            </button>
-            <button type="button" class="btn btn-primary" id="submit-btn">
-              Xác nhận
-            </button>
-          </div>
+    <h4>Bảng thông tin thuế</h4>
+    <table class="table mt-4">
+      <thead>
+        <tr>
+          <th scope="col">STT</th>
+          <th scope="col">Loại thuế</th>
+          <th scope="col">Giá(%)</th>
+        </tr>
+      </thead>
+      <tbody id="table-body-tax"></tbody>
+    </table>
+
+    <button type="button" class="btn btn-primary mt-4" data-toggle="modal" data-target="#confirmModal">
+      Gửi
+    </button>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="confirmModalLabel">Xác nhận gửi</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          Bạn có chắc chắn muốn gửi hóa đơn này không?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">
+            Hủy
+          </button>
+          <button type="button" class="btn btn-primary" id="submit-btn">
+            Xác nhận
+          </button>
         </div>
       </div>
     </div>
+  </div>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
-    <script>
-      $(document).ready(async function () {
-        const response = await fetch(
-          "http://localhost:8086/api/v1/bill/adjust-pricing"
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+  <script>
+    $(document).ready(async function () {
+      const response = await fetch(
+        "http://localhost:8080/api/v1/bill/adjust-pricing"
+      );
+
+      const text = await response.text(); // Lấy dữ liệu phản hồi dưới dạng chuỗi
+      if (JSON.parse(text) == null) {
+        return;
+      }
+
+      const tableBodyTiered = $("#table-body-tiered");
+      const tieredPricingData = JSON.parse(text).tieredPricing || [];
+      $.each(tieredPricingData, function (index, item) {
+        const row = $("<tr>");
+        row.append($("<td style='padding: 8px;'>").text(index + 1));
+        row.append($("<td style='padding: 8px;'>").text(item.startNumber));
+        row.append($("<td style='padding: 8px;'>").text(item.endNumber));
+        row.append($("<td style='padding: 8px;'>").text(item.price));
+        row.append($("<td style='padding: 8px;'>").text(item.name));
+
+        tableBodyTiered.append(row);
+      });
+
+      const tableBodyTax = $("#table-body-tax");
+      const taxData = JSON.parse(text).taxs || [];
+      $.each(taxData, function (index, item) {
+        const row = $("<tr>");
+        row.append($("<td style='padding: 8px;'>").text(index + 1));
+        row.append(
+          $("<td style='padding: 8px;'>").text(item.name.toUpperCase())
         );
+        row.append($("<td style='padding: 8px;'>").text(item.tax));
 
-        const text = await response.text(); // Lấy dữ liệu phản hồi dưới dạng chuỗi
-        if (JSON.parse(text) == null) {
+        tableBodyTax.append(row);
+      });
+
+      $("#submit-btn").click(async function () {
+        if (tieredPricingData.length == 0 && taxData == 0) {
+          alert("Chưa có sự thay đổi nào");
           return;
         }
 
-        const tableBodyTiered = $("#table-body-tiered");
-        const tieredPricingData = JSON.parse(text).tieredPricing || [];
-        $.each(tieredPricingData, function (index, item) {
-          const row = $("<tr>");
-          row.append($("<td style='padding: 8px;'>").text(index + 1));
-          row.append($("<td style='padding: 8px;'>").text(item.startNumber));
-          row.append($("<td style='padding: 8px;'>").text(item.endNumber));
-          row.append($("<td style='padding: 8px;'>").text(item.price));
-          row.append($("<td style='padding: 8px;'>").text(item.name));
+        if (
+          tableBodyTiered.text().trim() == "" &&
+          tableBodyTax.text().trim() == ""
+        ) {
+          alert("Chưa có sự thay đổi nào");
+          $("#confirmModal").modal("hide");
+          return;
+        }
 
-          tableBodyTiered.append(row);
-        });
-
-        const tableBodyTax = $("#table-body-tax");
-        const taxData = JSON.parse(text).taxs || [];
-        $.each(taxData, function (index, item) {
-          const row = $("<tr>");
-          row.append($("<td style='padding: 8px;'>").text(index + 1));
-          row.append(
-            $("<td style='padding: 8px;'>").text(item.name.toUpperCase())
-          );
-          row.append($("<td style='padding: 8px;'>").text(item.tax));
-
-          tableBodyTax.append(row);
-        });
-
-        $("#submit-btn").click(async function () {
-          if (tieredPricingData.length == 0 && taxData == 0) {
-            alert("Chưa có sự thay đổi nào");
-            return;
-          }
-
-          if (
-            tableBodyTiered.text().trim() == "" &&
-            tableBodyTax.text().trim() == ""
-          ) {
-            alert("Chưa có sự thay đổi nào");
-            $("#confirmModal").modal("hide");
-            return;
-          }
-
-          let formHTML = `<h2>Thông báo điều chỉnh giá</h2>
-      ${
-        tableBodyTiered.text().trim() != "" &&
-        `<h4>Bảng thông tin hóa đơn</h4>
+        let formHTML = `<h2>Thông báo điều chỉnh giá</h2>
+      ${tableBodyTiered.text().trim() != "" &&
+          `<h4>Bảng thông tin hóa đơn</h4>
                   <table class="table mt-4" style="border-collapse: collapse; width: 100%;">
                     <thead>
                       <tr>
@@ -161,11 +139,10 @@
                     </thead>
                     ${tableBodyTiered.prop("outerHTML").trim()}
                   </table>`
-      }
+          }
 
-      ${
-        tableBodyTax.text().trim() != "" &&
-        `<h4>Bảng thông tin thuế</h4>
+      ${tableBodyTax.text().trim() != "" &&
+          `<h4>Bảng thông tin thuế</h4>
                   <table class="table mt-4" style="border-collapse: collapse; width: 100%;">
                     <thead>
                       <tr>
@@ -176,32 +153,33 @@
                     </thead>
                     ${tableBodyTax.prop("outerHTML").trim()}
                   </table>`
-      }`;
+          }`;
 
-          document.querySelector(".modal-body").innerText = "Đang gửi...";
-          document.querySelector(".btn").disabled = true;
-          const response = await fetch(
-            "http://localhost:8086/api/v1/sendEmail-adjustPrice",
-            {
-              method: "POST", // *GET, POST, PUT, DELETE, etc.
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ content: formHTML.trim() }), // body data type must match "Content-Type" header
-            }
-          );
+        document.querySelector(".modal-body").innerText = "Đang gửi...";
+        document.querySelector(".btn").disabled = true;
+        const response = await fetch(
+          "http://localhost:8080/api/v1/sendEmail-adjustPrice",
+          {
+            method: "POST", // *GET, POST, PUT, DELETE, etc.
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ content: formHTML.trim() }), // body data type must match "Content-Type" header
+          }
+        );
 
-          const text = await response.text(); // Lấy dữ liệu phản hồi dưới dạng chuỗi
-          $("#confirmModal").modal("hide");
+        const text = await response.text(); // Lấy dữ liệu phản hồi dưới dạng chuỗi
+        $("#confirmModal").modal("hide");
 
-          document.querySelector(".btn").disabled = false;
-          document.querySelector(".modal-body").innerText =
-            "Bạn có chắc chắn muốn gửi hóa đơn này không?";
-          $("#confirmModal").modal("hide");
-          alert(text);
-          location.reload();
-        });
+        document.querySelector(".btn").disabled = false;
+        document.querySelector(".modal-body").innerText =
+          "Bạn có chắc chắn muốn gửi hóa đơn này không?";
+        $("#confirmModal").modal("hide");
+        alert(text);
+        location.reload();
       });
-    </script>
-  </body>
+    });
+  </script>
+</body>
+
 </html>

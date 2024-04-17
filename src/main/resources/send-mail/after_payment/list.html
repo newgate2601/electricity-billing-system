@@ -116,14 +116,15 @@
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
   <script>
+
     $(document).ready(function () {
-      const table = $("#myTable").DataTable({
-        paging: true, // Hiển thị phân trang
-        pageLength: 2, // Kích thước của mỗi trang
-        searching: true, // Cho phép tìm kiếm
-        ordering: true, // Cho phép sắp xếp
-        info: true, // Hiển thị thông tin bảng
-        order: [[0, "asc"]], // Sắp xếp mặc định theo cột thứ nhất (index 0)
+      var table = $("#myTable").DataTable({
+        paging: true,
+        pageLength: 10,
+        searching: true,
+        ordering: true,
+        info: true,
+        order: [[0, "asc"]],
         drawCallback: function () {
           calculateSum();
         },
@@ -132,48 +133,38 @@
         },
       });
 
-      table.on("init.dt", function () {
-        const searchInput = document.querySelector('input[type="search"]');
-        if (searchInput) {
-          searchInput.focus();
-        }
-      });
+      // Lấy dữ liệu ban đầu
+      fetch('http://localhost:8080/api/v1/bill/list/after?page=0&size=10&sort=string')
+        .then(response => response.json())
+        .then(data => {
 
-      // Xử lý sự kiện khi checkbox "Chọn tất cả" được thay đổi
-      $("#select-all").change(function () {
-        $(".select-checkbox").prop("checked", $(this).prop("checked"));
-      });
-      // Gọi API
-      fetch("http://localhost:8086/api/v1/bill/list/after?page=0&size=2&sort=string")
-        .then((response) => response.json())
-        .then((data) => {
-          console.log("Data from API:", data.content);
+          // Xử lý dữ liệu và thêm vào bảng
           data.content.forEach((item, index) => {
-            const row = `<tr>
-                      <td>${index + 1}</td>
-                      <td>${item.apartment.customerEntity.name}</td>
-                      <td class='infor-${index}'>${item.apartment.codeHome}</td>
-                      <td>${item.apartment.addressEntity.homeNumber}, ${item.apartment.addressEntity.streetName}, ${item.apartment.addressEntity.ward}, ${item.apartment.addressEntity.district}, ${item.apartment.addressEntity.city}</td>
-                      <td>${item.startNumber}</td>
-                      <td>${item.endNumber}</td>
-                      <td>${item.endNumber - item.startNumber}</td>
-                      <td>${new Date(item.submitTime * 1000).toLocaleDateString()}</td>
-                      <td>${item.price}</td>
-                      <td>${item.status ? "Đã thanh toán" : "Chưa thanh toán"}</td>
-                      <td><input type="checkbox" class="select-checkbox" style="width: 25px; height: 25px" /></td>
-                    </tr>`;
+            var row = `<tr>
+                <td class='infor-${index}'>${item.id}</td>
+                <td class='infor-${index}'>${item.apartment.customerEntity.name}</td>
+                <td class='infor-${index}'>${item.apartment.codeHome}</td>
+                <td class='infor-${index}'>${item.apartment.addressEntity.homeNumber}, ${item.apartment.addressEntity.streetName}, ${item.apartment.addressEntity.ward}, ${item.apartment.addressEntity.district}, ${item.apartment.addressEntity.city}</td>
+                <td class='infor-${index}'>${item.startNumber}</td>
+                <td class='infor-${index}'>${item.endNumber}</td>
+                <td class='infor-${index}'>${item.endNumber - item.startNumber}</td>
+                <td class='infor-${index}' style = "white-space: nowrap" >${item?.submitTimeResponse}</td>
+                <td class='infor-${index}'>${item.price}</td>
+                <td class='infor-${index}'>${item.status ? 'Đã thanh toán' : 'Chưa thanh toán'}</td>
+                <td class='infor-${index}'><input type="checkbox" class="select-checkbox" style="width: 25px; height: 25px" /></td>
+            </tr>`;
             table.row.add($(row)).draw();
           });
+
           return data;
-        })
-        .then((data) => {
+        }).then((data) => {
           console.log(data.content)
           data.content.forEach((item, index) => {
             $(`.infor-${index}`).click(function () {
               const customer = { ...item.apartment?.customerEntity, codeHome: item.apartment.codeHome, billCode: item.billCode, submitTime: item.submitTime, limitedTime: item.limitedTime };
-
+              event.stopPropagation()
               sessionStorage.setItem('customer', JSON.stringify(customer))
-              window.open(`http://127.0.0.1:5500/src/main/resources/send-mail/before_payment/detail-info.html?billId=${item.id}`, '_self')
+
             });
           });
         })
@@ -189,66 +180,73 @@
         // Nếu tất cả các checkbox được chọn, kiểm tra checkbox "Chọn tất cả"
         $("#select-all").prop(
           "checked",
-          $(".select-checkbox:checked").length === $(".select-checkbox").length
+          $(".select-checkbox:checked").length ===
+          $(".select-checkbox").length
         );
       });
 
+
+
       // Xử lý sự kiện khi nút gửi được nhấn
+      $("#submit-btn").click(function () {
+        $("#confirmModal").modal("show");
+      });
+
+      // Xử lý sự kiện khi nút xác nhận gửi được nhấn
       $(".btn_confirm").click(function () {
         var selectedItems = [];
         $(".select-checkbox:checked").each(function () {
-          selectedItems.push($(this).closest("tr").find("td:eq(2)").text()); // Lấy giá trị của cột mã hộ gia đình
+          selectedItems.push($(this).closest("tr").find("td:eq(0)").text()); // Lấy ID của hóa đơn
         });
-        console.log(selectedItems); // In ra console các mã hộ gia đình đã được chọn
-        // Thực hiện các thao tác khác ở đây
-      });
 
-      // Xử lý sự kiện khi nút thanh toán được nhấn
-      $("#submit-btn-pay").click(function () {
-        var selectedItems = [];
-        $(".select-checkbox:checked").each(function () {
-          selectedItems.push($(this).closest("tr").find("td:eq(2)").text()); // Lấy giá trị của cột mã hộ gia đình
+        // Tạo URL API với các billIds như query parameters
+        var apiUrl = "http://localhost:8080/api/v1/sendEmail-after?";
+        selectedItems.forEach(function (billId, index) {
+          if (index > 0) {
+            apiUrl += "&";
+          }
+          apiUrl += "billIds=" + encodeURIComponent(billId);
         });
-        console.log(selectedItems);
+
+        // Gửi yêu cầu đến API
+        fetch(apiUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          }
+        })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error("Đã xảy ra lỗi khi gửi tin nhắn. Vui lòng thử lại sau.");
+            }
+            alert("Email đã được gửi thành công!");
+          })
+          .catch(error => {
+            alert(error.message);
+            console.error(error);
+          });
+
+        $("#confirmModal").modal("hide");
       });
 
-      $(".info-1").click(function () {
-        console.log(1);
-        window.open(
-          "http://127.0.0.1:5500/electricity-billing-system/src/main/resources/send-mail/after_payment/detail-info.html",
-          "_self"
-        );
-      });
-
-      $("#search-btn").click(function () {
-        const startTime = moment($("#start-time").val()).format("YYYY-MM-DD");
-        const endTime = moment($("#end-time").val()).format("YYYY-MM-DD");
-
-        // call api
-        console.log("Thời gian bắt đầu:", startTime);
-        console.log("Thời gian kết thúc:", endTime);
-      });
-
+      // Hàm tính tổng tiền
       function calculateSum() {
-        let sumSoNuocCu = 0;
-        let sumSoNuocMoi = 0;
-        let sumSoNuocSuDung = 0;
-        let sumThanhTien = 0;
+        var sumSoNuocCu = 0;
+        var sumSoNuocMoi = 0;
+        var sumSoNuocSuDung = 0;
+        var sumThanhTien = 0;
 
         $("#myTable tbody tr").each(function () {
-          if ($(this).find("td:eq(3)").text()) {
-            sumSoNuocCu += parseFloat($(this).find("td:eq(3)").text());
-          }
-          if ($(this).find("td:eq(4)").text()) {
-            sumSoNuocMoi += parseFloat($(this).find("td:eq(4)").text());
-          }
-          if ($(this).find("td:eq(5)").text()) {
-            sumSoNuocSuDung += parseFloat($(this).find("td:eq(5)").text());
-          }
-          if ($(this).find("td:eq(7)").text()) {
-            sumThanhTien += parseFloat($(this).find("td:eq(7)").text());
-          }
+          sumSoNuocCu += parseFloat($(this).find("td:eq(3)").text());
+          sumSoNuocMoi += parseFloat($(this).find("td:eq(4)").text());
+          sumSoNuocSuDung += parseFloat($(this).find("td:eq(5)").text());
+          sumThanhTien += parseFloat($(this).find("td:eq(8)").text());
         });
+
+        sumSoNuocCu = isNaN(sumSoNuocCu) ? 0 : sumSoNuocCu;
+        sumSoNuocMoi = isNaN(sumSoNuocMoi) ? 0 : sumSoNuocMoi;
+        sumSoNuocSuDung = isNaN(sumSoNuocSuDung) ? 0 : sumSoNuocSuDung;
+        sumThanhTien = isNaN(sumThanhTien) ? 0 : sumThanhTien;
 
         $("#old_water").text(sumSoNuocCu.toFixed(2));
         $("#new_water").text(sumSoNuocMoi.toFixed(2));
@@ -256,6 +254,7 @@
         $("#total_amount").text(sumThanhTien.toFixed(2));
       }
     });
+
   </script>
 </body>
 

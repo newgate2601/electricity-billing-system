@@ -13,8 +13,8 @@ import java.util.List;
 @Setter
 public class BillAfterPaymentResponse {
     private Long id;
-    private OffsetDateTime submitTime;
-    private OffsetDateTime limitedTime;
+    private String submitTimeResponse;
+    private String limitedTimeResponse;
     private String description;
     private String billCode;
     private Double price;

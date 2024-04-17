@@ -27,8 +27,8 @@ public class SendEmailController {
     private final TieredPricingService tieredPricingService;
 
     @PostMapping("/sendEmail")
-    public String sendEmail(@RequestBody Map<String, String> request) {
-        String email = request.get("email");
+    public String sendEmail() {
+        String email = "pphuc9122002@gmail.com";
 
         // Call the sendEmail method to send an email
         String subject = "Hello from Spring Boot";
@@ -81,7 +81,7 @@ public class SendEmailController {
 
     }
 
-    @Operation(summary = "notification adjust price water")
+    @Operation(summary = "notification send email before payment")
     @PostMapping("/sendEmail-beforepayment")
     public ResponseEntity<String> sendEmailBeforePaymenPriceWater(
             @RequestParam List<Long> billIds) {
@@ -106,6 +106,28 @@ public class SendEmailController {
 
     }
 
+    @Operation(summary = "send email overtime")
+    @PostMapping("/sendEmail-overtime")
+    public ResponseEntity<String> sendEmailOverTime(
+            @RequestParam List<Long> billIds) {
+
+        List<CustomerEntity> allCustomer = customerService.getAllCustomerByBillIds(billIds);
+        Map<Long, CustomerEntity> customerEntityMap = allCustomer.stream().collect(Collectors.toMap(
+                CustomerEntity::getId, Function.identity()));
+        Map<Long, BillEntity> longBillEntityMap = customerService.getBillMap(billIds);
+        if (allCustomer == null) {
+            return ResponseEntity.ok("Does not exist customer");
+        }
+        List<String> customerEmail = allCustomer.stream().map(CustomerEntity::getEmail).collect(Collectors.toList());
+        for (CustomerEntity customerEntity: allCustomer) {
+            String email = customerEntity.getEmail();
+            BillEntity billEntity = longBillEntityMap.get(customerEntity.getId());
+            sendMailToCustomer(email, "Thông báo quá hạn  ",
+                    "<p>Hóa đơn của khách hàng da qua hạn vào ngày: :</p> <p>" +billEntity.getLimitedTime()+"</p>");
+        }
+        return ResponseEntity.ok("Email sent successfully");
+
+    }
     @Operation(summary = "sendemailafterpaymenr")
     @PostMapping("/sendEmail-after")
     public ResponseEntity<String> sendEmailAfterPaymenPriceWater(

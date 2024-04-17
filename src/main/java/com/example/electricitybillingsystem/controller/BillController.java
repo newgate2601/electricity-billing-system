@@ -32,11 +32,11 @@ public class BillController {
     public Page<BillBeforePaymentResponse> getAllBillBeforePayment(@RequestParam(required = false) Pageable pageable) {
         return billService.getAllBillBeforePayment(pageable);
     }
-//    @Operation(summary = "get all bill over time")
-//    @GetMapping("/list/over-time")
-//    public Page<BillAfterPaymentResponse> getAllBillOverTime(@RequestParam(required = false) Pageable pageable){
-//        return billService.getAllBillOverTime(pageable);
-//    }
+    @Operation(summary = "get all bill over time")
+    @GetMapping("/list/over-time")
+    public Page<BillAfterPaymentResponse> getAllBillOverTime(@RequestParam(required = false) Pageable pageable){
+        return billService.getAllBillOverTime(pageable);
+    }
 
     @Operation(summary = "get all bill after payment")
     @GetMapping("/list/after")

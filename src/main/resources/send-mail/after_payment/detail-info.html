@@ -65,11 +65,11 @@
               <td class="font-weight-bold total_amount">0</td>
             </tr>
             <tr>
-              <td colspan="5" class="font-weight-bold">Thuế VAT (10%)</td>
+              <td colspan="5" class="font-weight-bold">Thuế VAT (%)</td>
               <td class="font-weight-bold tax_vat">0</td>
             </tr>
             <tr>
-              <td colspan="5" class="font-weight-bold">Thuế BVMT (5%)</td>
+              <td colspan="5" class="font-weight-bold">Thuế BVMT (%)</td>
               <td class="font-weight-bold tax_bvmt">0</td>
             </tr>
             <tr>
@@ -119,8 +119,45 @@
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
   <script>
     $(document).ready(function () {
+      // Xử lý sự kiện click vào nút "Gửi"
+      $("#confirmModal button.btn-primary").click(function () {
+        // Lấy billId từ URL
+        var billId = getUrlParameter('billId');
+
+        // Tạo URL API để gửi email
+        var apiUrl = "http://localhost:8080/api/v1/sendEmail-after?billIds=" + encodeURIComponent(billId);
+
+        // Gửi yêu cầu đến API
+        fetch(apiUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          }
+        })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error("Đã xảy ra lỗi khi gửi tin nhắn. Vui lòng thử lại sau.");
+            }
+            alert("Email đã được gửi thành công!");
+          })
+          .catch(error => {
+            alert(error.message);
+            console.error(error);
+          });
+
+        $("#confirmModal").modal("hide");
+      });
+
+      // Hàm để lấy tham số URL theo tên
+      function getUrlParameter(name) {
+        name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+        var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+        var results = regex.exec(location.search);
+        return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+      }
+      var billId = getUrlParameter('billId');
       // Gửi yêu cầu API để lấy dữ liệu hóa đơn chi tiết
-      fetch('http://localhost:8086/api/v1/bill/detail/bill?billId=1')
+      fetch('http://localhost:8080/api/v1/bill/detail/bill?billId' + billId)
         .then(response => response.json())
         .then(data => {
           let totalCost = 0; // Khởi tạo biến tổng tiền hàng

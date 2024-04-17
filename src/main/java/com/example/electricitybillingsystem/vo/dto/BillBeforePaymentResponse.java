@@ -13,7 +13,7 @@ import java.util.List;
 public class BillBeforePaymentResponse {
     private Long id;
     private OffsetDateTime submitTime;
-    private OffsetDateTime limitedTime;
+    private String limitedTimeResponse;
     private String description;
     private String billCode;
     private Double price;
