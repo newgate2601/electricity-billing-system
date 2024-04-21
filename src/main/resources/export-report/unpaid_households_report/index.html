@@ -44,47 +44,25 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- <tr>
-                                <td>Nguyen Van A</td>
-                                <td>2000-01-01</td>
-                                <td>123 ABC Street, Hanoi</td>
-                                <td>Hanoi</td>
-                                <td>001</td>
-                                <td>5000000</td>
-                            </tr>
-                            <tr>
-                                <td>Tran Thi B</td>
-                                <td>1990-02-02</td>
-                                <td>456 DEF Street, Ho Chi Minh City</td>
-                                <td>Ho Chi Minh City</td>
-                                <td>002</td>
-                                <td>3000000</td>
-                            </tr>
-                            <tr>
-                                <td>Le Van C</td>
-                                <td>1985-03-03</td>
-                                <td>789 GHI Street, Da Nang</td>
-                                <td>Da Nang</td>
-                                <td>003</td>
-                                <td>7000000</td>
-                            </tr> -->
+
                             </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="4" style="text-align:right">Tổng còn nợ:</th>
+                                    <th></th>
+                                </tr>
+                            </tfoot>
                         </table>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- =======  Data-Table  = End  ===================== -->
-        <!-- ============ Java Script Files  ================== -->
 
-
-        <!-- <script src="/assets/js/bootstrap.bundle.min.js"></script> -->
         <script src="../assets/js/bootstrap.bundle.min.js"></script>
         <script src="../assets/js/jquery-3.6.0.min.js"></script>
         <script src="../assets/js/datatables.min.js"></script>
         <script src="../assets/js/pdfmake.min.js"></script>
         <script src="../assets/js/vfs_fonts.js"></script>
-        <!-- <script src="../assets/js/custom.js"></script> -->
         <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
         <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
         <script src="https://cdn.datatables.net/buttons/1.7.1/js/dataTables.buttons.min.js"></script>
@@ -110,18 +88,44 @@
                                 return date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
                             }
                         },
-                        { 
+                        {
                             data: 'apartment.addressEntity',
                             render: function (data) {
-                                return "số nhà "+data.homeNumber+', '+ data.streetName + ', ' + data.ward + ', ' + data.district + ', ' + data.city;
+                                return "số nhà " + data.homeNumber + ', ' + data.streetName + ', ' + data.ward + ', ' + data.district + ', ' + data.city;
                             }
                         },
                         { data: 'billCode' },
                         { data: 'price' }
                     ],
-                    buttons: ['copy', 'csv', 'excel', 'pdf', 'print']
+                    buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+                    
+                    footerCallback: function (row, data, start, end, display) {
+                        var api = this.api(), data;
+
+
+                        var intVal = function (i) {
+                            return typeof i === 'string' ?
+                                i.replace(/[\$,]/g, '') * 1 :
+                                typeof i === 'number' ?
+                                    i : 0;
+                        };
+
+
+                        total = api
+                            .column(4)
+                            .data()
+                            .reduce(function (a, b) {
+                                return intVal(a) + intVal(b);
+                            }, 0);
+
+
+                        $(api.column(4).footer()).html(
+                            total + ' VNĐ'
+                        );
+                    }
                 });
-        
+
+
                 table.buttons().container()
                     .appendTo('#example_wrapper .col-md-6:eq(0)');
             });
