@@ -214,7 +214,7 @@ public class BillService {
             if (endNumber == null) {
                 endNumber = Long.MAX_VALUE;
             }
-            if (usedNumber <= endNumber) {
+            if (usedNumber < endNumber) {
                 Long used = usedNumber;
                 finalPrice = finalPrice.add(new BigDecimal(used).multiply(item.getPrice()));
                 detailBillResponse.setWaterConsumption(used);
