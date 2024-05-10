@@ -137,6 +137,7 @@
               const customer = { ...item.apartment?.customerEntity, codeHome: item.apartment.codeHome, billCode: item.billCode, submitTime: item.submitTime, limitedTime: item.limitedTime };
               event.stopPropagation()
               sessionStorage.setItem('customer', JSON.stringify(customer))
+              window.location.replace("detail-info.html?billId=" + encodeURIComponent(item.id))
             });
           });
         })
