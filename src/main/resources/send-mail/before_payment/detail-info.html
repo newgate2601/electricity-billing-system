@@ -64,11 +64,11 @@
               <td class="font-weight-bold total_amount">0</td>
             </tr>
             <tr>
-              <td colspan="5" class="font-weight-bold">Thuế VAT (%)</td>
+              <td colspan="5" class="font-weight-bold">Thuế VAT (<span id="valueVAT"></span>%)</td>
               <td class="font-weight-bold tax_vat">0</td>
             </tr>
             <tr>
-              <td colspan="5" class="font-weight-bold">Thuế BVMT (%)</td>
+              <td colspan="5" class="font-weight-bold">Thuế BVMT (<span id="valueBVMT"></span>%)</td>
               <td class="font-weight-bold tax_bvmt">0</td>
             </tr>
             <tr>
@@ -211,8 +211,10 @@
       const customer = JSON.parse(sessionStorage.getItem('customer'))
       $('#name').text(customer.name || '');
       $("#codeHome").text(customer.codeHome || '');
-      $("#limitedTime").text(customer.limitedTime || ''); // bỏ cái time tạo đi a ơi
-      $("#billCode").text(customer.billCode || ''); // bỏ cái time tạo đi a ơi
+      $("#valueVAT").text(customer.vatPrice || '');
+      $("#valueBVMT").text(customer.bvmtPrice || '');
+      $("#limitedTime").text(customer.limitedTime || '');
+      $("#billCode").text(customer.billCode || '');
     });
   </script>
 </body>
