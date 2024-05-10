@@ -109,44 +109,38 @@
         .then(data => {
 
           // Xử lý dữ liệu và thêm vào bảng
+
           data.content.forEach((item, index) => {
+            console.log(item)
             var row = `<tr>
-                    <td class='infor-${index}'>${item.id}</td>
-                    <td class='infor-${index}'>${item.apartment.customerEntity.name}</td>
-                    <td class='infor-${index}'>${item.apartment.codeHome}</td>
-                    <td class='infor-${index}'>${item.apartment.addressEntity.homeNumber}, ${item.apartment.addressEntity.streetName}, ${item.apartment.addressEntity.ward}, ${item.apartment.addressEntity.district}, ${item.apartment.addressEntity.city}</td>
-                    <td class='infor-${index}'>${item.startNumber}</td>
-                    <td class='infor-${index}'>${item.endNumber}</td>
-                    <td class='infor-${index}'>${item.endNumber - item.startNumber}</td>
-                    <td class='infor-${index}'>${item.timelineEntities?.[0]?.submitTime}</td>
-                    <td class='infor-${index}'>${item.price}</td>
-                    <td class='infor-${index}'>${item.status ? 'Đã thanh toán' : 'Chưa thanh toán'}</td>
-                    <td class='infor-${index}'><input type="checkbox" class="select-checkbox" style="width: 25px; height: 25px" /></td>
-                </tr>`;
+                <td class='infor-${index}'>${item.id}</td>
+                <td class='infor-${index}'>${item.apartment.customerEntity.name}</td>
+                <td class='infor-${index}'>${item.apartment.codeHome}</td>
+                <td class='infor-${index}'>${item.apartment.addressEntity.homeNumber}, ${item.apartment.addressEntity.streetName}, ${item.apartment.addressEntity.ward}, ${item.apartment.addressEntity.district}, ${item.apartment.addressEntity.city}</td>
+                <td class='infor-${index}'>${item.startNumber}</td>
+                <td class='infor-${index}'>${item.endNumber}</td>
+                <td class='infor-${index}'>${item.endNumber - item.startNumber}</td>
+                <td class='infor-${index}' style = "white-space: nowrap" >${item?.limitedTimeResponse}</td>
+        
+                <td class='infor-${index}'>${item.price}</td>
+                <td class='infor-${index}'>${item.status ? 'Đã thanh toán' : 'Chưa thanh toán'}</td>
+                <td class='infor-${index}'><input type="checkbox" class="select-checkbox" style="width: 25px; height: 25px" /></td>
+            </tr>`;
             table.row.add($(row)).draw();
           });
 
           return data;
-        })
-        .then((data) => {
+        }).then((data) => {
           console.log(data.content)
           data.content.forEach((item, index) => {
             $(`.infor-${index}`).click(function () {
               const customer = { ...item.apartment?.customerEntity, codeHome: item.apartment.codeHome, billCode: item.billCode, submitTime: item.submitTime, limitedTime: item.limitedTime };
-
-
+              event.stopPropagation()
               sessionStorage.setItem('customer', JSON.stringify(customer))
-              window.open(`http://127.0.0.1:5500/src/main/resources/send-mail/before_payment/detail-info.html?billId=${item.id}`, '_self')
             });
           });
         })
-        .catch(error => console.error('Error:', error));
-
-      // lấy bill id:
-      $('.infor').click(function () {
-        var billId = $(this).closest('tr').find('td:eq(0)').text(); // Giả sử billId nằm trong cột thứ ba
-        window.location.href = 'detail.html?billId=' + billId;
-      });
+        .catch((error) => console.error("Error:", error));
 
       // Xử lý sự kiện khi checkbox "Chọn tất cả" được thay đổi
       $("#select-all").change(function () {
@@ -163,6 +157,8 @@
         );
       });
 
+
+
       // Xử lý sự kiện khi nút gửi được nhấn
       $("#submit-btn").click(function () {
         $("#confirmModal").modal("show");
@@ -172,25 +168,37 @@
       $("#confirm-send-btn").click(function () {
         var selectedItems = [];
         $(".select-checkbox:checked").each(function () {
-          selectedItems.push($(this).closest("tr").find("td:eq(2)").text());
+          selectedItems.push($(this).closest("tr").find("td:eq(0)").text()); // Lấy ID của hóa đơn
         });
-        console.log(selectedItems);
+
+        // Tạo URL API với các billIds như query parameters
+        var apiUrl = "http://localhost:8080/api/v1/sendEmail-beforepayment?";
+        selectedItems.forEach(function (billId, index) {
+          if (index > 0) {
+            apiUrl += "&";
+          }
+          apiUrl += "billIds=" + encodeURIComponent(billId);
+        });
+
+        // Gửi yêu cầu đến API
+        fetch(apiUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          }
+        })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error("Đã xảy ra lỗi khi gửi tin nhắn. Vui lòng thử lại sau.");
+            }
+            alert("Email đã được gửi thành công!");
+          })
+          .catch(error => {
+            alert(error.message);
+            console.error(error);
+          });
 
         $("#confirmModal").modal("hide");
-      });
-
-      // Xử lý sự kiện khi nút thanh toán được nhấn
-      $("#submit-btn-pay").click(function () {
-        var selectedItems = [];
-        $(".select-checkbox:checked").each(function () {
-          selectedItems.push($(this).closest("tr").find("td:eq(2)").text());
-        });
-        console.log(selectedItems);
-      });
-
-      // Xử lý sự kiện khi nút tìm kiếm được nhấn
-      $('#myTable_filter input[type="search"]').on('keyup', function () {
-        calculateSum(); // Cập nhật tổng tiền sau khi tìm kiếm
       });
 
       // Hàm tính tổng tiền
@@ -207,12 +215,18 @@
           sumThanhTien += parseFloat($(this).find("td:eq(8)").text());
         });
 
+        sumSoNuocCu = isNaN(sumSoNuocCu) ? 0 : sumSoNuocCu;
+        sumSoNuocMoi = isNaN(sumSoNuocMoi) ? 0 : sumSoNuocMoi;
+        sumSoNuocSuDung = isNaN(sumSoNuocSuDung) ? 0 : sumSoNuocSuDung;
+        sumThanhTien = isNaN(sumThanhTien) ? 0 : sumThanhTien;
+
         $("#old_water").text(sumSoNuocCu.toFixed(2));
         $("#new_water").text(sumSoNuocMoi.toFixed(2));
         $("#final_water").text(sumSoNuocSuDung.toFixed(2));
         $("#total_amount").text(sumThanhTien.toFixed(2));
       }
     });
+
 
   </script>
 </body>

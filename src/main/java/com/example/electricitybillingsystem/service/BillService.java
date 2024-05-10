@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
@@ -70,6 +72,8 @@ public class BillService {
 
 
                     BillAfterPaymentResponse billAfterPaymentResponse = billMapper.getResponseAfterFromEntity(billEntity);
+                    String limittimeConvert = convertOffsetToDate(billEntity.getLimitedTime());
+                    billAfterPaymentResponse.setLimitedTimeResponse(limittimeConvert);
                     billAfterPaymentResponse.setTaxs(taxBillDTOS);
                     billAfterPaymentResponse.setApartment(apartmentDTO);
 
@@ -117,6 +121,8 @@ public class BillService {
 
 
                     BillBeforePaymentResponse billBeforePaymentResponse = billMapper.getResponseFromEntity(billEntity);
+                    String limitedTimeConvert = convertOffsetToDate(billEntity.getLimitedTime());
+                    billBeforePaymentResponse.setLimitedTimeResponse(limitedTimeConvert);
                     billBeforePaymentResponse
                             .setTaxs(taxBillDTOS);
                     billBeforePaymentResponse
@@ -164,6 +170,10 @@ public class BillService {
                             .timelineEntities(timelineEntities).build();
 
                     BillAfterPaymentResponse billAfterPaymentResponse = billMapper.getResponseAfterFromEntity(billEntity);
+                    String limittimeConvert = convertOffsetToDate(billEntity.getLimitedTime());
+                    String submittimeConvert = convertOffsetToDate(billEntity.getSubmitTime());
+                    billAfterPaymentResponse.setLimitedTimeResponse(limittimeConvert);
+                    billAfterPaymentResponse.setSubmitTimeResponse(submittimeConvert);
                     billAfterPaymentResponse.setTaxs(taxBillDTOS);
                     billAfterPaymentResponse.setApartment(apartmentDTO);
 
@@ -204,7 +214,7 @@ public class BillService {
             if (endNumber == null) {
                 endNumber = Long.MAX_VALUE;
             }
-            if (usedNumber <= endNumber) {
+            if (usedNumber < endNumber) {
                 Long used = usedNumber;
                 finalPrice = finalPrice.add(new BigDecimal(used).multiply(item.getPrice()));
                 detailBillResponse.setWaterConsumption(used);
@@ -238,6 +248,16 @@ public class BillService {
         detailBillResponse.setFinalPrice(finalPrice);
         detailBillResponses.add(detailBillResponse);
         return detailBillResponses;
+    }
+
+    private String convertOffsetToDate(OffsetDateTime offsetDateTime){
+
+        // Define a formatter
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+
+        // Format the OffsetDateTime to a String
+        String formattedDateTime = offsetDateTime.format(formatter);
+        return formattedDateTime;
     }
 
 }

@@ -1,148 +1,128 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>UI</title>
-    <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-    />
-  </head>
-  <body>
-    <div class="container mt-5">
-      <h4>Thông báo ngắt cung cấp nước</h4>
 
-      <div class="form-group">
-        <label for="ward">Phường:</label>
-        <select class="form-control" id="ward">
-          <option value="Nguyễn Trãi">Nguyễn Trãi</option>
-          <option value="Văn Quán">Văn Quán</option>
-          <option value="Phú La">Phú La</option>
-          <option value="Phúc La">Phúc La</option>
-          <option value="Hà Cầu">Hà Cầu</option>
-          <option value="Yên Nghĩa">Yên Nghĩa</option>
-          <option value="Quang Trung">Quang Trung</option>
-          <option value="La Khê">La Khê</option>
-          <option value="Phú Lãm">Phú Lãm</option>
-          <option value="Phú Lương">Phú Lương</option>
-          <option value="Lê Lợi">Lê Lợi</option>
-          <option value="Ô Cách">Ô Cách</option>
-          <option value="Mộ Lao">Mộ Lao</option>
-          <option value="Vạn Phúc">Vạn Phúc</option>
-          <option value="Văn Khê">Văn Khê</option>
-          <option value="Đồng Mai">Đồng Mai</option>
-          <option value="Biên Giang">Biên Giang</option>
-          <option value="Dương Nội">Dương Nội</option>
-          <option value="Hà Đông">Hà Đông</option>
-          <option value="Kiến Hưng">Kiến Hưng</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="start-time">Thời gian bắt đầu:</label>
-        <input type="datetime-local" id="start-time" class="form-control" />
-      </div>
-      <div class="form-group">
-        <label for="end-time">Thời gian kết thúc:</label>
-        <input type="datetime-local" id="end-time" class="form-control" />
-      </div>
-      <button
-        type="button"
-        class="btn btn-primary"
-        data-toggle="modal"
-        data-target="#confirmModal"
-      >
-        Gửi
-      </button>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UI</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+</head>
+
+<body>
+  <div class="container mt-5">
+    <h4>Thông báo ngắt cung cấp nước</h4>
+
+    <div class="form-group">
+      <label for="ward">Phường:</label>
+      <select class="form-control" id="ward">
+        <option value="Nguyễn Trãi">Nguyễn Trãi</option>
+        <option value="Văn Quán">Văn Quán</option>
+        <option value="Phú La">Phú La</option>
+        <option value="Phúc La">Phúc La</option>
+        <option value="Hà Cầu">Hà Cầu</option>
+        <option value="Yên Nghĩa">Yên Nghĩa</option>
+        <option value="Quang Trung">Quang Trung</option>
+        <option value="La Khê">La Khê</option>
+        <option value="Phú Lãm">Phú Lãm</option>
+        <option value="Phú Lương">Phú Lương</option>
+        <option value="Lê Lợi">Lê Lợi</option>
+        <option value="Ô Cách">Ô Cách</option>
+        <option value="Mộ Lao">Mộ Lao</option>
+        <option value="Vạn Phúc">Vạn Phúc</option>
+        <option value="Văn Khê">Văn Khê</option>
+        <option value="Đồng Mai">Đồng Mai</option>
+        <option value="Biên Giang">Biên Giang</option>
+        <option value="Dương Nội">Dương Nội</option>
+        <option value="Hà Đông">Hà Đông</option>
+        <option value="Kiến Hưng">Kiến Hưng</option>
+      </select>
     </div>
-    <div
-      class="modal fade"
-      id="confirmModal"
-      tabindex="-1"
-      role="dialog"
-      aria-labelledby="confirmModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="confirmModalLabel">Xác nhận gửi</h5>
-            <button
-              type="button"
-              class="close"
-              data-dismiss="modal"
-              aria-label="Close"
-            >
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            Bạn có chắc chắn muốn gửi hóa đơn này không?
-          </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-dismiss="modal"
-            >
-              Hủy
-            </button>
-            <button type="button" class="btn btn-primary" id="submit-btn">
-              Xác nhận
-            </button>
-          </div>
+    <div class="form-group">
+      <label for="start-time">Thời gian bắt đầu:</label>
+      <input type="datetime-local" id="start-time" class="form-control" />
+    </div>
+    <div class="form-group">
+      <label for="end-time">Thời gian kết thúc:</label>
+      <input type="datetime-local" id="end-time" class="form-control" />
+    </div>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#confirmModal">
+      Gửi
+    </button>
+  </div>
+  <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="confirmModalLabel">Xác nhận gửi</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          Bạn có chắc chắn muốn gửi hóa đơn này không?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">
+            Hủy
+          </button>
+          <button type="button" class="btn btn-primary" id="submit-btn">
+            Xác nhận
+          </button>
         </div>
       </div>
     </div>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script>
-      $(document).ready(function () {
-        $("#submit-btn").click(async function () {
-          const ward = $("#ward").val();
-          const startTime = $("#start-time").val();
-          const endTime = $("#end-time").val();
+  </div>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script>
+    $(document).ready(function () {
+      $("#submit-btn").click(async function () {
+        const ward = $("#ward").val();
+        const startTime = $("#start-time").val();
+        const endTime = $("#end-time").val();
 
-          if (startTime == "" || endTime == "") {
-            alert("Bạn phải chọn thời gian bắt đầu và kết thúc!");
-            return;
+        if (startTime == "" || endTime == "") {
+          alert("Bạn phải chọn thời gian bắt đầu và kết thúc!");
+          return;
+        }
+
+        const currentTime = new Date();
+
+        if (
+          new Date(startTime) < currentTime ||
+          new Date(endTime) < currentTime ||
+          new Date(startTime) >= new Date(endTime)
+        ) {
+          alert("Lỗi: Thời điểm không hợp lệ.");
+          return; // Dừng lại nếu có lỗi
+        }
+        document.querySelector(".modal-body").innerText = "Đang gửi...";
+        document.querySelector(".btn").disabled = true;
+        const response = await fetch(
+          "http://localhost:8080/api/v1/sendEmail-turnOffWater",
+          {
+            method: "POST", // *GET, POST, PUT, DELETE, etc.
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ ward, startTime, endTime }), // body data type must match "Content-Type" header
           }
+        );
 
-          const currentTime = new Date();
+        const text = await response.text(); // Lấy dữ liệu phản hồi dưới dạng chuỗi
+        $("#confirmModal").modal("hide");
 
-          if (
-            new Date(startTime) < currentTime ||
-            new Date(endTime) < currentTime ||
-            new Date(startTime) >= new Date(endTime)
-          ) {
-            alert("Lỗi: Thời điểm không hợp lệ.");
-            return; // Dừng lại nếu có lỗi
-          }
-          document.querySelector(".modal-body").innerText = "Đang gửi...";
-          document.querySelector(".btn").disabled = true;
-          const response = await fetch(
-            "http://localhost:8086/api/v1/sendEmail-turnOffWater",
-            {
-              method: "POST", // *GET, POST, PUT, DELETE, etc.
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ ward, startTime, endTime }), // body data type must match "Content-Type" header
-            }
-          );
-
-          const text = await response.text(); // Lấy dữ liệu phản hồi dưới dạng chuỗi
-          $("#confirmModal").modal("hide");
-
-          document.querySelector(".btn").disabled = false;
-          document.querySelector(".modal-body").innerText =
-            "Bạn có chắc chắn muốn gửi hóa đơn này không?";
-          alert(text);
-          location.reload();
-        });
-
-        $("#start-time").focus();
+        document.querySelector(".btn").disabled = false;
+        document.querySelector(".modal-body").innerText =
+          "Bạn có chắc chắn muốn gửi hóa đơn này không?";
+        alert(text);
+        location.reload();
       });
-    </script>
-  </body>
+
+      $("#start-time").focus();
+    });
+  </script>
+</body>
+
 </html>
