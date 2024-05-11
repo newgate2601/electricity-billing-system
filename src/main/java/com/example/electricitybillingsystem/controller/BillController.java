@@ -29,31 +29,22 @@ public class BillController {
 
     @Operation(summary = "get all bill before payment")
     @GetMapping("/list")
-    public Page<BillBeforePaymentResponse> getAllBillBeforePayment(@ParameterObject Pageable pageable) {
+    public Page<BillBeforePaymentResponse> getAllBillBeforePayment(@RequestParam(required = false) Pageable pageable) {
         return billService.getAllBillBeforePayment(pageable);
     }
-
     @Operation(summary = "get all bill over time")
     @GetMapping("/list/over-time")
-    public Page<BillAfterPaymentResponse> getAllBillOverTime(@ParameterObject Pageable pageable) {
+    public Page<BillAfterPaymentResponse> getAllBillOverTime(@RequestParam(required = false) Pageable pageable){
         return billService.getAllBillOverTime(pageable);
     }
 
     @Operation(summary = "get all bill after payment")
     @GetMapping("/list/after")
-    public Page<BillAfterPaymentResponse> getAllBillAfterPayment(@ParameterObject Pageable pageable) {
+    public Page<BillAfterPaymentResponse> getAllBillAfterPayment(@RequestParam(required = false) Pageable pageable){
         return billService.getAllBillAfterPayment(pageable);
     }
 
-    @GetMapping("/test1")
-    public void test1() throws InterruptedException {
-        Thread.sleep(1000);
-    }
 
-    @GetMapping("/test2")
-    public void test2() throws InterruptedException {
-        Thread.sleep(4000);
-    }
 
     @Operation(summary = "Theo dõi bill của khách hàng")
     @GetMapping
@@ -65,7 +56,6 @@ public class BillController {
                                        @ParameterObject Pageable pageable) {
         return billService2.getBills(statusValue, name, month, year, order, pageable);
     }
-
     @Operation(summary = "notification adjust service pricing")
     @GetMapping("/adjust-pricing")
     public AdjustPricingResponse getAllAdjustPricing() {
