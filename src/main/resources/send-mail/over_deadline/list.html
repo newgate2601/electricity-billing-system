@@ -131,9 +131,27 @@
           console.log(data.content)
           data.content.forEach((item, index) => {
             $(`.infor-${index}`).click(function () {
-              const customer = { ...item.apartment?.customerEntity, codeHome: item.apartment.codeHome, billCode: item.billCode, submitTime: item.submitTime, limitedTime: item.limitedTime };
+              let vatPrice = 0;
+              let bvmtPrice = 0;
+
+              // Duyệt qua mảng taxs và lấy giá trị của thuế TAX và BVMT
+              item.taxs.forEach(tax => {
+                if (tax.name === 'VAT') {
+                  vatPrice += tax.price;
+                } else if (tax.name === 'BVMT') {
+                  bvmtPrice += tax.price;
+                }
+              });
+
+              const customer = {
+                ...item.apartment?.customerEntity, codeHome: item.apartment.codeHome,
+                billCode: item.billCode, submitTime: item.submitTime, limitedTime: item.limitedTimeResponse,
+                vatPrice: vatPrice, // Giá trị của thuế TAX
+                bvmtPrice: bvmtPrice // Giá trị của thuế BVMT
+              };
               event.stopPropagation()
               sessionStorage.setItem('customer', JSON.stringify(customer))
+              window.location.replace("detail-info.html?billId=" + encodeURIComponent(item.id))
             });
           });
         })

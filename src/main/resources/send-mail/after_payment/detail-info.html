@@ -30,7 +30,7 @@
       <div class="col">
         <p>
           <span class="font-weight-bold">Trạng thái:</span>
-          <span>Chưa thanh toán</span>
+          <span id="codeStatus"> Đã Thanh toán</span>
         </p>
       </div>
     </div>
@@ -65,11 +65,11 @@
               <td class="font-weight-bold total_amount">0</td>
             </tr>
             <tr>
-              <td colspan="5" class="font-weight-bold">Thuế VAT (%)</td>
+              <td colspan="5" class="font-weight-bold">Thuế VAT (<span id="valueVAT"></span>%)</td>
               <td class="font-weight-bold tax_vat">0</td>
             </tr>
             <tr>
-              <td colspan="5" class="font-weight-bold">Thuế BVMT (%)</td>
+              <td colspan="5" class="font-weight-bold">Thuế BVMT (<span id="valueBVMT"></span>%)</td>
               <td class="font-weight-bold tax_bvmt">0</td>
             </tr>
             <tr>
@@ -84,7 +84,7 @@
     </div>
     <div class="row mb-4">
       <div class="col">
-        <button type="button" class="btn btn-primary" onclick="window.history.back()">
+        <button type="button" class="btn btn-primary" onclick="window.location.replace('list.html')">
           Quay lại
         </button>
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#confirmModal">
@@ -157,7 +157,7 @@
       }
       var billId = getUrlParameter('billId');
       // Gửi yêu cầu API để lấy dữ liệu hóa đơn chi tiết
-      fetch('http://localhost:8080/api/v1/bill/detail/bill?billId' + billId)
+      fetch('http://localhost:8080/api/v1/bill/detail/bill?billId=' + billId)
         .then(response => response.json())
         .then(data => {
           let totalCost = 0; // Khởi tạo biến tổng tiền hàng
@@ -201,7 +201,10 @@
         .catch(error => console.error('Error fetching data:', error));
       const customer = JSON.parse(sessionStorage.getItem('customer'))
       $('#name').text(customer.name || '');
+      // $('codeStatus').text(customer.)
       $("#codeHome").text(customer.codeHome || '');
+      $("#valueVAT").text(customer.vatPrice || '');
+      $("#valueBVMT").text(customer.bvmtPrice || '');
       $("#limitedTime").text(customer.limitedTime || '');
       $("#billCode").text(customer.billCode || '');
     });
