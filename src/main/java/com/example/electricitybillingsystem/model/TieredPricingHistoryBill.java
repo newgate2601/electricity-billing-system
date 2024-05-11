@@ -1,11 +1,10 @@
 package com.example.electricitybillingsystem.model;
 
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import javax.persistence.*;
 
 @Getter
 @Setter
@@ -13,7 +12,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Entity
 @Table(name = "tbl_tiered_pricing_history_bill")
-public class TieredPricingHistoryBill extends BaseEnt{
+public class TieredPricingHistoryBill extends BaseEnt {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -1,13 +1,13 @@
 package com.example.electricitybillingsystem.controller;
 
-import com.example.electricitybillingsystem.phu.BillService2;
 import com.example.electricitybillingsystem.service.BillService;
+import com.example.electricitybillingsystem.service.BillService2;
 import com.example.electricitybillingsystem.service.TieredPricingService;
 import com.example.electricitybillingsystem.vo.dto.BillAfterPaymentResponse;
 import com.example.electricitybillingsystem.vo.dto.BillBeforePaymentResponse;
+import com.example.electricitybillingsystem.vo.dto.BillResponse;
 import com.example.electricitybillingsystem.vo.dto.DetailBillResponse;
 import com.example.electricitybillingsystem.vo.response.AdjustPricingResponse;
-import com.example.electricitybillingsystem.vo.dto.BillResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springdoc.api.annotations.ParameterObject;
@@ -32,15 +32,16 @@ public class BillController {
     public Page<BillBeforePaymentResponse> getAllBillBeforePayment(@ParameterObject Pageable pageable) {
         return billService.getAllBillBeforePayment(pageable);
     }
+
     @Operation(summary = "get all bill over time")
     @GetMapping("/list/over-time")
-    public Page<BillAfterPaymentResponse> getAllBillOverTime(@ParameterObject Pageable pageable){
+    public Page<BillAfterPaymentResponse> getAllBillOverTime(@ParameterObject Pageable pageable) {
         return billService.getAllBillOverTime(pageable);
     }
 
     @Operation(summary = "get all bill after payment")
     @GetMapping("/list/after")
-    public Page<BillAfterPaymentResponse> getAllBillAfterPayment(@ParameterObject Pageable pageable){
+    public Page<BillAfterPaymentResponse> getAllBillAfterPayment(@ParameterObject Pageable pageable) {
         return billService.getAllBillAfterPayment(pageable);
     }
 
@@ -61,9 +62,10 @@ public class BillController {
                                        @RequestParam(required = false) Integer month,
                                        @RequestParam(required = false) Integer year,
                                        @RequestParam(required = false) String order,
-                                       @ParameterObject Pageable pageable){
+                                       @ParameterObject Pageable pageable) {
         return billService2.getBills(statusValue, name, month, year, order, pageable);
     }
+
     @Operation(summary = "notification adjust service pricing")
     @GetMapping("/adjust-pricing")
     public AdjustPricingResponse getAllAdjustPricing() {

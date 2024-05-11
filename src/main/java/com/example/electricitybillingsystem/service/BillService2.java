@@ -1,4 +1,4 @@
-package com.example.electricitybillingsystem.phu;
+package com.example.electricitybillingsystem.service;
 
 import com.example.electricitybillingsystem.filter.Filter;
 import com.example.electricitybillingsystem.mapper.BillMapper;
@@ -6,6 +6,7 @@ import com.example.electricitybillingsystem.model.BillEntity;
 import com.example.electricitybillingsystem.model.CustomerEntity;
 import com.example.electricitybillingsystem.repository.CustomerRepository;
 import com.example.electricitybillingsystem.vo.dto.BillResponse;
+import jakarta.persistence.EntityManager;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -13,7 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
@@ -35,17 +35,17 @@ public class BillService2 {
             month = now.getMonth().getValue();
             year = now.getYear();
         }
-        if (Objects.isNull(order)){
+        if (Objects.isNull(order)) {
             order = "ASC";
         }
         List<Long> employeeIds = null;
-        if (Objects.nonNull(name)){
+        if (Objects.nonNull(name)) {
             List<CustomerEntity> employeeEntities = Filter.builder(CustomerEntity.class, entityManager)
                     .search()
                     .isContain("name", name)
                     .getPage(PageRequest.of(0, 100000))
                     .getContent();
-            if (Objects.nonNull(employeeEntities)){
+            if (Objects.nonNull(employeeEntities)) {
                 employeeIds = employeeEntities.stream().map(CustomerEntity::getId).collect(Collectors.toList());
             }
         }
@@ -67,7 +67,7 @@ public class BillService2 {
 
         return bills.map(billEntity -> {
             BillResponse billResponse = billMapper.getBillResponseBy(billEntity);
-            if (customerEntityMap.containsKey(billEntity.getCustomerId())){
+            if (customerEntityMap.containsKey(billEntity.getCustomerId())) {
                 billResponse.setCustomerName(customerEntityMap.get(billEntity.getCustomerId()).getName());
             }
             return billResponse;
