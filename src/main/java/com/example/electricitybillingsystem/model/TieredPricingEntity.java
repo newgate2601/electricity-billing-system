@@ -20,6 +20,7 @@ public class TieredPricingEntity extends BaseEnt {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "_value")
     private BigDecimal value;
 
     private Long startNumber;
