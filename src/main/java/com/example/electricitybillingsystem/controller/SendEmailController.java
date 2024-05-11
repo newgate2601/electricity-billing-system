@@ -2,15 +2,16 @@ package com.example.electricitybillingsystem.controller;
 
 import com.example.electricitybillingsystem.model.BillEntity;
 import com.example.electricitybillingsystem.model.CustomerEntity;
-import com.example.electricitybillingsystem.service.*;
+import com.example.electricitybillingsystem.service.CustomerService;
+import com.example.electricitybillingsystem.service.EmailService;
+import com.example.electricitybillingsystem.service.TaxService;
+import com.example.electricitybillingsystem.service.TieredPricingService;
 import com.example.electricitybillingsystem.vo.request.TurnOffWaterInfoRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.mail.MessagingException;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -37,7 +38,7 @@ public class SendEmailController {
         try {
             emailService.sendEmail(email, subject, content);
             return "Email sent successfully.";
-        } catch (MessagingException | UnsupportedEncodingException e) {
+        } catch (Exception e) {
             return "Failed to send email. Error: " + e.getMessage();
         }
     }
@@ -94,13 +95,13 @@ public class SendEmailController {
             return ResponseEntity.ok("Does not exist customer");
         }
         List<String> customerEmail = allCustomer.stream().map(CustomerEntity::getEmail).collect(Collectors.toList());
-        for (CustomerEntity customerEntity: allCustomer) {
+        for (CustomerEntity customerEntity : allCustomer) {
             String email = customerEntity.getEmail();
             BillEntity billEntity = longBillEntityMap.get(customerEntity.getId());
             sendMailToCustomer(email, "Thông báo hóa đơn cần đóng ",
-                    "<p>Hóa đơn của khách hàng cần thanh toán: :</p> <p>" +billEntity.getPrice()
+                    "<p>Hóa đơn của khách hàng cần thanh toán: :</p> <p>" + billEntity.getPrice()
                             + "số nước cũ: " + billEntity.getStartNumber() +
-                            "số nước mới: "+ billEntity.getEndNumber()+"</p>");
+                            "số nước mới: " + billEntity.getEndNumber() + "</p>");
         }
         return ResponseEntity.ok("Email sent successfully");
 
@@ -141,11 +142,11 @@ public class SendEmailController {
             return ResponseEntity.ok("Does not exist customer");
         }
         List<String> customerEmail = allCustomer.stream().map(CustomerEntity::getEmail).collect(Collectors.toList());
-        for (CustomerEntity customerEntity: allCustomer) {
+        for (CustomerEntity customerEntity : allCustomer) {
             String email = customerEntity.getEmail();
             BillEntity billEntity = longBillEntityMap.get(customerEntity.getId());
             sendMailToCustomer(email, "thông báo đã đóng hóa đơn  ",
-                    "<p>Quý khách đã thanh toán thành công số tiền :</p> <p>" +billEntity.getPrice()
+                    "<p>Quý khách đã thanh toán thành công số tiền :</p> <p>" + billEntity.getPrice()
                             + "vào ngày: " + billEntity.getSubmitTime() + "</p>");
         }
         return ResponseEntity.ok("Email sent successfully");
@@ -155,7 +156,7 @@ public class SendEmailController {
     private void sendMailToCustomer(String email, String subject, String content) {
         try {
             emailService.sendEmail(email, subject, content);
-        } catch (MessagingException | UnsupportedEncodingException e) {
+        } catch (Exception e) {
             System.out.println("[Email-" + email + "] - Error::" + e.getMessage());
         }
     }

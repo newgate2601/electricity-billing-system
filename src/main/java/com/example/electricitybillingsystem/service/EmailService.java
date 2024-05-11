@@ -1,13 +1,13 @@
 package com.example.electricitybillingsystem.service;
 
 import com.example.electricitybillingsystem.model.CustomerEntity;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import org.springframework.mail.javamail.JavaMailSender;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
@@ -31,7 +31,7 @@ public class EmailService {
         mailSender.send(message);
     }
 
-    public List<CustomerEntity> sendEmailTurnOffWater(String ward){
+    public List<CustomerEntity> sendEmailTurnOffWater(String ward) {
         return addressService.getAllCustomerByWard(ward);
     }
 

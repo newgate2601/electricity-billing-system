@@ -1,10 +1,11 @@
 package com.example.electricitybillingsystem.model;
 
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
-import javax.persistence.*;
 import java.math.BigDecimal;
 
 @Data
@@ -12,6 +13,7 @@ import java.math.BigDecimal;
 @Entity
 @EqualsAndHashCode(callSuper = true)
 @Table(name = "tbl_tiered_pricing")
+@SuperBuilder
 public class TieredPricingEntity extends BaseEnt {
 
     @Id

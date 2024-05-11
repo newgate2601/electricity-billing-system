@@ -1,5 +1,7 @@
 package com.example.electricitybillingsystem.filter;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,8 +11,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.lang.NonNull;
 
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
 import java.util.*;
 
 @Getter
@@ -24,7 +24,7 @@ public class Filter<T> {
         return new FilterBuilder<>(clazz, entityManager);
     }
 
-    public List<T> getList(){
+    public List<T> getList() {
         return typedQuery.getResultList();
     }
 
@@ -57,7 +57,7 @@ public class Filter<T> {
         public FilterBuilder<T> search() {
             logicOperator = " OR ";
             mustOpenParentheses = true;
-            if (Boolean.TRUE.equals(mustCloseParentheses)){
+            if (Boolean.TRUE.equals(mustCloseParentheses)) {
                 conditions.append(" ) ");
             }
             mustCloseParentheses = false;
@@ -68,7 +68,7 @@ public class Filter<T> {
         public FilterBuilder<T> filter() {
             logicOperator = " AND ";
             mustOpenParentheses = true;
-            if (Boolean.TRUE.equals(mustCloseParentheses)){
+            if (Boolean.TRUE.equals(mustCloseParentheses)) {
                 conditions.append(" ) ");
             }
             mustCloseParentheses = false;
@@ -77,13 +77,13 @@ public class Filter<T> {
 
         @Override
         public FilterBuilder<T> isContain(String fieldName, String value) {
-            if (Objects.isNull(value)){
+            if (Objects.isNull(value)) {
                 return this;
             }
             paramMap.put(paramCount, "%" + escape(value) + "%");
             conditions.append(Boolean.TRUE.equals(mustOpenParentheses) ? this.logicOperator + " ( " : this.logicOperator)
                     .append("e.").append(fieldName).append(" LIKE ?").append(paramCount++);
-            if (Boolean.TRUE.equals(mustOpenParentheses)){
+            if (Boolean.TRUE.equals(mustOpenParentheses)) {
                 mustOpenParentheses = false;
             }
             mustCloseParentheses = true;
@@ -92,13 +92,13 @@ public class Filter<T> {
 
         @Override
         public FilterBuilder<T> isNotIn(String fieldName, Collection values) {
-            if (Objects.isNull(values)){
+            if (Objects.isNull(values)) {
                 return this;
             }
             paramMap.put(paramCount, values);
             conditions.append(Boolean.TRUE.equals(mustOpenParentheses) ? this.logicOperator + " ( " : this.logicOperator)
                     .append("e.").append(fieldName).append(" NOT IN (?").append(paramCount++).append(")");
-            if (Boolean.TRUE.equals(mustOpenParentheses)){
+            if (Boolean.TRUE.equals(mustOpenParentheses)) {
                 mustOpenParentheses = false;
             }
             mustCloseParentheses = true;
@@ -107,13 +107,13 @@ public class Filter<T> {
 
         @Override
         public FilterBuilder<T> isIn(String fieldName, Collection values) {
-            if (Objects.isNull(values)){
+            if (Objects.isNull(values)) {
                 return this;
             }
             paramMap.put(paramCount, values);
             conditions.append(Boolean.TRUE.equals(mustOpenParentheses) ? this.logicOperator + " ( " : this.logicOperator)
                     .append("e.").append(fieldName).append(" IN (?").append(paramCount++).append(")");
-            if (Boolean.TRUE.equals(mustOpenParentheses)){
+            if (Boolean.TRUE.equals(mustOpenParentheses)) {
                 mustOpenParentheses = false;
             }
             mustCloseParentheses = true;
@@ -122,13 +122,13 @@ public class Filter<T> {
 
         @Override
         public FilterBuilder<T> isEqual(String fieldName, Object value) {
-            if (Objects.isNull(value)){
+            if (Objects.isNull(value)) {
                 return this;
             }
             paramMap.put(paramCount, value);
             conditions.append(Boolean.TRUE.equals(mustOpenParentheses) ? this.logicOperator + " ( " : this.logicOperator)
                     .append("e.").append(fieldName).append(" = ?").append(paramCount++);
-            if (Boolean.TRUE.equals(mustOpenParentheses)){
+            if (Boolean.TRUE.equals(mustOpenParentheses)) {
                 mustOpenParentheses = false;
             }
             mustCloseParentheses = true;
@@ -145,7 +145,7 @@ public class Filter<T> {
         public FilterBuilder<T> isNull(String fieldName) {
             conditions.append(Boolean.TRUE.equals(mustOpenParentheses) ? this.logicOperator + " ( " : this.logicOperator)
                     .append("e.").append(fieldName).append(" IS NULL ");
-            if (Boolean.TRUE.equals(mustOpenParentheses)){
+            if (Boolean.TRUE.equals(mustOpenParentheses)) {
                 mustOpenParentheses = false;
             }
             mustCloseParentheses = true;
@@ -156,7 +156,7 @@ public class Filter<T> {
         public FilterBuilder isNotNull(String fieldName) {
             conditions.append(Boolean.TRUE.equals(mustOpenParentheses) ? this.logicOperator + " ( " : this.logicOperator)
                     .append("e.").append(fieldName).append(" IS NOT NULL ");
-            if (Boolean.TRUE.equals(mustOpenParentheses)){
+            if (Boolean.TRUE.equals(mustOpenParentheses)) {
                 mustOpenParentheses = false;
             }
             mustCloseParentheses = true;
@@ -176,7 +176,7 @@ public class Filter<T> {
             typedQuery.setFirstResult((pageNumber * pageSize));
             typedQuery.setMaxResults((pageNumber * pageSize) + pageSize);
             List<T> content = typedQuery.getResultList();
-            if (Objects.isNull(content) || content.isEmpty()){
+            if (Objects.isNull(content) || content.isEmpty()) {
                 return Page.empty();
             }
             long total = typedQuery.getResultStream().count();
@@ -184,7 +184,7 @@ public class Filter<T> {
             return new PageImpl<>(content, pageable, total);
         }
 
-        public Filter<T> build(){
+        public Filter<T> build() {
             for (Object key : paramMap.keySet()) {
                 Object value = paramMap.get(key);
                 typedQuery.setParameter((int) key, value);
@@ -193,14 +193,13 @@ public class Filter<T> {
             return new Filter<>(this.typedQuery);
         }
 
-        private TypedQuery<T> genQuery(){
+        private TypedQuery<T> genQuery() {
             String newConditions = "";
-            if (conditions.length() > 0){
+            if (conditions.length() > 0) {
                 newConditions = new String(this.conditions);
-                if (newConditions.startsWith(" AND")){
+                if (newConditions.startsWith(" AND")) {
                     newConditions = newConditions.substring(4);
-                }
-                else if (newConditions.startsWith(" OR")){
+                } else if (newConditions.startsWith(" OR")) {
                     newConditions = newConditions.substring(3);
                 }
                 query.append("WHERE ").append(newConditions)

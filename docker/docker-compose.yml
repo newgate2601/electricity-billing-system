@@ -5,7 +5,7 @@ services:
     image: postgres
     environment:
       POSTGRES_DB: water_management
-      POSTGRES_USER: postgres
+      POSTGRES_USER: admin
       POSTGRES_PASSWORD: 123456
     ports:
       - '5432:5432'
