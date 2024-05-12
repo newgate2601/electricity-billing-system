@@ -283,7 +283,7 @@ public class BillServiceTest {
                 "c",
                 5,
                 2024,
-                null,
+                "DESC",
                 PageRequest.of(0, 1000000));
 
         showResultAfterFilter(billResponses);
@@ -297,6 +297,314 @@ public class BillServiceTest {
 
         assertEquals(BigDecimal.valueOf(2), bills.get(1).getPrice());
         assertEquals("phúc", bills.get(1).getCustomerName());
+        // rollback
+        this.transactionManager.rollback(transaction);
+    }
+
+    @Test
+    @DisplayName("Lấy danh sách bill theo tháng 3 " +
+            "và sắp xếp theo thứ tự giá giảm dần")
+    @Transactional
+    public void testGetBillsV11(){
+        TransactionStatus transaction = this.transactionManager.getTransaction(null);
+        fakeDataForTestGetBills();
+
+        Page<BillResponse> billResponses = billService2.getBills(
+                null,
+                null,
+                3,
+                2024,
+                "DESC",
+                PageRequest.of(0, 1000000));
+
+        showResultAfterFilter(billResponses);
+
+        assertEquals(3, billResponses.getContent().size());
+
+        List<BillResponse> bills = billResponses.getContent();
+        assertEquals(BigDecimal.valueOf(3), bills.get(0).getPrice());
+        assertEquals("ngọc", bills.get(0).getCustomerName());
+
+        assertEquals(BigDecimal.valueOf(2), bills.get(1).getPrice());
+        assertEquals("phúc", bills.get(1).getCustomerName());
+
+        assertEquals(BigDecimal.valueOf(1), bills.get(2).getPrice());
+        assertEquals("phú", bills.get(2).getCustomerName());
+
+        // rollback
+        this.transactionManager.rollback(transaction);
+    }
+
+    @Test
+    @DisplayName("Lấy danh sách bill theo tháng 5 của những người dùng có tên gồm chữ cái #c " +
+            "và sắp xếp theo thứ tự giá tăng dần")
+    @Transactional
+    public void testGetBillsV12(){
+        TransactionStatus transaction = this.transactionManager.getTransaction(null);
+        fakeDataForTestGetBills();
+
+        Page<BillResponse> billResponses = billService2.getBills(
+                null,
+                "c",
+                5,
+                2024,
+                "ASC",
+                PageRequest.of(0, 1000000));
+
+        showResultAfterFilter(billResponses);
+
+        // compare size bills in db not filter
+        assertEquals(2, billResponses.getContent().size());
+
+        List<BillResponse> bills = billResponses.getContent();
+        assertEquals(BigDecimal.valueOf(2), bills.get(0).getPrice());
+        assertEquals("phúc", bills.get(0).getCustomerName());
+
+        assertEquals(BigDecimal.valueOf(3), bills.get(1).getPrice());
+        assertEquals("ngọc", bills.get(1).getCustomerName());
+
+        // rollback
+        this.transactionManager.rollback(transaction);
+    }
+
+    @Test
+    @DisplayName("Lấy danh sách bill theo tháng 12 của những người dùng có tên gồm chữ cái #k " +
+            "và theo thứ tự giảm dần " +
+            "và trạng thái là đã đóng tiền")
+    @Transactional
+    public void testGetBillsV13(){
+        TransactionStatus transaction = this.transactionManager.getTransaction(null);
+        fakeDataForTestGetBills();
+
+        Page<BillResponse> billResponses = billService2.getBills(
+                null,
+                "k",
+                12,
+                2024,
+                "DESC",
+                PageRequest.of(0, 1000000));
+
+        showResultAfterFilter(billResponses);
+
+        // compare size bills in db not filter
+        assertEquals(0, billResponses.getContent().size());
+
+        // rollback
+        this.transactionManager.rollback(transaction);
+    }
+
+    @Test
+    @DisplayName("Lấy danh sách bill theo tháng 5 của những người dùng có tên gồm chữ cái #c " +
+            "và sắp xếp theo thứ tự giá tăng dần " +
+            "và trạng thái đóng tiền là đã đóng")
+    @Transactional
+    public void testGetBillsV14(){
+        TransactionStatus transaction = this.transactionManager.getTransaction(null);
+        fakeDataForTestGetBills();
+
+        Page<BillResponse> billResponses = billService2.getBills(
+                null,
+                "c",
+                5,
+                2024,
+                "ASC",
+                PageRequest.of(0, 1000000));
+
+        showResultAfterFilter(billResponses);
+
+        // compare size bills in db not filter
+        assertEquals(2, billResponses.getContent().size());
+
+        List<BillResponse> bills = billResponses.getContent();
+        assertEquals(BigDecimal.valueOf(2), bills.get(0).getPrice());
+        assertEquals("phúc", bills.get(0).getCustomerName());
+
+        assertEquals(BigDecimal.valueOf(3), bills.get(1).getPrice());
+        assertEquals("ngọc", bills.get(1).getCustomerName());
+
+        // rollback
+        this.transactionManager.rollback(transaction);
+    }
+
+    @Test
+    @DisplayName("Lấy danh sách bill theo tháng 5 của những người dùng có tên gồm chữ cái #c " +
+            "và sắp xếp theo thứ tự giá giảm dần " +
+            "và trạng thái đóng tiền là đã đóng")
+    @Transactional
+    public void testGetBillsV15(){
+        TransactionStatus transaction = this.transactionManager.getTransaction(null);
+        fakeDataForTestGetBills();
+
+        Page<BillResponse> billResponses = billService2.getBills(
+                "DONE",
+                "c",
+                5,
+                2024,
+                "DESC",
+                PageRequest.of(0, 1000000));
+
+        showResultAfterFilter(billResponses);
+
+        // compare size bills in db not filter
+        assertEquals(0, billResponses.getContent().size());
+
+//        List<BillResponse> bills = billResponses.getContent();
+//        assertEquals(BigDecimal.valueOf(3), bills.get(0).getPrice());
+//        assertEquals("ngọc", bills.get(0).getCustomerName());
+//
+//        assertEquals(BigDecimal.valueOf(2), bills.get(1).getPrice());
+//        assertEquals("phúc", bills.get(1).getCustomerName());
+
+        // rollback
+        this.transactionManager.rollback(transaction);
+    }
+
+    @Test
+    @DisplayName("Lấy danh sách bill theo tháng 5 của những người dùng có tên gồm chữ cái #p " +
+            "và sắp xếp theo thứ tự giá giảm dần " +
+            "và trạng thái đóng tiền là đã đóng")
+    @Transactional
+    public void testGetBillsV16(){
+        TransactionStatus transaction = this.transactionManager.getTransaction(null);
+        fakeDataForTestGetBills();
+
+        Page<BillResponse> billResponses = billService2.getBills(
+                "DONE",
+                "p",
+                5,
+                2024,
+                "DESC",
+                PageRequest.of(0, 1000000));
+
+        showResultAfterFilter(billResponses);
+
+        // compare size bills in db not filter
+        assertEquals(0, billResponses.getContent().size());
+
+//        List<BillResponse> bills = billResponses.getContent();
+//        assertEquals(BigDecimal.valueOf(2), bills.get(0).getPrice());
+//        assertEquals("phúc", bills.get(0).getCustomerName());
+//
+//        assertEquals(BigDecimal.valueOf(1), bills.get(1).getPrice());
+//        assertEquals("phú", bills.get(1).getCustomerName());
+
+        // rollback
+        this.transactionManager.rollback(transaction);
+    }
+
+    @Test
+    @DisplayName("Lấy danh sách bill theo tháng 5 của những người dùng có tên gồm chữ cái #c " +
+            "và sắp xếp theo thứ tự giá giảm dần " +
+            "và trạng thái đóng tiền là chưa đóng")
+    @Transactional
+    public void testGetBillsV17(){
+        TransactionStatus transaction = this.transactionManager.getTransaction(null);
+        fakeDataForTestGetBills();
+
+        Page<BillResponse> billResponses = billService2.getBills(
+                "YET",
+                "c",
+                5,
+                2024,
+                "DESC",
+                PageRequest.of(0, 1000000));
+
+        showResultAfterFilter(billResponses);
+
+        // compare size bills in db not filter
+        assertEquals(2, billResponses.getContent().size());
+
+        List<BillResponse> bills = billResponses.getContent();
+        assertEquals(BigDecimal.valueOf(3), bills.get(0).getPrice());
+        assertEquals("ngọc", bills.get(0).getCustomerName());
+
+        assertEquals(BigDecimal.valueOf(2), bills.get(1).getPrice());
+        assertEquals("phúc", bills.get(1).getCustomerName());
+
+        // rollback
+        this.transactionManager.rollback(transaction);
+    }
+
+    @Test
+    @DisplayName("Lấy danh sách bill theo tháng 5 của những người dùng có tên gồm chữ cái #c " +
+            "và sắp xếp theo thứ tự giá tăng dần " +
+            "và trạng thái đóng tiền là chưa đóng")
+    @Transactional
+    public void testGetBillsV18(){
+        TransactionStatus transaction = this.transactionManager.getTransaction(null);
+        fakeDataForTestGetBills();
+
+        Page<BillResponse> billResponses = billService2.getBills(
+                "YET",
+                "c",
+                5,
+                2024,
+                "DESC",
+                PageRequest.of(0, 1000000));
+
+        showResultAfterFilter(billResponses);
+
+        // compare size bills in db not filter
+        assertEquals(2, billResponses.getContent().size());
+
+        List<BillResponse> bills = billResponses.getContent();
+        assertEquals(BigDecimal.valueOf(3), bills.get(0).getPrice());
+        assertEquals("ngọc", bills.get(0).getCustomerName());
+
+        assertEquals(BigDecimal.valueOf(2), bills.get(1).getPrice());
+        assertEquals("phúc", bills.get(1).getCustomerName());
+
+        // rollback
+        this.transactionManager.rollback(transaction);
+    }
+
+    @Test
+    @DisplayName("Lấy danh sách bill theo tháng 4 của những người dùng có tên gồm chữ cái #p")
+    @Transactional
+    public void testGetBillsV19(){
+        TransactionStatus transaction = this.transactionManager.getTransaction(null);
+        fakeDataForTestGetBills();
+
+        Page<BillResponse> billResponses = billService2.getBills(
+                null,
+                "p",
+                4,
+                2024,
+                null,
+                PageRequest.of(0, 1000000));
+
+        showResultAfterFilter(billResponses);
+
+        // compare size bills in db not filter
+        assertEquals(2, billResponses.getContent().size());
+
+        // rollback
+        this.transactionManager.rollback(transaction);
+    }
+
+    @Test
+    @DisplayName("Lấy danh sách bill theo tháng 4 của những người dùng có trạng thái đã đóng tiền")
+    @Transactional
+    public void testGetBillsV20(){
+        TransactionStatus transaction = this.transactionManager.getTransaction(null);
+        fakeDataForTestGetBills();
+
+        Page<BillResponse> billResponses = billService2.getBills(
+                "DONE",
+                null,
+                4,
+                2024,
+                null,
+                PageRequest.of(0, 1000000));
+
+        showResultAfterFilter(billResponses);
+
+        // compare size bills in db not filter
+        assertEquals(1, billResponses.getContent().size());
+        List<BillResponse> bills = billResponses.getContent();
+        assertEquals(BigDecimal.valueOf(1), bills.get(0).getPrice());
+        assertEquals("phú", bills.get(0).getCustomerName());
+
         // rollback
         this.transactionManager.rollback(transaction);
     }
