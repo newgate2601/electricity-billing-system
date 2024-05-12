@@ -16,7 +16,7 @@ public class WaterServiceResponse {
 
     private String name;
 
-    private String description;
+    private String des;
 
     private List<TieredPricingEntity> prices;
 

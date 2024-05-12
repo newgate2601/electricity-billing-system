@@ -1,16 +1,29 @@
 package com.example.electricitybillingsystem.vo.request;
 
-import com.example.electricitybillingsystem.model.TieredPricingEntity;
 import lombok.Builder;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Data
 @Builder
 public class UpdatePriceRequest {
 
-    private List<TieredPricingEntity> currentPrices;
+    private Long electricityServiceId;
 
-    private List<TieredPricingEntity> newPrices;
+    private List<Price> newPrices;
+
+    @Data
+    @Builder
+    public static class Price {
+
+        private Long startNumber;
+
+        private Long endNumber;
+
+        private BigDecimal value;
+
+    }
+
 }

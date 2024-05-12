@@ -28,14 +28,14 @@ class TieredPricingServiceTest {
     @DisplayName("Cập nhât giá tiền - chỉ có giá tiền mới")
     void updatePrice() {
         Long electricityServiceId = 1L;
-        List<TieredPricingEntity> newPrices = List.of(
-                TieredPricingEntity.builder().startNumber(0L).endNumber(10L).value(BigDecimal.valueOf(7500)).electricityServiceId(electricityServiceId).build(),
-                TieredPricingEntity.builder().startNumber(10L).endNumber(20L).value(BigDecimal.valueOf(8800)).electricityServiceId(electricityServiceId).build(),
-                TieredPricingEntity.builder().startNumber(20L).endNumber(30L).value(BigDecimal.valueOf(12000)).electricityServiceId(electricityServiceId).build(),
-                TieredPricingEntity.builder().startNumber(30L).value(BigDecimal.valueOf(24000)).electricityServiceId(electricityServiceId).build()
+        List<UpdatePriceRequest.Price> newPrices = List.of(
+                UpdatePriceRequest.Price.builder().startNumber(0L).endNumber(10L).value(BigDecimal.valueOf(7500)).build(),
+                UpdatePriceRequest.Price.builder().startNumber(10L).endNumber(20L).value(BigDecimal.valueOf(8800)).build(),
+                UpdatePriceRequest.Price.builder().startNumber(20L).endNumber(30L).value(BigDecimal.valueOf(12000)).build(),
+                UpdatePriceRequest.Price.builder().startNumber(30L).value(BigDecimal.valueOf(24000)).build()
         );
         UpdatePriceRequest request = UpdatePriceRequest.builder()
-                .currentPrices(List.of())
+                .electricityServiceId(electricityServiceId)
                 .newPrices(newPrices)
                 .build();
 
