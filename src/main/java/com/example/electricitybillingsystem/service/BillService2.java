@@ -75,6 +75,7 @@ public class BillService2 {
             if (customerEntityMap.containsKey(billEntity.getCustomerId())) {
                 billResponse.setCustomerName(customerEntityMap.get(billEntity.getCustomerId()).getName());
             }
+            billResponse.setStatus(billEntity.getStatusValue());
             return billResponse;
         });
     }
