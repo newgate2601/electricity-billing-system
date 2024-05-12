@@ -9,6 +9,7 @@ import com.example.electricitybillingsystem.model.*;
 import com.example.electricitybillingsystem.repository.*;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +18,7 @@ import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -35,8 +37,24 @@ public class BillService {
     private final TieredPricingHistoryService tieredPricingHistoryService;
 
     @Transactional(readOnly = true)
-    public Page<BillAfterPaymentResponse> getAllBillOverTime(Pageable pageable) {
+    public Page<BillAfterPaymentResponse> getAllBillOverTime(Pageable pageable, String startTime, String endTime) {
         Page<BillEntity> billEntities = billRepository.findBillOverLimitedTime(pageable);
+
+        List<BillEntity> filteredBillEntities = new ArrayList<>();
+        if (!startTime.equals("") && !endTime.equals("")) {
+            filteredBillEntities =
+                    billEntities.stream().filter(bill -> !bill.getSubmitTime().isBefore(OffsetDateTime.parse(startTime)) && !bill.getSubmitTime().isAfter(OffsetDateTime.parse(endTime))).collect(Collectors.toList());
+        } else if (startTime.equals("") && !endTime.equals("")) {
+            filteredBillEntities =
+                    billEntities.stream().filter(bill -> bill.getSubmitTime().isBefore(OffsetDateTime.parse(endTime))).collect(Collectors.toList());
+        } else if (!startTime.equals("") && endTime.equals("")) {
+            filteredBillEntities =
+                    billEntities.stream().filter(bill -> bill.getSubmitTime().isAfter(OffsetDateTime.parse(startTime))).collect(Collectors.toList());
+        }
+        if(filteredBillEntities.size()!=0){
+            Page<BillEntity> filteredPage = new PageImpl<>(filteredBillEntities, billEntities.getPageable(), billEntities.getTotalElements());
+            billEntities = filteredPage;
+        }
         return billEntities.map(
                 billEntity -> {
                     ApartmentEntity apartmentEntity = apartmentRepository.findById(billEntity.getApartmentId())
@@ -134,8 +152,25 @@ public class BillService {
     }
 
     @Transactional(readOnly = true)
-    public Page<BillAfterPaymentResponse> getAllBillAfterPayment(Pageable pageable) {
+    public Page<BillAfterPaymentResponse> getAllBillAfterPayment(Pageable pageable, String startTime, String endTime) {
         Page<BillEntity> billEntities = billRepository.findAllByStatus(true, pageable);
+
+        List<BillEntity> filteredBillEntities = new ArrayList<>();
+        if (!startTime.equals("") && !endTime.equals("")) {
+            filteredBillEntities =
+                     billEntities.stream().filter(bill -> !bill.getSubmitTime().isBefore(OffsetDateTime.parse(startTime)) && !bill.getSubmitTime().isAfter(OffsetDateTime.parse(endTime))).collect(Collectors.toList());
+        } else if (startTime.equals("") && !endTime.equals("")) {
+            filteredBillEntities =
+                    billEntities.stream().filter(bill -> bill.getSubmitTime().isBefore(OffsetDateTime.parse(endTime))).collect(Collectors.toList());
+        } else if (!startTime.equals("") && endTime.equals("")) {
+            filteredBillEntities =
+                    billEntities.stream().filter(bill -> bill.getSubmitTime().isAfter(OffsetDateTime.parse(startTime))).collect(Collectors.toList());
+        }
+        if(filteredBillEntities.size()!=0){
+            Page<BillEntity> filteredPage = new PageImpl<>(filteredBillEntities, billEntities.getPageable(), billEntities.getTotalElements());
+            billEntities = filteredPage;
+        }
+
         return billEntities.map(
                 billEntity -> {
                     ApartmentEntity apartmentEntity = apartmentRepository.findById(billEntity.getApartmentId())
@@ -186,7 +221,7 @@ public class BillService {
     public List<DetailBillResponse> intoMoney(Long billId) {
         List<DetailBillResponse> detailBillResponses = new ArrayList<>();
         Long timelineStartNumber = billRepository.findById(billId).get().getStartNumber();
-        Long timelineEndNumber  = billRepository.findById(billId).get().getEndNumber();
+        Long timelineEndNumber = billRepository.findById(billId).get().getEndNumber();
         Long usedWater = timelineEndNumber - timelineStartNumber;
         detailBillResponses.add(DetailBillResponse.builder()
                 .oldNumber(timelineStartNumber)
@@ -250,7 +285,7 @@ public class BillService {
         return detailBillResponses;
     }
 
-    private String convertOffsetToDate(OffsetDateTime offsetDateTime){
+    private String convertOffsetToDate(OffsetDateTime offsetDateTime) {
 
         // Define a formatter
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");

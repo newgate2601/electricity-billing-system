@@ -66,7 +66,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
+          <!-- <tr>
             <th class="info-1" scope="row">1</th>
             <td class="info-1">Nguyễn</td>
             <td class="info-1">12345</td>
@@ -83,7 +83,7 @@
                 style="width: 25px; height: 25px"
               />
             </td>
-          </tr>
+          </tr> -->
         </tbody>
         <tfoot>
           <tr>
@@ -183,87 +183,97 @@
         });
 
         // Lấy dữ liệu ban đầu
-        fetch(
-          "http://localhost:8080/api/v1/bill/list/after?page=0&size=10&sort=string"
-        )
-          .then((response) => response.json())
-          .then((data) => {
-            // Xử lý dữ liệu và thêm vào bảng
-            data.content.forEach((item, index) => {
-              var row = `<tr>
+        function fetchApi(api) {
+          fetch(api, {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            },
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              // Xử lý dữ liệu và thêm vào bảng
+              data.content.forEach((item, index) => {
+                var row = `<tr>
                 <td class='infor-${index}'>${item.id}</td>
                 <td class='infor-${index}'>${
-                item.apartment.customerEntity.name
-              }</td>
+                  item.apartment.customerEntity.name
+                }</td>
                 <td class='infor-${index}'>${item.apartment.codeHome}</td>
                 <td class='infor-${index}'>${
-                item.apartment.addressEntity.homeNumber
-              }, ${item.apartment.addressEntity.streetName}, ${
-                item.apartment.addressEntity.ward
-              }, ${item.apartment.addressEntity.district}, ${
-                item.apartment.addressEntity.city
-              }</td>
+                  item.apartment.addressEntity.homeNumber
+                }, ${item.apartment.addressEntity.streetName}, ${
+                  item.apartment.addressEntity.ward
+                }, ${item.apartment.addressEntity.district}, ${
+                  item.apartment.addressEntity.city
+                }</td>
                 <td class='infor-${index}'>${item.startNumber}</td>
                 <td class='infor-${index}'>${item.endNumber}</td>
                 <td class='infor-${index}'>${
-                item.endNumber - item.startNumber
-              }</td>
+                  item.endNumber - item.startNumber
+                }</td>
+                <td class='infor-${index}' style = "white-space: nowrap"  >${
+                  item?.submitTimeResponse
+                }</td>
                 <td class='infor-${index}'>${item.price}</td>
                 <td ><input type="checkbox" class="select-checkbox" style="width: 25px; height: 25px" /></td>
             </tr>`;
 
-              const option = document.createElement("option");
-              option.textContent = item.apartment.addressEntity.district;
-              option.value = item.apartment.addressEntity.district;
-              districtSelect.appendChild(option);
-              table.row.add($(row)).draw();
-            });
-
-            return data;
-          })
-          .then((data) => {
-            data.content.forEach((item, index) => {
-              $(`.infor-${index}`).click(function () {
-                let vatPrice = 0;
-                let bvmtPrice = 0;
-
-                // Duyệt qua mảng taxs và lấy giá trị của thuế TAX và BVMT
-                item.taxs.forEach((tax) => {
-                  if (tax.name === "VAT") {
-                    vatPrice += tax.price;
-                  } else if (tax.name === "BVMT") {
-                    bvmtPrice += tax.price;
-                  }
-                });
-
-                const customer = {
-                  ...item.apartment?.customerEntity,
-                  codeHome: item.apartment.codeHome,
-                  billCode: item.billCode,
-                  submitTime: item.submitTime,
-                  limitedTime: item.limitedTimeResponse,
-                  vatPrice: vatPrice, // Giá trị của thuế TAX
-                  bvmtPrice: bvmtPrice, // Giá trị của thuế BVMT
-                };
-                event.stopPropagation();
-                sessionStorage.setItem("customer", JSON.stringify(customer));
-                window.location.replace(
-                  "detail-info.html?billId=" + encodeURIComponent(item.id)
-                );
+                selectElement.selectedIndex = 0;
+                const option = document.createElement("option");
+                option.textContent = item.apartment.addressEntity.district;
+                option.value = item.apartment.addressEntity.district;
+                districtSelect.appendChild(option);
+                table.row.add($(row)).draw();
               });
-            });
-          })
-          .catch((error) => console.error("Error:", error));
 
+              return data;
+            })
+            .then((data) => {
+              data.content.forEach((item, index) => {
+                $(`.infor-${index}`).click(function () {
+                  let vatPrice = 0;
+                  let bvmtPrice = 0;
+
+                  // Duyệt qua mảng taxs và lấy giá trị của thuế TAX và BVMT
+                  item.taxs.forEach((tax) => {
+                    if (tax.name === "VAT") {
+                      vatPrice += tax.price;
+                    } else if (tax.name === "BVMT") {
+                      bvmtPrice += tax.price;
+                    }
+                  });
+
+                  const customer = {
+                    ...item.apartment?.customerEntity,
+                    codeHome: item.apartment.codeHome,
+                    billCode: item.billCode,
+                    submitTime: item.submitTime,
+                    limitedTime: item.limitedTimeResponse,
+                    vatPrice: vatPrice, // Giá trị của thuế TAX
+                    bvmtPrice: bvmtPrice, // Giá trị của thuế BVMT
+                  };
+                  event.stopPropagation();
+                  sessionStorage.setItem("customer", JSON.stringify(customer));
+                  window.location.replace(
+                    "detail-info.html?billId=" + encodeURIComponent(item.id)
+                  );
+                });
+              });
+            })
+            .catch((error) => console.error("Error:", error));
+        }
+        fetchApi(
+          "http://localhost:8080/api/v1/bill/list/after?page=0&size=0&sort=string&startTime=&endTime="
+        );
         $("#search-btn").click(function () {
-          var startTime = $("#start-time").val();
-          var endTime = $("#end-time").val();
-
-          // Kiểm tra xem các giá trị đã được lấy chưa
-          console.log("Thời gian bắt đầu:", startTime);
-          console.log("Thời gian kết thúc:", endTime);
-
-          // Tiếp tục xử lý dữ liệu ở đây
+          const startTime = $("#start-time").val();
+          const endTime = $("#end-time").val();
+          if (startTime >= endTime) {
+            alert("Chọn thời gian không hợp lệ");
+          }
+          fetchApi(
+            `http://localhost:8080/api/v1/bill/list/after?page=0&size=0&sort=string&startTime=${startTime}&endTime=${endTime}`
+          );
         });
 
         // Xử lý sự kiện khi checkbox "Chọn tất cả" được thay đổi
