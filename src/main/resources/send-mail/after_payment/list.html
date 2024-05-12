@@ -1,278 +1,355 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bootstrap Table</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <!-- CSS DataTables -->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css"
+    />
+    <style>
+      /* Custom CSS for table */
+      .dataTables_wrapper {
+        overflow-x: auto;
+      }
+    </style>
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bootstrap Table</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
-  <!-- CSS DataTables -->
-  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css" />
-  <style>
-    /* Custom CSS for table */
-    .dataTables_wrapper {
-      overflow-x: auto;
-    }
-  </style>
-</head>
+  <body>
+    <div class="container mt-5">
+      <h3>Thông báo hóa đơn sau khi đóng</h3>
+      <h5><span>Trạng thái:</span> Đã thanh toán</h5>
 
-<body>
-  <div class="container mt-5">
-    <h3>Thông báo hóa đơn sau khi đóng</h3>
-    <div class="form-group">
-      <label for="start-time">Thời gian bắt đầu:</label>
-      <input type="datetime-local" id="start-time" class="form-control" />
+      <div class="form-group">
+        <label for="start-time">Thời gian bắt đầu:</label>
+        <input type="date" id="start-time" class="form-control" />
+      </div>
+      <div class="form-group">
+        <label for="end-time">Thời gian kết thúc:</label>
+        <input type="date" id="end-time" class="form-control" />
+      </div>
+      <button type="button" class="btn btn-primary" id="search-btn">
+        Lọc thời gian
+      </button>
+      <div class="form-group mt-3">
+        <label for="districtSelect">Chọn phường:</label>
+        <select class="form-control" id="districtSelect"></select>
+      </div>
+      <div class="form-group d-flex align-center my-4">
+        <input
+          type="checkbox"
+          id="select-all"
+          style="width: 25px; height: 25px"
+        />
+        Chọn tất cả
+      </div>
+      <table id="myTable" class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Tên hộ gia đình</th>
+            <th scope="col">Mã hộ gia đình</th>
+            <th scope="col" style="width: 22%; text-align: center">Địa chỉ</th>
+            <th scope="col">Số nước cũ(m<sup>3</sup>)</th>
+            <th scope="col">Số nước mới(m<sup>3</sup>)</th>
+            <th scope="col">Số nước sử dụng(m<sup>3</sup>)</th>
+            <th scope="col">Ngày đóng</th>
+            <th scope="col">Thành tiền(đồng)</th>
+            <th scope="col">Select</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th class="info-1" scope="row">1</th>
+            <td class="info-1">Nguyễn</td>
+            <td class="info-1">12345</td>
+            <td class="info-1">255, nguyễn văn trỗi</td>
+            <td class="info-1">100</td>
+            <td class="info-1">150</td>
+            <td class="info-1">50</td>
+            <td class="info-1">2024-04-04</td>
+            <td class="info-1">50000</td>
+            <td>
+              <input
+                type="checkbox"
+                class="select-checkbox"
+                style="width: 25px; height: 25px"
+              />
+            </td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <th colspan="4">Tổng</th>
+            <th id="old_water"></th>
+            <th id="new_water"></th>
+            <th id="final_water"></th>
+            <th></th>
+            <th id="total_amount"></th>
+            <th></th>
+          </tr>
+        </tfoot>
+      </table>
+      <button
+        type="button"
+        class="btn btn-primary my-4"
+        id="submit-btn"
+        data-toggle="modal"
+        data-target="#confirmModal"
+      >
+        Gửi
+      </button>
     </div>
-    <div class="form-group">
-      <label for="end-time">Thời gian kết thúc:</label>
-      <input type="datetime-local" id="end-time" class="form-control" />
-    </div>
-    <button type="button" class="btn btn-primary" id="search-btn">
-      Lọc thời gian
-    </button>
-    <div class="form-group d-flex align-center my-4">
-      <input type="checkbox" id="select-all" style="width: 25px; height: 25px" />
-      Chọn tất cả
-    </div>
-    <table id="myTable" class="table table-striped">
-      <thead>
-        <tr>
-          <th scope="col">#</th>
-          <th scope="col">Tên hộ gia đình</th>
-          <th scope="col">Mã hộ gia đình</th>
-          <th scope="col">Địa chỉ</th>
-          <th scope="col">Số nước cũ(m<sup>3</sup>)</th>
-          <th scope="col">Số nước mới(m<sup>3</sup>)</th>
-          <th scope="col">Số nước sử dụng(m<sup>3</sup>)</th>
-          <th scope="col">Ngày đóng</th>
-          <th scope="col">Thành tiền(đồng)</th>
-          <th scope="col">Trạng thái</th>
-          <th scope="col">Select</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- <tr>
-          <th class="info-1" scope="row">1</th>
-          <td class="info-1">Nguyễn</td>
-          <td class="info-1">12345</td>
-          <td class="info-1">255, nguyễn văn trỗi</td>
-          <td class="info-1">100</td>
-          <td class="info-1">150</td>
-          <td class="info-1">50</td>
-          <td class="info-1">2024-04-04</td>
-          <td class="info-1">50000</td>
-          <td class="info-1">Đã thanh toán</td>
-          <td>
-            <input type="checkbox" class="select-checkbox" style="width: 25px; height: 25px" />
-          </td>
-        </tr> -->
-      </tbody>
-      <tfoot>
-        <tr>
-          <th colspan="4">Tổng</th>
-          <th id="old_water"></th>
-          <th id="new_water"></th>
-          <th id="final_water"></th>
-          <th></th>
-          <th id="total_amount"></th>
-          <th></th>
-          <th></th>
-        </tr>
-      </tfoot>
-    </table>
-    <button type="button" class="btn btn-primary my-4" id="submit-btn" data-toggle="modal" data-target="#confirmModal">
-      Gửi
-    </button>
-  </div>
 
-  <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="confirmModalLabel">Xác nhận gửi</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          Bạn có chắc chắn muốn gửi hóa đơn này không?
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">
-            Hủy
-          </button>
-          <button type="button" class="btn btn-primary btn_confirm">
-            Xác nhận
-          </button>
+    <div
+      class="modal fade"
+      id="confirmModal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="confirmModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="confirmModalLabel">Xác nhận gửi</h5>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            Bạn có chắc chắn muốn gửi hóa đơn này không?
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Hủy
+            </button>
+            <button type="button" class="btn btn-primary btn_confirm">
+              Xác nhận
+            </button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-  <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-  <script>
+    <script>
+      $(document).ready(function () {
+        var table = $("#myTable").DataTable({
+          paging: true,
+          pageLength: 10,
+          searching: true,
+          ordering: true,
+          info: true,
+          order: [[0, "asc"]],
+          drawCallback: function () {
+            calculateSum();
+          },
+          language: {
+            url: "https://cdn.datatables.net/plug-ins/1.10.24/i18n/Vietnamese.json",
+          },
+        });
 
-    $(document).ready(function () {
-      var table = $("#myTable").DataTable({
-        paging: true,
-        pageLength: 10,
-        searching: true,
-        ordering: true,
-        info: true,
-        order: [[0, "asc"]],
-        drawCallback: function () {
-          calculateSum();
-        },
-        language: {
-          url: "https://cdn.datatables.net/plug-ins/1.10.24/i18n/Vietnamese.json",
-        },
-      });
+        const districtSelect = document.getElementById("districtSelect");
+        const option = document.createElement("option");
+        option.textContent = "chọn tất cả";
+        option.value = "";
+        districtSelect.appendChild(option);
 
-      // Lấy dữ liệu ban đầu
-      fetch('http://localhost:8080/api/v1/bill/list/after?page=0&size=10&sort=string')
-        .then(response => response.json())
-        .then(data => {
+        $("#districtSelect").change(function () {
+          var selectedDistrict = $(this).val();
+          // Thực hiện các hành động dựa trên quận được chọn
+          table.column(3).search(selectedDistrict).draw();
+        });
 
-          // Xử lý dữ liệu và thêm vào bảng
-          data.content.forEach((item, index) => {
-            var row = `<tr>
+        // Lấy dữ liệu ban đầu
+        fetch(
+          "http://localhost:8080/api/v1/bill/list/after?page=0&size=10&sort=string"
+        )
+          .then((response) => response.json())
+          .then((data) => {
+            // Xử lý dữ liệu và thêm vào bảng
+            data.content.forEach((item, index) => {
+              var row = `<tr>
                 <td class='infor-${index}'>${item.id}</td>
-                <td class='infor-${index}'>${item.apartment.customerEntity.name}</td>
+                <td class='infor-${index}'>${
+                item.apartment.customerEntity.name
+              }</td>
                 <td class='infor-${index}'>${item.apartment.codeHome}</td>
-                <td class='infor-${index}'>${item.apartment.addressEntity.homeNumber}, ${item.apartment.addressEntity.streetName}, ${item.apartment.addressEntity.ward}, ${item.apartment.addressEntity.district}, ${item.apartment.addressEntity.city}</td>
+                <td class='infor-${index}'>${
+                item.apartment.addressEntity.homeNumber
+              }, ${item.apartment.addressEntity.streetName}, ${
+                item.apartment.addressEntity.ward
+              }, ${item.apartment.addressEntity.district}, ${
+                item.apartment.addressEntity.city
+              }</td>
                 <td class='infor-${index}'>${item.startNumber}</td>
                 <td class='infor-${index}'>${item.endNumber}</td>
-                <td class='infor-${index}'>${item.endNumber - item.startNumber}</td>
-                <td class='infor-${index}' style = "white-space: nowrap"  >${item?.submitTimeResponse}</td>
+                <td class='infor-${index}'>${
+                item.endNumber - item.startNumber
+              }</td>
                 <td class='infor-${index}'>${item.price}</td>
-                <td class='infor-${index}'>${item.status ? 'Đã thanh toán' : 'Chưa thanh toán'}</td>
-                <td class='infor-${index}'><input type="checkbox" class="select-checkbox" style="width: 25px; height: 25px" /></td>
+                <td ><input type="checkbox" class="select-checkbox" style="width: 25px; height: 25px" /></td>
             </tr>`;
-            table.row.add($(row)).draw();
-          });
 
-          return data;
-        }).then((data) => {
-          console.log(data.content)
-          data.content.forEach((item, index) => {
-            $(`.infor-${index}`).click(function () {
-              let vatPrice = 0;
-              let bvmtPrice = 0;
-
-              // Duyệt qua mảng taxs và lấy giá trị của thuế TAX và BVMT
-              item.taxs.forEach(tax => {
-                if (tax.name === 'VAT') {
-                  vatPrice += tax.price;
-                } else if (tax.name === 'BVMT') {
-                  bvmtPrice += tax.price;
-                }
-              });
-
-              const customer = {
-                ...item.apartment?.customerEntity, codeHome: item.apartment.codeHome,
-                billCode: item.billCode, submitTime: item.submitTime, limitedTime: item.limitedTimeResponse,
-                vatPrice: vatPrice, // Giá trị của thuế TAX
-                bvmtPrice: bvmtPrice // Giá trị của thuế BVMT
-              };
-              event.stopPropagation()
-              sessionStorage.setItem('customer', JSON.stringify(customer))
-              window.location.replace("detail-info.html?billId=" + encodeURIComponent(item.id))
+              const option = document.createElement("option");
+              option.textContent = item.apartment.addressEntity.district;
+              option.value = item.apartment.addressEntity.district;
+              districtSelect.appendChild(option);
+              table.row.add($(row)).draw();
             });
-          });
-        })
-        .catch((error) => console.error("Error:", error));
 
-      // Xử lý sự kiện khi checkbox "Chọn tất cả" được thay đổi
-      $("#select-all").change(function () {
-        $(".select-checkbox").prop("checked", $(this).prop("checked"));
-      });
-
-      // Xử lý sự kiện khi các checkbox trong bảng được thay đổi
-      $(".select-checkbox").change(function () {
-        // Nếu tất cả các checkbox được chọn, kiểm tra checkbox "Chọn tất cả"
-        $("#select-all").prop(
-          "checked",
-          $(".select-checkbox:checked").length ===
-          $(".select-checkbox").length
-        );
-      });
-
-
-
-      // Xử lý sự kiện khi nút gửi được nhấn
-      $("#submit-btn").click(function () {
-        $("#confirmModal").modal("show");
-      });
-
-      // Xử lý sự kiện khi nút xác nhận gửi được nhấn
-      $(".btn_confirm").click(function () {
-        var selectedItems = [];
-        $(".select-checkbox:checked").each(function () {
-          selectedItems.push($(this).closest("tr").find("td:eq(0)").text()); // Lấy ID của hóa đơn
-        });
-
-        // Tạo URL API với các billIds như query parameters
-        var apiUrl = "http://localhost:8080/api/v1/sendEmail-after?";
-        selectedItems.forEach(function (billId, index) {
-          if (index > 0) {
-            apiUrl += "&";
-          }
-          apiUrl += "billIds=" + encodeURIComponent(billId);
-        });
-
-        // Gửi yêu cầu đến API
-        fetch(apiUrl, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          }
-        })
-          .then(response => {
-            if (!response.ok) {
-              throw new Error("Đã xảy ra lỗi khi gửi tin nhắn. Vui lòng thử lại sau.");
-            }
-            alert("Email đã được gửi thành công!");
+            return data;
           })
-          .catch(error => {
-            alert(error.message);
-            console.error(error);
-          });
+          .then((data) => {
+            data.content.forEach((item, index) => {
+              $(`.infor-${index}`).click(function () {
+                let vatPrice = 0;
+                let bvmtPrice = 0;
 
-        $("#confirmModal").modal("hide");
-      });
+                // Duyệt qua mảng taxs và lấy giá trị của thuế TAX và BVMT
+                item.taxs.forEach((tax) => {
+                  if (tax.name === "VAT") {
+                    vatPrice += tax.price;
+                  } else if (tax.name === "BVMT") {
+                    bvmtPrice += tax.price;
+                  }
+                });
 
-      // Hàm tính tổng tiền
-      function calculateSum() {
-        var sumSoNuocCu = 0;
-        var sumSoNuocMoi = 0;
-        var sumSoNuocSuDung = 0;
-        var sumThanhTien = 0;
+                const customer = {
+                  ...item.apartment?.customerEntity,
+                  codeHome: item.apartment.codeHome,
+                  billCode: item.billCode,
+                  submitTime: item.submitTime,
+                  limitedTime: item.limitedTimeResponse,
+                  vatPrice: vatPrice, // Giá trị của thuế TAX
+                  bvmtPrice: bvmtPrice, // Giá trị của thuế BVMT
+                };
+                event.stopPropagation();
+                sessionStorage.setItem("customer", JSON.stringify(customer));
+                window.location.replace(
+                  "detail-info.html?billId=" + encodeURIComponent(item.id)
+                );
+              });
+            });
+          })
+          .catch((error) => console.error("Error:", error));
 
-        $("#myTable tbody tr").each(function () {
-          sumSoNuocCu += parseFloat($(this).find("td:eq(3)").text());
-          sumSoNuocMoi += parseFloat($(this).find("td:eq(4)").text());
-          sumSoNuocSuDung += parseFloat($(this).find("td:eq(5)").text());
-          sumThanhTien += parseFloat($(this).find("td:eq(8)").text());
+        $("#search-btn").click(function () {
+          var startTime = $("#start-time").val();
+          var endTime = $("#end-time").val();
+
+          // Kiểm tra xem các giá trị đã được lấy chưa
+          console.log("Thời gian bắt đầu:", startTime);
+          console.log("Thời gian kết thúc:", endTime);
+
+          // Tiếp tục xử lý dữ liệu ở đây
         });
 
-        sumSoNuocCu = isNaN(sumSoNuocCu) ? 0 : sumSoNuocCu;
-        sumSoNuocMoi = isNaN(sumSoNuocMoi) ? 0 : sumSoNuocMoi;
-        sumSoNuocSuDung = isNaN(sumSoNuocSuDung) ? 0 : sumSoNuocSuDung;
-        sumThanhTien = isNaN(sumThanhTien) ? 0 : sumThanhTien;
+        // Xử lý sự kiện khi checkbox "Chọn tất cả" được thay đổi
+        $("#select-all").change(function () {
+          $(".select-checkbox").prop("checked", $(this).prop("checked"));
+        });
 
-        $("#old_water").text(sumSoNuocCu.toFixed(2));
-        $("#new_water").text(sumSoNuocMoi.toFixed(2));
-        $("#final_water").text(sumSoNuocSuDung.toFixed(2));
-        $("#total_amount").text(sumThanhTien.toFixed(2));
-      }
-    });
+        // Xử lý sự kiện khi các checkbox trong bảng được thay đổi
+        $(".select-checkbox").change(function () {
+          // Nếu tất cả các checkbox được chọn, kiểm tra checkbox "Chọn tất cả"
+          $("#select-all").prop(
+            "checked",
+            $(".select-checkbox:checked").length ===
+              $(".select-checkbox").length
+          );
+        });
 
-  </script>
-</body>
+        // Xử lý sự kiện khi nút gửi được nhấn
+        $("#submit-btn").click(function () {
+          $("#confirmModal").modal("show");
+        });
 
+        // Xử lý sự kiện khi nút xác nhận gửi được nhấn
+        $(".btn_confirm").click(function () {
+          var selectedItems = [];
+          $(".select-checkbox:checked").each(function () {
+            selectedItems.push($(this).closest("tr").find("td:eq(0)").text()); // Lấy ID của hóa đơn
+          });
+
+          // Tạo URL API với các billIds như query parameters
+          var apiUrl = "http://localhost:8080/api/v1/sendEmail-after?";
+          selectedItems.forEach(function (billId, index) {
+            if (index > 0) {
+              apiUrl += "&";
+            }
+            apiUrl += "billIds=" + encodeURIComponent(billId);
+          });
+
+          // Gửi yêu cầu đến API
+          fetch(apiUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          })
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error(
+                  "Đã xảy ra lỗi khi gửi tin nhắn. Vui lòng thử lại sau."
+                );
+              }
+              alert("Email đã được gửi thành công!");
+            })
+            .catch((error) => {
+              alert(error.message);
+              console.error(error);
+            });
+
+          $("#confirmModal").modal("hide");
+        });
+
+        // Hàm tính tổng tiền
+        function calculateSum() {
+          var sumSoNuocCu = 0;
+          var sumSoNuocMoi = 0;
+          var sumSoNuocSuDung = 0;
+          var sumThanhTien = 0;
+
+          $("#myTable tbody tr").each(function () {
+            sumSoNuocCu += parseFloat($(this).find("td:eq(3)").text());
+            sumSoNuocMoi += parseFloat($(this).find("td:eq(4)").text());
+            sumSoNuocSuDung += parseFloat($(this).find("td:eq(5)").text());
+            sumThanhTien += parseFloat($(this).find("td:eq(8)").text());
+          });
+
+          sumSoNuocCu = isNaN(sumSoNuocCu) ? 0 : sumSoNuocCu;
+          sumSoNuocMoi = isNaN(sumSoNuocMoi) ? 0 : sumSoNuocMoi;
+          sumSoNuocSuDung = isNaN(sumSoNuocSuDung) ? 0 : sumSoNuocSuDung;
+          sumThanhTien = isNaN(sumThanhTien) ? 0 : sumThanhTien;
+
+          $("#old_water").text(sumSoNuocCu.toFixed(2));
+          $("#new_water").text(sumSoNuocMoi.toFixed(2));
+          $("#final_water").text(sumSoNuocSuDung.toFixed(2));
+          $("#total_amount").text(sumThanhTien.toFixed(2));
+        }
+      });
+    </script>
+  </body>
 </html>
