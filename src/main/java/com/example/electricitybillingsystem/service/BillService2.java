@@ -29,7 +29,12 @@ public class BillService2 {
     private final CustomerRepository customerRepository;
 
     @Transactional(readOnly = true)
-    public Page<BillResponse> getBills(String statusValue, String name, Integer month, Integer year, String order, Pageable pageable){
+    public Page<BillResponse> getBills(String statusValue,
+                                       String name,
+                                       Integer month,
+                                       Integer year,
+                                       String order,
+                                       Pageable pageable){
         if (Objects.isNull(month)){
             OffsetDateTime now = OffsetDateTime.now();
             month = now.getMonth().getValue();
@@ -70,6 +75,7 @@ public class BillService2 {
             if (customerEntityMap.containsKey(billEntity.getCustomerId())) {
                 billResponse.setCustomerName(customerEntityMap.get(billEntity.getCustomerId()).getName());
             }
+            billResponse.setStatus(billEntity.getStatusValue());
             return billResponse;
         });
     }

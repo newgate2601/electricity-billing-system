@@ -9,32 +9,36 @@
 </head>
 
 <body class="bg-gray-100">
-    <div class="container mx-auto px-4 py-8">
-        <!-- Title -->
-        <h1 class="text-3xl font-semibold mb-8">Danh sách các loại thuế</h1>
+<div class="container mx-auto px-4 py-8">
+    <!-- Title -->
+    <h1 class="text-3xl font-semibold mb-8">Danh sách các loại thuế</h1>
 
-        <!-- Tax List Container -->
-        <ul id="tax-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></ul>
-    </div>
+    <!-- Tax List Container -->
+    <ul id="tax-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></ul>
+</div>
 
-    <script>
-        const getAllTax = async () => {
-            const res = await fetch("http://localhost:8080/tax/all")
-            const data = await res.json()
-            data.forEach((tax) => {
-                const listContainer = document.querySelector("#tax-list")
-                listContainer.innerHTML = ''
-                listContainer.innerHTML +=
-                    `<li class="bg-white rounded-lg p-6 shadow-md">
+<script>
+    const getAllTax = async () => {
+        const res = await fetch("http://localhost:8080/tax/all", {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('token'),
+            }
+        })
+        const data = await res.json()
+        data.forEach((tax) => {
+            const listContainer = document.querySelector("#tax-list")
+            listContainer.innerHTML = ''
+            listContainer.innerHTML +=
+                `<li class="bg-white rounded-lg p-6 shadow-md">
                         <a href="update/index.html?id=${tax.id}">
                             <h2 class="text-xl font-semibold">Thuế ${tax.name}</h2>
                         </a>
                     </li>`
-            })
-        }
+        })
+    }
 
-        getAllTax()
-    </script>
+    getAllTax()
+</script>
 </body>
 
 </html>

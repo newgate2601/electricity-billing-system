@@ -5,9 +5,9 @@ import com.example.electricitybillingsystem.model.TaxEntity;
 import com.example.electricitybillingsystem.model.TieredPricingEntity;
 import com.example.electricitybillingsystem.model.WaterServiceEntity;
 import com.example.electricitybillingsystem.repository.TieredPricingRepository;
-import com.example.electricitybillingsystem.vo.request.UpdatePriceRequest;
 import com.example.electricitybillingsystem.repository.WaterServiceRepository;
 import com.example.electricitybillingsystem.vo.dto.TieredPricingDTO;
+import com.example.electricitybillingsystem.vo.request.UpdatePriceRequest;
 import com.example.electricitybillingsystem.vo.response.AdjustPricingResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,8 +31,14 @@ public class TieredPricingService {
 
     @Transactional
     public Object updatePrice(UpdatePriceRequest request) {
-        tieredPricingRepository.deleteTieredPricingEntitiesByIdIn(request.getCurrentPrices().stream().map(TieredPricingEntity::getId).toList());
-        tieredPricingRepository.saveAll(request.getNewPrices());
+        tieredPricingRepository.deleteAllByElectricityServiceId(request.getElectricityServiceId());
+        tieredPricingRepository.saveAll(request.getNewPrices().stream().map(price -> {
+            TieredPricingEntity entity = tieredPricingMapper.toEntity(price);
+            entity.setElectricityServiceId(request.getElectricityServiceId());
+            entity.setIsStatus(true);
+            entity.setStatus(true);
+            return entity;
+        }).toList());
         return true;
     }
 

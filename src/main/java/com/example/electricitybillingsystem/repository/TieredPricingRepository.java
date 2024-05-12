@@ -13,7 +13,7 @@ public interface TieredPricingRepository extends JpaRepository<TieredPricingEnti
     List<TieredPricingEntity> findAllByIsStatus(Boolean status);
     List<TieredPricingEntity> findAllByElectricityServiceId(Long serviceId);
 
-    void deleteTieredPricingEntitiesByIdIn(List<Long> ids);
+    void deleteAllByElectricityServiceId(Long id);
 
     @Modifying
     @Query("UPDATE TieredPricingEntity e SET e.isStatus = false")

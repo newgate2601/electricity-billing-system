@@ -9,98 +9,112 @@
 </head>
 
 <body class="bg-gray-100">
-    <div class="container mx-auto px-4 py-8">
-        <!-- Title -->
-        <h1 id="service-name" class="text-3xl font-semibold mb-8">Cập nhật giá nước</h1>
+<div class="container mx-auto px-4 py-8">
+    <!-- Title -->
+    <h1 id="service-name" class="text-3xl font-semibold mb-8">Cập nhật giá nước</h1>
 
-        <!-- Form -->
-        <form id="waterPriceForm" class="bg-white rounded-lg p-6 shadow-md mb-8">
-            <!-- Water Price Tiers -->
-            <div id="waterPriceTiers">
-                <!-- Tier -->
-                <div class="grid grid-cols-4 gap-4 mb-4"></div>
-            </div>
+    <!-- Form -->
+    <form id="waterPriceForm" class="bg-white rounded-lg p-6 shadow-md mb-8">
+        <!-- Water Price Tiers -->
+        <div id="waterPriceTiers">
+            <!-- Tier -->
+            <div class="grid grid-cols-4 gap-4 mb-4"></div>
+        </div>
 
-            <!-- Add Tier Button -->
-            <button type="button" id="addTierButton"
-                class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 focus:outline-none focus:bg-blue-600">Thêm
-                bậc mới</button>
+        <!-- Add Tier Button -->
+        <button type="button" id="addTierButton"
+                class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 focus:outline-none focus:bg-blue-600">
+            Thêm
+            bậc mới
+        </button>
 
-            <!-- Submit Button -->
-            <button type="submit"
-                class="bg-green-500 text-white px-4 py-2 rounded mt-4 hover:bg-green-600 focus:outline-none focus:bg-green-600">Cập
-                nhật giá tiền nước</button>
-        </form>
-    </div>
+        <!-- Submit Button -->
+        <button type="submit"
+                class="bg-green-500 text-white px-4 py-2 rounded mt-4 hover:bg-green-600 focus:outline-none focus:bg-green-600">
+            Cập
+            nhật giá tiền nước
+        </button>
+    </form>
+</div>
 
-    <script>
-        const getService = async () => {
-            const serviceId = new URLSearchParams(location.search).get('id')
-            const res = await fetch(`http://localhost:8080/water-service/${serviceId}`)
-            const data = await res.json()
-            localStorage.setItem('waterService', JSON.stringify(data))
-            document.querySelector("#service-name").innerHTML = `${data.name}`
-            data.prices.forEach(price => {
-                addTier(price)
-            });
-
-        }
-
-        const onFormSubmit = () => {
-            document.querySelector("form").onsubmit = async (e) => {
-                e.preventDefault()
-                const waterService = JSON.parse(localStorage.getItem('waterService'))
-                const formData = new FormData(e.target);
-                const startNumbers = formData.getAll('startNumber[]')
-                const endNumbers = formData.getAll('endNumber[]')
-                const values = formData.getAll('value[]')
-                const newPrices = startNumbers.map((_, index) => ({
-                    startNumber: Number(startNumbers[index]),
-                    endNumber: Number(endNumbers[index]) || null,
-                    value: Number(values[index]),
-                    status: true,
-                    electricityServiceId: waterService.id
-                }))
-                const body = { currentPrices: waterService.prices, newPrices }
-                const res = await fetch(`http://localhost:8080/tiered-pricing/update`, {
-                    method: "POST",
-                    headers: { 'content-type': 'application/json' },
-                    body: JSON.stringify(body)
-                })
-                const data = await res.json()
-                if (data) {
-                    alert("Thành công")
-                    history.back()
-                } else {
-                    alert("Thất bại")
-                }
+<script>
+    const getService = async () => {
+        const serviceId = new URLSearchParams(location.search).get('id')
+        const res = await fetch(`http://localhost:8080/water-service/${serviceId}`, {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('token'),
             }
-        }
+        })
+        const data = await res.json()
+        localStorage.setItem('waterService', JSON.stringify(data))
+        document.querySelector("#service-name").innerHTML = `${data.name}`
+        data.prices.forEach(price => {
+            addTier(price)
+        });
 
-        function addTier({ startNumber, endNumber, value }) {
-            const tierContainer = document.getElementById('waterPriceTiers');
-            const newTier = document.createElement('div');
-            newTier.className = 'grid grid-cols-4 gap-4 mb-4';
-            newTier.innerHTML = `
+    }
+
+    const onFormSubmit = () => {
+        document.querySelector("form").onsubmit = (e) => {
+            e.preventDefault()
+            const waterService = JSON.parse(localStorage.getItem('waterService'))
+            const formData = new FormData(e.target);
+            const startNumbers = formData.getAll('startNumber[]')
+            const endNumbers = formData.getAll('endNumber[]')
+            const values = formData.getAll('value[]')
+            const newPrices = startNumbers.map((_, index) => ({
+                startNumber: Number(startNumbers[index]),
+                endNumber: Number(endNumbers[index]) || null,
+                value: Number(values[index]),
+            }))
+            const body = {electricityServiceId: waterService.id, newPrices}
+            fetch(`http://localhost:8080/tiered-pricing/update`, {
+                method: "POST",
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                    'content-type': 'application/json'
+                },
+                body: JSON.stringify(body)
+            })
+                .then(res => res.json())
+                .then((data) => {
+                    if (data) {
+                        alert("Thành công")
+                        history.back()
+                    } else {
+                        alert("Thất bại")
+                    }
+                })
+                .catch(e => {
+                    alert("Thất bại")
+                })
+        }
+    }
+
+    function addTier({startNumber, endNumber, value}) {
+        const tierContainer = document.getElementById('waterPriceTiers');
+        const newTier = document.createElement('div');
+        newTier.className = 'grid grid-cols-4 gap-4 mb-4';
+        newTier.innerHTML = `
                 <input type="number" name="startNumber[]" class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500" placeholder="Bắt đầu" value=${startNumber} required="">
                 <input type="number" name="endNumber[]" class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500" placeholder="Kết thúc" value=${endNumber}>
                 <input type="number" name="value[]" class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500" placeholder="Giá trị" value=${value} required="">
                 <button type="button" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 focus:outline-none focus:bg-red-600" onclick="removeTier(this)">Xoá</button>
             `;
-            tierContainer.appendChild(newTier);
-        }
+        tierContainer.appendChild(newTier);
+    }
 
-        function removeTier(button) {
-            button.parentNode.remove();
-        }
+    function removeTier(button) {
+        button.parentNode.remove();
+    }
 
-        // Add event listener for adding tier button
-        document.getElementById('addTierButton').addEventListener('click', addTier);
+    // Add event listener for adding tier button
+    document.getElementById('addTierButton').addEventListener('click', addTier);
 
 
-        getService()
-        onFormSubmit()
-    </script>
+    getService()
+    onFormSubmit()
+</script>
 </body>
 
 </html>
