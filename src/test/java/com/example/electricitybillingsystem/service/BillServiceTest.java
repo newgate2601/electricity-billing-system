@@ -240,9 +240,63 @@ public class BillServiceTest {
 
         showResultAfterFilter(billResponses);
 
+        assertEquals(0, billResponses.getContent().size());
+
+        // rollback
+        this.transactionManager.rollback(transaction);
+    }
+
+    @Test
+    @DisplayName("Lấy danh sách bill theo tháng 12 của những người dùng có tên gồm chữ cái #q ")
+    @Transactional
+    public void testGetBillsV9(){
+        TransactionStatus transaction = this.transactionManager.getTransaction(null);
+        fakeDataForTestGetBills();
+
+        Page<BillResponse> billResponses = billService2.getBills(
+                null,
+                "q",
+                12,
+                2024,
+                null,
+                PageRequest.of(0, 1000000));
+
+        showResultAfterFilter(billResponses);
+
         // compare size bills in db not filter
         assertEquals(0, billResponses.getContent().size());
 
+        // rollback
+        this.transactionManager.rollback(transaction);
+    }
+
+    @Test
+    @DisplayName("Lấy danh sách bill theo tháng 5 của những người dùng có tên gồm chữ cái #c " +
+            "và sắp xếp theo thứ tự giá giảm dần")
+    @Transactional
+    public void testGetBillsV10(){
+        TransactionStatus transaction = this.transactionManager.getTransaction(null);
+        fakeDataForTestGetBills();
+
+        Page<BillResponse> billResponses = billService2.getBills(
+                null,
+                "c",
+                5,
+                2024,
+                null,
+                PageRequest.of(0, 1000000));
+
+        showResultAfterFilter(billResponses);
+
+        // compare size bills in db not filter
+        assertEquals(2, billResponses.getContent().size());
+
+        List<BillResponse> bills = billResponses.getContent();
+        assertEquals(BigDecimal.valueOf(3), bills.get(0).getPrice());
+        assertEquals("ngọc", bills.get(0).getCustomerName());
+
+        assertEquals(BigDecimal.valueOf(2), bills.get(1).getPrice());
+        assertEquals("phúc", bills.get(1).getCustomerName());
         // rollback
         this.transactionManager.rollback(transaction);
     }
