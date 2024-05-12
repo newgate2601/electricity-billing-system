@@ -31,6 +31,8 @@ public class BillEntity {
     private Long employeeId;
     private Long customerId;
     private Long apartmentId;
+    @Column(name = "_month")
     private Integer month;
+    @Column(name = "_year")
     private Integer year;
 }
