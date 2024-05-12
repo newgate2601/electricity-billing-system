@@ -145,7 +145,6 @@ public class BillService {
                             .setTaxs(taxBillDTOS);
                     billBeforePaymentResponse
                             .setApartment(apartmentDTO);
-
                     return billBeforePaymentResponse;
                 }
         );
