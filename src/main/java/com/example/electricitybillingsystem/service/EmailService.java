@@ -28,7 +28,7 @@ public class EmailService {
     private final TaxService taxService;
     private final TieredPricingService tieredPricingService;
 
-    public void sendEmail(String email, String subject, String content) throws MessagingException, UnsupportedEncodingException {
+    public Boolean sendEmail(String email, String subject, String content) throws MessagingException, UnsupportedEncodingException {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message);
 
@@ -38,7 +38,13 @@ public class EmailService {
         helper.setSubject(subject);
         helper.setText(content, true);
 
-        mailSender.send(message);
+        try{
+            mailSender.send(message) ;
+            return true;
+        }catch(Exception e){
+            return false;
+        }
+
     }
     @Transactional
     public String sendEmailTurnOffWater(TurnOffWaterInfoRequest turnOffWaterInfoRequest) throws MessagingException, UnsupportedEncodingException {

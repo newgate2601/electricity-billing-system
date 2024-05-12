@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @RestController
@@ -44,6 +45,14 @@ public class BillController {
         return billService.getAllBillAfterPayment(pageable);
     }
 
+    @Operation(summary = "get all bill after payment by submitTime")
+    @GetMapping("/list/after/submit-time")
+    public Page<BillAfterPaymentResponse> getAllBillAfterPaymentBySubmitTime(
+            @RequestParam(required = false) Pageable pageable,
+            @RequestParam OffsetDateTime fromDate,
+            @RequestParam OffsetDateTime toDate){
+        return billService.getAllBillAfterPaymentBySubmitTime(pageable,fromDate,toDate);
+    }
 
 
     @Operation(summary = "Theo dõi bill của khách hàng")
