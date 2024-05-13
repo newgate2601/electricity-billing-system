@@ -88,7 +88,7 @@
             <td colspan="1">
               <select id="status">
                 <option value="DONE">Đã đóng</option>
-                <option value="NONE">Chưa đóng</option>
+                <option value="YET">Chưa đóng</option>
               </select>
             </td>
             <td colspan="2"><input type="text" id="name" /></td>
@@ -149,6 +149,8 @@
 
         const urlBill = new URL(ENDPOINT, window.location.origin);
 
+
+
         if (monthInput !== "") {
           urlBill.searchParams.append("month", monthInput);
         }
@@ -157,13 +159,16 @@
           urlBill.searchParams.append("year", yearInput);
         }
 
+        urlBill.searchParams.append("order", sort);
+
         if (name !== "") {
-          urlBill.searchParams.append("name", yearInput);
+          urlBill.searchParams.append("name", name);
         }
 
-        urlBill.searchParams.append("order", sort);
-        urlBill.searchParams.append("name", name);
-        urlBill.searchParams.append("status", status);
+        if (status !== "") {
+          urlBill.searchParams.append("statusValue", status);
+        }
+
 
         fetch(urlBill)
           .then((response) => {
@@ -188,14 +193,11 @@
                   bill.id +
                   ')">Xem chi tiết</button>';
                 totalPaid += bill.price;
-              } else if (bill.status === "NONE") {
+              } else if (bill.status === "YET") {
                 actionButtons =
                   '<button onclick="viewDetail(' +
                   bill.id +
-                  ')">Chi tiết</button>' +
-                  '<button onclick="sendEmail(' +
-                  bill.id +
-                  ')">Gửi email</button>';
+                  ')">Chi tiết</button>'
                 totalDue += bill.price;
               }
 
@@ -220,14 +222,11 @@
               billTableBody.innerHTML += row;
             });
 
-            // Calculate remaining total
-            var totalRemaining = totalDue - totalPaid;
-
             // Update totals in the table footer
             document.getElementById("totalDue").innerText = totalDue;
             document.getElementById("totalPaid").innerText = totalPaid;
             document.getElementById("totalRemaining").innerText =
-              totalRemaining;
+                    totalDue;
           })
           .catch((error) => {
             console.error("Failed to fetch bill data:", error);
@@ -241,6 +240,13 @@
       document
         .getElementById("searchButton")
         .addEventListener("click", function () {
+          const monthInput = document.getElementById("monthInput").value;
+          const yearInput = document.getElementById("yearInput").value;
+
+          if((monthInput!="" && +monthInput<=0) || (yearInput!=""&&+yearInput<=0)){
+            alert("Năm hoặc tháng phải lớn hơn 0!")
+            return;
+          }
           search();
         });
 
