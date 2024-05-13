@@ -77,15 +77,21 @@
                     dom: 'Bfrtip',
                     ajax: {
                         url: 'http://localhost:8080/api/v1/bill/list',
-                        dataSrc: 'content'
+                        dataSrc: 'content',
+                        headers: {
+                            'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                        },
                     },
                     columns: [
                         { data: 'apartment.customerEntity.name' },
                         {
                             data: 'apartment.customerEntity.birthday',
                             render: function (data) {
-                                var date = new Date(data * 1000);
-                                return date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+                                var date = new Date(data);
+                                var day = date.getDate();
+                                var month = date.getMonth() + 1;
+                                var year = date.getFullYear();
+                                return (day < 10 ? '0' : '') + day + '-' + (month < 10 ? '0' : '') + month + '-' + year;
                             }
                         },
                         {
@@ -95,14 +101,21 @@
                             }
                         },
                         { data: 'billCode' },
-                        { data: 'price' }
+                        {
+                            data: null,
+                            render: function (data) {
+                                if (data.apartment.timelineEntities.length > 0) {
+                                    var timeline = data.apartment.timelineEntities[0];
+                                    return data.price * (timeline.endNumber - timeline.startNumber);
+                                } else {
+                                    return 0;
+                                }
+                            }
+                        }
                     ],
                     buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
 
                     footerCallback: function (row, data, start, end, display) {
-                        var api = this.api(), data;
-
-
                         var intVal = function (i) {
                             return typeof i === 'string' ?
                                 i.replace(/[\$,]/g, '') * 1 :
@@ -110,16 +123,12 @@
                                     i : 0;
                         };
 
+                        total = data.reduce(function (a, b) {
+                            var aValue = b.apartment.timelineEntities.length > 0 ? b.price * (b.apartment.timelineEntities[0].endNumber - b.apartment.timelineEntities[0].startNumber) : 0;
+                            return a + intVal(aValue);
+                        }, 0);
 
-                        total = api
-                            .column(4)
-                            .data()
-                            .reduce(function (a, b) {
-                                return intVal(a) + intVal(b);
-                            }, 0);
-
-
-                        $(api.column(4).footer()).html(
+                        $(this.api().column(4).footer()).html(
                             total + ' VNĐ'
                         );
                     }

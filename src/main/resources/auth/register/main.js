@@ -13,7 +13,7 @@ const register = (event) => {
     })
         .then(response => {
             if (response.ok) {
-                location.href = "/auth/login"
+                location.href = "../login/index.html"
             } else {
                 throw new Error('Registration failed');
             }
