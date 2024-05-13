@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,9 +25,15 @@ public class TaxService {
         return taxRepo.findById(id).orElse(null);
     }
 
-    public TaxEntity save(TaxEntity taxEntity) {
-        return taxRepo.save(taxEntity);
+    public TaxEntity save(Long id, BigDecimal tax) {
+        TaxEntity entity = taxRepo.findById(id).orElseThrow();
+        if (tax.compareTo(BigDecimal.valueOf(0)) <= 0 || tax.compareTo(BigDecimal.valueOf(100)) >= 0) {
+            throw new IllegalArgumentException("Giá trị thuế phải lớn hơn 0 và nhỏ hơn 100");
+        }
+        entity.setTax(tax);
+        return taxRepo.save(entity);
     }
+
     private final TaxRepository taxRepository;
     private final TaxBillRepository taxBillRepository;
 
@@ -35,14 +42,14 @@ public class TaxService {
         return taxRepository.findByIsStatus(status);
     }
 
-    public List<TaxEntity> getAllTaxByBillId(Long id){
+    public List<TaxEntity> getAllTaxByBillId(Long id) {
         List<TaxBillEntity> taxBillEntities = taxBillRepository.findAllByBillId(id);
-        if(taxBillEntities==null || taxBillEntities.size()==0){
+        if (taxBillEntities == null || taxBillEntities.size() == 0) {
             return null;
         }
 
         List<Long> taxIds = taxBillEntities.stream().map(TaxBillEntity::getTaxId).collect(Collectors.toList());
-        if(taxIds==null || taxIds.size()==0){
+        if (taxIds == null || taxIds.size() == 0) {
             return null;
         }
 
@@ -53,7 +60,7 @@ public class TaxService {
     }
 
     @Transactional
-    public void updateAllStatusToFalse(){
+    public void updateAllStatusToFalse() {
         taxRepository.updateAllStatusToFalse();
     }
 

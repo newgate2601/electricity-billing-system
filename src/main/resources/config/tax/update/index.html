@@ -53,14 +53,14 @@
             e.preventDefault()
             const formData = new FormData(e.target)
             const tax = JSON.parse(localStorage.getItem('tax'))
-            tax.tax = Number(formData.get('tax-price'))
+            const body = {id: tax.id, tax: Number(formData.get('tax-price'))}
             fetch(`http://localhost:8080/tax/update`, {
                 method: "POST",
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem('token'),
                     'content-type': 'application/json'
                 },
-                body: JSON.stringify(tax)
+                body: JSON.stringify(body)
             })
                 .then(res => res.json())
                 .then(data => {

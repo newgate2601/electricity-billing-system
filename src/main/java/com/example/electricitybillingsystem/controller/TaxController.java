@@ -1,7 +1,7 @@
 package com.example.electricitybillingsystem.controller;
 
-import com.example.electricitybillingsystem.model.TaxEntity;
 import com.example.electricitybillingsystem.service.TaxService;
+import com.example.electricitybillingsystem.vo.request.UpdateTaxRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,8 +22,8 @@ public class TaxController {
     }
 
     @PostMapping("/update")
-    public Object updateTax(@RequestBody TaxEntity taxEntity) {
-        return taxService.save(taxEntity);
+    public Object updateTax(@RequestBody UpdateTaxRequest request) {
+        return taxService.save(request.getId(), request.getTax());
     }
 
 }
