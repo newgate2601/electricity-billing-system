@@ -4,6 +4,7 @@ import com.example.electricitybillingsystem.model.*;
 import com.example.electricitybillingsystem.repository.*;
 import com.example.electricitybillingsystem.vo.request.TurnOffWaterInfoRequest;
 import jakarta.mail.MessagingException;
+import jakarta.mail.Multipart;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,14 +28,12 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -45,17 +44,17 @@ public class EmailServiceTest {
     @Mock
     private CustomerService customerService;
 
+    @Mock
+    private AddressService addressService;
+    @Mock
+    private JavaMailSender mailSender; // Mocking JavaMailSender
     @InjectMocks
     private EmailService emailService;
 
-    @Mock
-    private JavaMailSender mailSender; // Mocking JavaMailSender
 
     @Autowired
     private AddressRepository addressRepository;
 
-    @Mock
-    private AddressService addressService;
     @Autowired
     private BillRepository billRepository;
     @Autowired
@@ -236,7 +235,7 @@ public class EmailServiceTest {
 
     @BeforeEach
     void setup() {
-
+        MockitoAnnotations.initMocks(this);
     }
 
     @Test
@@ -258,37 +257,149 @@ public class EmailServiceTest {
 
         assertTrue(result);
     }
+    @Test
+    @DisplayName("Kiểm Tra gửi thông báo cắt nước thành công tới khách hàng ")
+    public void testSendEmailTurnOffWater_success() throws MessagingException, UnsupportedEncodingException {
+        // Arrange
+        TurnOffWaterInfoRequest request = new TurnOffWaterInfoRequest();
+        request.setStartTime("10:00");
+        request.setEndTime("12:00");
+        request.setWard("Ward1");
 
+        // Tạo danh sách khách hàng mẫu
+        CustomerEntity customerEntity1 = new CustomerEntity();
+        customerEntity1.setEmail("ngoc@gmail.com");
+        CustomerEntity customerEntity2 = new CustomerEntity();
+        customerEntity2.setEmail("ngoc2@gmail.com");
+
+        List<CustomerEntity> customers = Arrays.asList(customerEntity1, customerEntity2);
+
+        // Tạo mock cho addressService
+        AddressService mockAddressService = mock(AddressService.class);
+        when(mockAddressService.getAllCustomerByWard(anyString())).thenReturn(customers);
+
+        // Tạo mock cho mailSender
+        JavaMailSender mailSender = mock(JavaMailSender.class);
+        MimeMessage mimeMessage = mock(MimeMessage.class);
+        when(mailSender.createMimeMessage()).thenReturn(mimeMessage);
+
+        // Tạo emailService với mockAddressService và mailSender được inject
+        EmailService emailService = new EmailService(mailSender, mockAddressService, mock(CustomerService.class), mock(TaxService.class), mock(TieredPricingService.class));
+
+        // Act
+        String result = emailService.sendEmailTurnOffWater(request);
+
+        // Assert
+        assertEquals("Email sent successfully", result);
+        verify(mimeMessage, times(customers.size())).setContent(any(Multipart.class)); // Kiểm tra rằng setContent được gọi đúng số lần tương ứng với số lượng khách hàng
+    }
 
     @Test
-    public void testSendEmailBeforePayment() throws Exception {
-        // Mock data
-        List<Long> billIds = Arrays.asList(1L, 2L);
-        CustomerEntity customer1 = new CustomerEntity(1L, "John Doe", OffsetDateTime.now(), "123456789", "Note", "john@example.com");
-        CustomerEntity customer2 = new CustomerEntity(2L, "Jane Doe", OffsetDateTime.now(), "987654321", "Another note", "jane@example.com");
-        List<CustomerEntity> allCustomers = Arrays.asList(customer1, customer2);
+    @DisplayName("Kiểm Tra gửi thông báo cắt nước khi  không có khách hàng sẽ thông báo không tìm thấy khách hàng")
+    public void testSendEmailTurnOffWater_fail_nocustomer() throws MessagingException, UnsupportedEncodingException {
+        TurnOffWaterInfoRequest request = new TurnOffWaterInfoRequest();
+        request.setStartTime("10:00");
+        request.setEndTime("12:00");
+        request.setWard("Ward1");
 
-        BillEntity bill1 = new BillEntity(1L, OffsetDateTime.now(), OffsetDateTime.now().plusDays(30), "Description", "ABC123", BigDecimal.valueOf(100), true, "Paid", 100L, 200L, 1L, 1L, 1L, 5, 2024);
-        BillEntity bill2 = new BillEntity(2L, OffsetDateTime.now(), OffsetDateTime.now().plusDays(30), "Description", "DEF456", BigDecimal.valueOf(200), true, "Paid", 200L, 300L, 2L, 2L, 2L, 5, 2024);
-        Map<Long, BillEntity> billMap = Map.of(1L, bill1, 2L, bill2);
+        // Tạo danh sách khách hàng rỗng
+        List<CustomerEntity> emptyCustomers = new ArrayList<>();
 
-        // Stubbing the behavior of customerService
-        when(customerService.getAllCustomerByBillIds(billIds)).thenReturn(allCustomers);
-        when(customerService.getBillMap(billIds)).thenReturn(billMap);
+        // Tạo mock cho addressService và thiết lập nó để trả về danh sách khách hàng rỗng
+        AddressService mockAddressService = mock(AddressService.class);
+        when(mockAddressService.getAllCustomerByWard(anyString())).thenReturn(emptyCustomers);
 
-        // Stubbing the behavior of mailSender
-        doNothing().when(mailSender).send(any(MimeMessage.class));
+        // Tạo emailService với mockAddressService và các mock khác
+        EmailService emailService = new EmailService(mock(JavaMailSender.class), mockAddressService, mock(CustomerService.class), mock(TaxService.class), mock(TieredPricingService.class));
 
-        // Perform the method under test
+        // Act
+        String result = emailService.sendEmailTurnOffWater(request);
+
+        // Assert
+        assertEquals("Không tồn tại khách hàng nào", result);
+    }
+
+    @Test
+    @DisplayName("Kiểm Tra chức năng thông báo cắt nước khi  không nhập thông tin giờ cắt nước")
+    public void testSendEmailTurnOffWater_fail_time() throws MessagingException, UnsupportedEncodingException {
+        TurnOffWaterInfoRequest request = new TurnOffWaterInfoRequest();
+        request.setStartTime("");
+        request.setEndTime("");
+        request.setWard("Ward1");
+        // Tạo emailService với mockAddressService và các mock khác
+        EmailService emailService = new EmailService(mock(JavaMailSender.class), mock(AddressService.class), mock(CustomerService.class), mock(TaxService.class), mock(TieredPricingService.class));
+
+        // Act
+        String result = emailService.sendEmailTurnOffWater(request);
+
+        // Assert
+        assertEquals("Bạn phải chọn thời gian bắt đầu và kết thúc!", result);
+    }
+    @Test
+    @DisplayName("Kiểm Tra gửi email trước khi thanh toán với tồn tại khách hàng")
+    public void testSendEmailBeforePayment_customerExists() throws MessagingException, UnsupportedEncodingException {
+        // Arrange
+        JavaMailSender mockMailSender = mock(JavaMailSender.class);
+        AddressService mockAddressService = mock(AddressService.class);
+        CustomerService mockCustomerService = mock(CustomerService.class);
+        TaxService mockTaxService = mock(TaxService.class);
+        TieredPricingService mockTieredPricingService = mock(TieredPricingService.class);
+
+        EmailService emailService = new EmailService(mockMailSender, mockAddressService, mockCustomerService, mockTaxService, mockTieredPricingService);
+
+        List<Long> billIds = new ArrayList<>(); // Danh sách billIds mẫu
+        CustomerEntity customerEntity = new CustomerEntity();
+        customerEntity.setId(1L);
+        customerEntity.setEmail("example@example.com");
+        List<CustomerEntity> customers = Collections.singletonList(customerEntity);
+
+        // Tạo mock cho longBillEntityMap để không trả về null
+        Map<Long, BillEntity> longBillEntityMap = new HashMap<>();
+        BillEntity billEntity = new BillEntity();
+        billEntity.setPrice(BigDecimal.valueOf(100)); // Thiết lập giá trị cho billEntity để tránh lỗi NullPointerException
+        longBillEntityMap.put(customerEntity.getId(), billEntity);
+
+        // Mock customerService.getAllCustomerByBillIds(billIds) để trả về danh sách khách hàng
+        when(mockCustomerService.getAllCustomerByBillIds(billIds)).thenReturn(customers);
+        // Mock customerService.getBillMap(billIds) để trả về longBillEntityMap
+        when(mockCustomerService.getBillMap(billIds)).thenReturn(longBillEntityMap);
+
+        // Mock JavaMailSender để trả về mimeMessage không null khi gọi createMimeMessage()
+        MimeMessage mockMimeMessage = mock(MimeMessage.class);
+        when(mockMailSender.createMimeMessage()).thenReturn(mockMimeMessage);
+
+        // Act
         String result = emailService.sendEmailBeforPayment(billIds);
 
-        // Verify the interactions
-        verify(customerService, times(1)).getAllCustomerByBillIds(billIds);
-        verify(customerService, times(1)).getBillMap(billIds);
-        verify(mailSender, times(2)).send(any(MimeMessage.class));
+        // Assert
+        assertEquals("Email sent successfully", result); // Kiểm tra kết quả trả về của phương thức
+        verify(mockCustomerService, times(1)).getAllCustomerByBillIds(billIds); // Xác nhận rằng phương thức getAllCustomerByBillIds đã được gọi đúng một lần
+        verify(mockMailSender, times(1)).send(any(MimeMessage.class)); // Xác nhận rằng phương thức send của mockMailSender đã được gọi đúng một lần
+    }
+    @Test
+    @DisplayName("Kiểm Tra gửi email trước khi thanh toán mà không có khách hàng nào")
+    public void testSendEmailBeforePayment_noCustomer() throws MessagingException, UnsupportedEncodingException {
+        // Arrange
+        JavaMailSender mockMailSender = mock(JavaMailSender.class);
+        AddressService mockAddressService = mock(AddressService.class);
+        CustomerService mockCustomerService = mock(CustomerService.class);
+        TaxService mockTaxService = mock(TaxService.class);
+        TieredPricingService mockTieredPricingService = mock(TieredPricingService.class);
 
-        // Assert the result
-        assertEquals("Email sent successfully", result);
+        EmailService emailService = new EmailService(mockMailSender, mockAddressService, mockCustomerService, mockTaxService, mockTieredPricingService);
+
+        List<Long> billIds = new ArrayList<>(); // Danh sách billIds mẫu
+
+        // Mock customerService.getAllCustomerByBillIds(billIds) để trả về null
+        when(mockCustomerService.getAllCustomerByBillIds(billIds)).thenReturn(null);
+
+        // Act
+        String result = emailService.sendEmailBeforPayment(billIds);
+
+        // Assert
+        assertEquals("Không tồn tại khách hàng nào", result); // Kiểm tra kết quả trả về của phương thức
+        verify(mockCustomerService, times(1)).getAllCustomerByBillIds(billIds); // Xác nhận rằng phương thức getAllCustomerByBillIds đã được gọi đúng một lần
+        verifyNoInteractions(mockMailSender); // Xác nhận rằng không có phương thức nào của mockMailSender đã được gọi
     }
 
 

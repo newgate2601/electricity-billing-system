@@ -265,7 +265,7 @@ public class BillEmailServiceTest {
 
     @Test
     @Transactional
-    @DisplayName("test lấy bill trước khi thanh toán của Phúc ")
+    @DisplayName("test lấy bill trước khi thanh toán của khách hàng có tên Phúc ")
     public void testGetAllBillBeforePayment_correct_name() {
         // Tạo dữ liệu thử nghiệm
         TransactionStatus transaction = this.transactionManager.getTransaction(null);
@@ -465,6 +465,37 @@ public class BillEmailServiceTest {
 
     @Test
     @Transactional
+    @DisplayName("Kiểm tra nếu khách hàng quá hạn 6 ngày sẽ không lấy được bill quá hạn")
+    public void testGetAllBillOverTime_min6day() {
+        // Tạo dữ liệu thử nghiệm
+        TransactionStatus transaction = this.transactionManager.getTransaction(null);
+        initData();
+        Page<BillAfterPaymentResponse> billResponses = billService.getAllBillOverTime(
+
+                PageRequest.of(0, 1000000),"", "");
+
+        // compare size bills in db not filter
+        assertEquals(1, billResponses.getContent().size());
+        List<BillAfterPaymentResponse> bills = billResponses.getContent();
+        assertEquals(false, bills.get(0).getStatus());
+        // Kiểm tra đuúng ngay limitedTime
+        assertEquals("04-05-2024",bills.get(0).getLimitedTimeResponse());
+        // Kiểm tra ngày hiện tại trừ limitedTime >= 7
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy'T'HH:mm:ssXXX");
+
+        // Phân tích chuỗi thành OffsetDateTime
+        OffsetDateTime limitedTime = OffsetDateTime.parse(bills.get(0).getLimitedTimeResponse()+"T00:00:00+00:00", formatter);
+        OffsetDateTime currentTime = OffsetDateTime.parse("10-05-2024"+"T00:00:00+00:00", formatter);
+        Duration duration = Duration.between(limitedTime,currentTime);
+        Long days = duration.toDays();
+        assertTrue( duration.toDays() < 7);
+
+        // rollback
+        this.transactionManager.rollback(transaction);
+    }
+
+    @Test
+    @Transactional
     @DisplayName("Kiểm tra lấy thành công khách hàng quá hạn = 7 ngay`")
     public void testGetAllBillOverTime_equalLimitTime() {
         // Tạo dữ liệu thử nghiệm
@@ -492,4 +523,6 @@ public class BillEmailServiceTest {
         // rollback
         this.transactionManager.rollback(transaction);
     }
+
+
 }
