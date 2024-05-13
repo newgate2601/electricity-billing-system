@@ -15,7 +15,7 @@ const login = (event) => {
         .then(data => {
             localStorage.setItem('user', JSON.stringify(data.user));
             localStorage.setItem('token', data.token);
-            location.href = "/config"
+            location.href = "../../config/index.html"
         })
         .catch(error => console.error(error));
 };
