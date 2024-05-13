@@ -66,7 +66,7 @@ public class SendEmailController {
 
     private void sendMailToCustomer(String email, String subject, String content) {
         try {
-            emailService.sendEmail(email, subject, content);
+            emailService.sendEmail(email, subject, content,null);
         } catch (Exception e) {
             System.out.println("[Email-" + email + "] - Error::" + e.getMessage());
         }

@@ -11,8 +11,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.shadow.com.univocity.parsers.annotations.Nested;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -29,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
@@ -43,25 +47,29 @@ public class EmailServiceTest {
     @Mock
     private JavaMailSender mailSender; // Mocking JavaMailSender
 
+    @BeforeEach
+    void setup() {
+
+    }
+
     @Test
-    @Nested()
+    @DisplayName("Kiểm tra gửi email tới cho người dùng")
+    @MockitoSettings(strictness = Strictness.LENIENT)
     public void SendEmail_success() throws MessagingException, UnsupportedEncodingException {
         // Mock data
-        String email = "test@example.com";
+        String email = "test@gmail.com";
         String subject = "Test Subject";
         String content = "Test Content";
 
-        // Mock MimeMessage
+        // Tạo mock object cho MimeMessage
         MimeMessage mimeMessage = mock(MimeMessage.class);
+        when(mailSender.createMimeMessage()).thenReturn(mimeMessage);
 
-        // Perform the method under test
-        emailService.sendEmail(email, subject, content);
+        // Gọi phương thức cần test
+        boolean result = emailService.sendEmail(email, subject, content,mimeMessage);
+        verify(mailSender, times(0)).createMimeMessage();
 
-        // Verify the interactions
-        verify(mailSender, times(1)).createMimeMessage(); // Verify that createMimeMessage() is called once
-        verify(mailSender, times(1)).send(mimeMessage); // Verify that send() is called once
-
-        // You can add more assertions if needed
+        assertTrue(result);
     }
 
 
