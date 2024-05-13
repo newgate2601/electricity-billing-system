@@ -61,9 +61,13 @@ public class EmailService {
             return "Bạn phải chọn thời gian bắt đầu và kết thúc!";
         }
 
+        if(turnOffWaterInfoRequest.getWard()==null){
+            return "Yêu cầu chọn phường!";
+        }
+
         List<CustomerEntity> customers = addressService.getAllCustomerByWard(turnOffWaterInfoRequest.getWard());
         if (customers == null || customers.size() == 0) {
-            return "Does not exist customer";
+            return "Không tồn tại khách hàng nào";
         }
 
         List<String> customerEmail = customers.stream().map(CustomerEntity::getEmail).collect(Collectors.toList());
@@ -79,7 +83,7 @@ public class EmailService {
             throws MessagingException, UnsupportedEncodingException {
         List<CustomerEntity> allCustomer = customerService.getAllCustomer();
         if (allCustomer == null) {
-            return "Does not exist customer";
+            return "Không tồn tại khách hàng nào";
         }
         List<String> customerEmail = allCustomer.stream().map(CustomerEntity::getEmail).collect(Collectors.toList());
         for (String email : customerEmail) {
@@ -95,7 +99,7 @@ public class EmailService {
         List<CustomerEntity> allCustomer = customerService.getAllCustomerByBillIds(billIds);
         Map<Long, BillEntity> longBillEntityMap = customerService.getBillMap(billIds);
         if (allCustomer == null) {
-            return "Does not exist customer";
+            return "Không tồn tại khách hàng nào";
         }
         for (CustomerEntity customerEntity : allCustomer) {
             String email = customerEntity.getEmail();
@@ -115,7 +119,7 @@ public class EmailService {
 
         Map<Long, BillEntity> longBillEntityMap = customerService.getBillMap(billIds);
         if (allCustomer == null) {
-            return "Does not exist customer";
+            return "Không tồn tại khách hàng nào";
         }
         for (CustomerEntity customerEntity : allCustomer) {
             String email = customerEntity.getEmail();
@@ -137,7 +141,7 @@ public class EmailService {
                 CustomerEntity::getId, Function.identity()));
         Map<Long, BillEntity> longBillEntityMap = customerService.getBillMap(billIds);
         if (allCustomer == null) {
-            return "Does not exist customer";
+            return "Không tồn tại khách hàng nào";
         }
         List<String> customerEmail = allCustomer.stream().map(CustomerEntity::getEmail).collect(Collectors.toList());
         for (CustomerEntity customerEntity : allCustomer) {
