@@ -1,10 +1,9 @@
 package com.example.electricitybillingsystem.service;
 
 
-import com.example.electricitybillingsystem.model.BillEntity;
-import com.example.electricitybillingsystem.model.CustomerEntity;
-import com.example.electricitybillingsystem.repository.BillRepository;
-import com.example.electricitybillingsystem.repository.CustomerRepository;
+import com.example.electricitybillingsystem.model.*;
+import com.example.electricitybillingsystem.repository.*;
+import com.example.electricitybillingsystem.vo.dto.BillBeforePaymentResponse;
 import com.example.electricitybillingsystem.vo.dto.BillResponse;
 import io.jsonwebtoken.lang.Assert;
 import jakarta.persistence.EntityManager;
@@ -20,18 +19,39 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.awt.print.Pageable;
 import java.math.BigDecimal;
+import java.time.Duration;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 public class BillServiceTest {
     @Autowired
     private BillService2 billService2;
     @Autowired
+    private BillService billService;
+    @Autowired
     private BillRepository billRepository;
     @Autowired
     private CustomerRepository customerRepository;
+
+    @Autowired
+    private AddressRepository addressRepository;
+
+    @Autowired
+    private ApartmentRepository apartmentRepository;
+
+    @Autowired
+    private TimelineRepository timelineRepository;
+
+    @Autowired
+    private  TaxRepository taxRepository;
+
+    @Autowired
+    private  TaxBillRepository taxBillRepository;
     @Autowired
     private EntityManager entityManager;
     @Autowired
@@ -40,7 +60,7 @@ public class BillServiceTest {
     @Test
     @DisplayName("Lấy danh sách bill theo tháng hiện tại")
     @Transactional
-    public void testGetBills(){
+    public void testGetBills() {
         TransactionStatus transaction = this.transactionManager.getTransaction(null);
         fakeDataForTestGetBills();
 
@@ -64,7 +84,7 @@ public class BillServiceTest {
     @Test
     @DisplayName("Lấy danh sách bill theo tháng 3")
     @Transactional
-    public void testGetBillsV2(){
+    public void testGetBillsV2() {
         TransactionStatus transaction = this.transactionManager.getTransaction(null);
         fakeDataForTestGetBills();
 
@@ -88,7 +108,7 @@ public class BillServiceTest {
     @Test
     @DisplayName("Lấy danh sách bill theo tháng 4 và sắp xếp theo thứ tự giảm dần giá bill")
     @Transactional
-    public void testGetBillsV3(){
+    public void testGetBillsV3() {
         TransactionStatus transaction = this.transactionManager.getTransaction(null);
         fakeDataForTestGetBills();
 
@@ -120,7 +140,7 @@ public class BillServiceTest {
     @Test
     @DisplayName("Lấy danh sách bill theo tháng 6")
     @Transactional
-    public void testGetBillsV4(){
+    public void testGetBillsV4() {
         TransactionStatus transaction = this.transactionManager.getTransaction(null);
         fakeDataForTestGetBills();
 
@@ -144,7 +164,7 @@ public class BillServiceTest {
     @Test
     @DisplayName("Lấy danh sách bill theo tháng 3 của những người dùng có tên gồm chữ cái #ú ")
     @Transactional
-    public void testGetBillsV5(){
+    public void testGetBillsV5() {
         TransactionStatus transaction = this.transactionManager.getTransaction(null);
         fakeDataForTestGetBills();
 
@@ -169,7 +189,7 @@ public class BillServiceTest {
     @DisplayName("Lấy danh sách bill theo tháng 3 của những người dùng có tên gồm chữ cái #ú " +
             "và trạng thái là chưa đóng tiền")
     @Transactional
-    public void testGetBillsV6(){
+    public void testGetBillsV6() {
         TransactionStatus transaction = this.transactionManager.getTransaction(null);
         fakeDataForTestGetBills();
 
@@ -195,7 +215,7 @@ public class BillServiceTest {
             "và trạng thái là đã đóng tiền " +
             "và sắp xếp theo giá tiền giảm dần")
     @Transactional
-    public void testGetBillsV7(){
+    public void testGetBillsV7() {
         TransactionStatus transaction = this.transactionManager.getTransaction(null);
         fakeDataForTestGetBills();
 
@@ -226,7 +246,7 @@ public class BillServiceTest {
     @Test
     @DisplayName("Lấy danh sách bill theo tháng 3 của những người dùng có tên gồm chữ cái #z ")
     @Transactional
-    public void testGetBillsV8(){
+    public void testGetBillsV8() {
         TransactionStatus transaction = this.transactionManager.getTransaction(null);
         fakeDataForTestGetBills();
 
@@ -249,7 +269,7 @@ public class BillServiceTest {
     @Test
     @DisplayName("Lấy danh sách bill theo tháng 12 của những người dùng có tên gồm chữ cái #q ")
     @Transactional
-    public void testGetBillsV9(){
+    public void testGetBillsV9() {
         TransactionStatus transaction = this.transactionManager.getTransaction(null);
         fakeDataForTestGetBills();
 
@@ -274,7 +294,7 @@ public class BillServiceTest {
     @DisplayName("Lấy danh sách bill theo tháng 5 của những người dùng có tên gồm chữ cái #c " +
             "và sắp xếp theo thứ tự giá giảm dần")
     @Transactional
-    public void testGetBillsV10(){
+    public void testGetBillsV10() {
         TransactionStatus transaction = this.transactionManager.getTransaction(null);
         fakeDataForTestGetBills();
 
@@ -305,7 +325,7 @@ public class BillServiceTest {
     @DisplayName("Lấy danh sách bill theo tháng 3 " +
             "và sắp xếp theo thứ tự giá giảm dần")
     @Transactional
-    public void testGetBillsV11(){
+    public void testGetBillsV11() {
         TransactionStatus transaction = this.transactionManager.getTransaction(null);
         fakeDataForTestGetBills();
 
@@ -339,7 +359,7 @@ public class BillServiceTest {
     @DisplayName("Lấy danh sách bill theo tháng 5 của những người dùng có tên gồm chữ cái #c " +
             "và sắp xếp theo thứ tự giá tăng dần")
     @Transactional
-    public void testGetBillsV12(){
+    public void testGetBillsV12() {
         TransactionStatus transaction = this.transactionManager.getTransaction(null);
         fakeDataForTestGetBills();
 
@@ -372,7 +392,7 @@ public class BillServiceTest {
             "và theo thứ tự giảm dần " +
             "và trạng thái là đã đóng tiền")
     @Transactional
-    public void testGetBillsV13(){
+    public void testGetBillsV13() {
         TransactionStatus transaction = this.transactionManager.getTransaction(null);
         fakeDataForTestGetBills();
 
@@ -398,7 +418,7 @@ public class BillServiceTest {
             "và sắp xếp theo thứ tự giá tăng dần " +
             "và trạng thái đóng tiền là đã đóng")
     @Transactional
-    public void testGetBillsV14(){
+    public void testGetBillsV14() {
         TransactionStatus transaction = this.transactionManager.getTransaction(null);
         fakeDataForTestGetBills();
 
@@ -431,7 +451,7 @@ public class BillServiceTest {
             "và sắp xếp theo thứ tự giá giảm dần " +
             "và trạng thái đóng tiền là đã đóng")
     @Transactional
-    public void testGetBillsV15(){
+    public void testGetBillsV15() {
         TransactionStatus transaction = this.transactionManager.getTransaction(null);
         fakeDataForTestGetBills();
 
@@ -464,7 +484,7 @@ public class BillServiceTest {
             "và sắp xếp theo thứ tự giá giảm dần " +
             "và trạng thái đóng tiền là đã đóng")
     @Transactional
-    public void testGetBillsV16(){
+    public void testGetBillsV16() {
         TransactionStatus transaction = this.transactionManager.getTransaction(null);
         fakeDataForTestGetBills();
 
@@ -497,7 +517,7 @@ public class BillServiceTest {
             "và sắp xếp theo thứ tự giá giảm dần " +
             "và trạng thái đóng tiền là chưa đóng")
     @Transactional
-    public void testGetBillsV17(){
+    public void testGetBillsV17() {
         TransactionStatus transaction = this.transactionManager.getTransaction(null);
         fakeDataForTestGetBills();
 
@@ -530,7 +550,7 @@ public class BillServiceTest {
             "và sắp xếp theo thứ tự giá tăng dần " +
             "và trạng thái đóng tiền là chưa đóng")
     @Transactional
-    public void testGetBillsV18(){
+    public void testGetBillsV18() {
         TransactionStatus transaction = this.transactionManager.getTransaction(null);
         fakeDataForTestGetBills();
 
@@ -561,7 +581,7 @@ public class BillServiceTest {
     @Test
     @DisplayName("Lấy danh sách bill theo tháng 4 của những người dùng có tên gồm chữ cái #p")
     @Transactional
-    public void testGetBillsV19(){
+    public void testGetBillsV19() {
         TransactionStatus transaction = this.transactionManager.getTransaction(null);
         fakeDataForTestGetBills();
 
@@ -585,7 +605,7 @@ public class BillServiceTest {
     @Test
     @DisplayName("Lấy danh sách bill theo tháng 4 của những người dùng có trạng thái đã đóng tiền")
     @Transactional
-    public void testGetBillsV20(){
+    public void testGetBillsV20() {
         TransactionStatus transaction = this.transactionManager.getTransaction(null);
         fakeDataForTestGetBills();
 
@@ -609,9 +629,9 @@ public class BillServiceTest {
         this.transactionManager.rollback(transaction);
     }
 
-    void showResultAfterFilter(Page<BillResponse> billResponses){
+    void showResultAfterFilter(Page<BillResponse> billResponses) {
         System.out.println("-------------------------------------DATA AFTER FILTER:");
-        for (BillResponse billResponse : billResponses.getContent()){
+        for (BillResponse billResponse : billResponses.getContent()) {
             System.out.println(billResponse.getId() +
                     " - price: " + billResponse.getPrice() +
                     " - status: " + billResponse.getStatus() +
@@ -620,7 +640,9 @@ public class BillServiceTest {
         System.out.println("-------------------------------------------------------");
     }
 
-    void fakeDataForTestGetBills(){
+
+
+    void fakeDataForTestGetBills() {
         //        RuntimeException exception = Assertions.assertThrows(
 //                RuntimeException.class, () -> categoryService.create(categoryDto1)
         // A, B, C
@@ -729,5 +751,6 @@ public class BillServiceTest {
         // flush to db
         entityManager.flush();
     }
+
 
 }
