@@ -226,13 +226,13 @@
                 table.row.add($(row)).draw();
               });
 
-              return data;
-            })
-            .then((data) => {
-              data.content.forEach((item, index) => {
-                $(`.infor-${index}`).click(function () {
-                  let vatPrice = 0;
-                  let bvmtPrice = 0;
+            return data;
+          })
+          .then((data) => {
+            data.content.forEach((item, index) => {
+              $(`.infor-${index}`).click(function () {
+                let vatPrice = 0;
+                let bvmtPrice = 0;
 
                   // Duyệt qua mảng taxs và lấy giá trị của thuế TAX và BVMT
                   item.taxs.forEach((tax) => {
