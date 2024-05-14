@@ -3,6 +3,7 @@ package com.example.electricitybillingsystem.service;
 import com.example.electricitybillingsystem.model.*;
 import com.example.electricitybillingsystem.repository.*;
 import com.example.electricitybillingsystem.vo.request.TurnOffWaterInfoRequest;
+import jakarta.mail.Address;
 import jakarta.mail.MessagingException;
 import jakarta.mail.Multipart;
 import jakarta.mail.internet.MimeMessage;
@@ -12,10 +13,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -27,6 +25,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
@@ -350,6 +349,7 @@ public class EmailServiceTest {
         List<Long> billIds = new ArrayList<>(); // Danh sách billIds mẫu
         CustomerEntity customerEntity = new CustomerEntity();
         customerEntity.setId(1L);
+        customerEntity.setName("Phuc");
         customerEntity.setEmail("example@example.com");
         List<CustomerEntity> customers = Collections.singletonList(customerEntity);
 
@@ -376,6 +376,7 @@ public class EmailServiceTest {
         verify(mockCustomerService, times(1)).getAllCustomerByBillIds(billIds); // Xác nhận rằng phương thức getAllCustomerByBillIds đã được gọi đúng một lần
         verify(mockMailSender, times(1)).send(any(MimeMessage.class)); // Xác nhận rằng phương thức send của mockMailSender đã được gọi đúng một lần
     }
+
     @Test
     @DisplayName("Kiểm Tra gửi email trước khi thanh toán mà không có khách hàng nào")
     public void testSendEmailBeforePayment_noCustomer() throws MessagingException, UnsupportedEncodingException {
@@ -400,6 +401,144 @@ public class EmailServiceTest {
         assertEquals("Không tồn tại khách hàng nào", result); // Kiểm tra kết quả trả về của phương thức
         verify(mockCustomerService, times(1)).getAllCustomerByBillIds(billIds); // Xác nhận rằng phương thức getAllCustomerByBillIds đã được gọi đúng một lần
         verifyNoInteractions(mockMailSender); // Xác nhận rằng không có phương thức nào của mockMailSender đã được gọi
+    }
+
+    @Test
+    @DisplayName("Kiểm Tra gửi email sau khi thanh toán với tồn tại khách hàng")
+    public void testSendEmailAfterPayment_customerExists() throws MessagingException, UnsupportedEncodingException {
+        // Arrange
+        JavaMailSender mockMailSender = mock(JavaMailSender.class);
+        AddressService mockAddressService = mock(AddressService.class);
+        CustomerService mockCustomerService = mock(CustomerService.class);
+        TaxService mockTaxService = mock(TaxService.class);
+        TieredPricingService mockTieredPricingService = mock(TieredPricingService.class);
+
+        EmailService emailService = new EmailService(mockMailSender, mockAddressService, mockCustomerService, mockTaxService, mockTieredPricingService);
+
+        List<Long> billIds = new ArrayList<>(); // Danh sách billIds mẫu
+        CustomerEntity customerEntity = new CustomerEntity();
+        customerEntity.setId(1L);
+        customerEntity.setName("Phuc");
+        customerEntity.setEmail("example@example.com");
+        List<CustomerEntity> customers = Collections.singletonList(customerEntity);
+
+        // Tạo mock cho longBillEntityMap để không trả về null
+        Map<Long, BillEntity> longBillEntityMap = new HashMap<>();
+        BillEntity billEntity = new BillEntity();
+        billEntity.setPrice(BigDecimal.valueOf(100)); // Thiết lập giá trị cho billEntity để tránh lỗi NullPointerException
+        longBillEntityMap.put(customerEntity.getId(), billEntity);
+
+        // Mock customerService.getAllCustomerByBillIds(billIds) để trả về danh sách khách hàng
+        when(mockCustomerService.getAllCustomerByBillIds(billIds)).thenReturn(customers);
+        // Mock customerService.getBillMap(billIds) để trả về longBillEntityMap
+        when(mockCustomerService.getBillMap(billIds)).thenReturn(longBillEntityMap);
+
+        // Mock JavaMailSender để trả về mimeMessage không null khi gọi createMimeMessage()
+        MimeMessage mockMimeMessage = mock(MimeMessage.class);
+        when(mockMailSender.createMimeMessage()).thenReturn(mockMimeMessage);
+
+        // Act
+        String result = emailService.sendEmailAfterPayment(billIds);
+
+        // Assert
+        assertEquals("Email sent successfully", result); // Kiểm tra kết quả trả về của phương thức
+        verify(mockCustomerService, times(1)).getAllCustomerByBillIds(billIds); // Xác nhận rằng phương thức getAllCustomerByBillIds đã được gọi đúng một lần
+        verify(mockMailSender, times(1)).send(any(MimeMessage.class)); // Xác nhận rằng phương thức send của mockMailSender đã được gọi đúng một lần
+    }
+
+    @Test
+    @DisplayName("Kiểm Tra gửi email trước khi thanh toán mà không có khách hàng nào")
+    public void testSendEmailAfterPayment_noCustomer() throws MessagingException, UnsupportedEncodingException {
+        // Arrange
+        JavaMailSender mockMailSender = mock(JavaMailSender.class);
+        AddressService mockAddressService = mock(AddressService.class);
+        CustomerService mockCustomerService = mock(CustomerService.class);
+        TaxService mockTaxService = mock(TaxService.class);
+        TieredPricingService mockTieredPricingService = mock(TieredPricingService.class);
+
+        EmailService emailService = new EmailService(mockMailSender, mockAddressService, mockCustomerService, mockTaxService, mockTieredPricingService);
+
+        List<Long> billIds = new ArrayList<>(); // Danh sách billIds mẫu
+
+        // Mock customerService.getAllCustomerByBillIds(billIds) để trả về null
+        when(mockCustomerService.getAllCustomerByBillIds(billIds)).thenReturn(null);
+
+        // Act
+        String result = emailService.sendEmailAfterPayment(billIds);
+
+        // Assert
+        assertEquals("Không tồn tại khách hàng nào", result); // Kiểm tra kết quả trả về của phương thức
+        verify(mockCustomerService, times(1)).getAllCustomerByBillIds(billIds); // Xác nhận rằng phương thức getAllCustomerByBillIds đã được gọi đúng một lần
+        verifyNoInteractions(mockMailSender); // Xác nhận rằng không có phương thức nào của mockMailSender đã được gọi
+    }
+
+    @Test
+    @DisplayName("Kiểm Tra gửi email quá hạn thanh toán mà không có khách hàng nào")
+    public void testSendEmailOverTime_noCustomer() throws MessagingException, UnsupportedEncodingException {
+        // Arrange
+        JavaMailSender mockMailSender = mock(JavaMailSender.class);
+        AddressService mockAddressService = mock(AddressService.class);
+        CustomerService mockCustomerService = mock(CustomerService.class);
+        TaxService mockTaxService = mock(TaxService.class);
+        TieredPricingService mockTieredPricingService = mock(TieredPricingService.class);
+
+        EmailService emailService = new EmailService(mockMailSender, mockAddressService, mockCustomerService, mockTaxService, mockTieredPricingService);
+
+        List<Long> billIds = new ArrayList<>(); // Danh sách billIds mẫu
+
+        // Mock customerService.getAllCustomerByBillIds(billIds) để trả về null
+        when(mockCustomerService.getAllCustomerByBillIds(billIds)).thenReturn(null);
+
+        // Act
+        String result = emailService.sendEmailOverTime(billIds);
+
+        // Assert
+        assertEquals("Không tồn tại khách hàng nào", result); // Kiểm tra kết quả trả về của phương thức
+        verify(mockCustomerService, times(1)).getAllCustomerByBillIds(billIds); // Xác nhận rằng phương thức getAllCustomerByBillIds đã được gọi đúng một lần
+        verifyNoInteractions(mockMailSender); // Xác nhận rằng không có phương thức nào của mockMailSender đã được gọi
+    }
+
+    @Test
+    @DisplayName("Kiểm Tra gửi email sau khi thanh toán với tồn tại khách hàng")
+    public void testSendEmailOverTime_customerExists() throws MessagingException, UnsupportedEncodingException {
+        // Arrange
+        JavaMailSender mockMailSender = mock(JavaMailSender.class);
+        AddressService mockAddressService = mock(AddressService.class);
+        CustomerService mockCustomerService = mock(CustomerService.class);
+        TaxService mockTaxService = mock(TaxService.class);
+        TieredPricingService mockTieredPricingService = mock(TieredPricingService.class);
+
+        EmailService emailService = new EmailService(mockMailSender, mockAddressService, mockCustomerService, mockTaxService, mockTieredPricingService);
+
+        List<Long> billIds = new ArrayList<>(); // Danh sách billIds mẫu
+        CustomerEntity customerEntity = new CustomerEntity();
+        customerEntity.setId(1L);
+        customerEntity.setName("Phuc");
+        customerEntity.setEmail("example@example.com");
+        List<CustomerEntity> customers = Collections.singletonList(customerEntity);
+
+        // Tạo mock cho longBillEntityMap để không trả về null
+        Map<Long, BillEntity> longBillEntityMap = new HashMap<>();
+        BillEntity billEntity = new BillEntity();
+        billEntity.setPrice(BigDecimal.valueOf(100)); // Thiết lập giá trị cho billEntity để tránh lỗi NullPointerException
+        longBillEntityMap.put(customerEntity.getId(), billEntity);
+
+        // Mock customerService.getAllCustomerByBillIds(billIds) để trả về danh sách khách hàng
+        when(mockCustomerService.getAllCustomerByBillIds(billIds)).thenReturn(customers);
+        // Mock customerService.getBillMap(billIds) để trả về longBillEntityMap
+        when(mockCustomerService.getBillMap(billIds)).thenReturn(longBillEntityMap);
+
+        // Mock JavaMailSender để trả về mimeMessage không null khi gọi createMimeMessage()
+        MimeMessage mockMimeMessage = mock(MimeMessage.class);
+        when(mockMailSender.createMimeMessage()).thenReturn(mockMimeMessage);
+
+        // Act
+        String result = emailService.sendEmailOverTime(billIds);
+
+        // Assert
+        assertEquals("Email sent successfully", result); // Kiểm tra kết quả trả về của phương thức
+        verify(mockCustomerService, times(1)).getAllCustomerByBillIds(billIds); // Xác nhận rằng phương thức getAllCustomerByBillIds đã được gọi đúng một lần
+        verify(mockMailSender, times(1)).send(any(MimeMessage.class)); // Xác nhận rằng phương thức send của mockMailSender đã được gọi đúng một lần
     }
 
 
