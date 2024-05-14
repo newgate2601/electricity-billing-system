@@ -46,7 +46,7 @@
           <th scope="col">#</th>
           <th scope="col">Tên hộ gia đình</th>
           <th scope="col">Mã hộ gia đình</th>
-          <th scope="col" style="width: 22%; text-align: center">Địa chỉ</th>
+          <th scope="col" style="width: 25%; text-align: center">Địa chỉ</th>
           <th scope="col">Số nước cũ(m<sup>3</sup>)</th>
           <th scope="col">Số nước mới(m<sup>3</sup>)</th>
           <th scope="col">Số nước sử dụng(m<sup>3</sup>)</th>
@@ -78,10 +78,10 @@
       <tfoot>
         <tr>
           <th colspan="4">Tổng</th>
-          <th id="old_water"></th>
+          <th></th>
           <th id="new_water"></th>
           <th id="final_water"></th>
-          <th></th>
+          <th id="old_water"></th>
           <th id="total_amount"></th>
           <th></th>
         </tr>
@@ -140,10 +140,7 @@
       });
 
       const districtSelect = document.getElementById("districtSelect");
-      const option = document.createElement("option");
-      option.textContent = "chọn tất cả";
-      option.value = "";
-      districtSelect.appendChild(option);
+
 
       $("#districtSelect").change(function () {
         var selectedDistrict = $(this).val();
@@ -151,7 +148,6 @@
         table.column(3).search(selectedDistrict).draw();
       });
 
-      // Lấy dữ liệu ban đầu
       async function fetchApi(api) {
         try {
           const response = await fetch(api, {
@@ -165,11 +161,15 @@
           }
 
           const data = await response.json();
+          if (!Array.isArray(data.content) || data.content.length === 0) {
+            throw new Error("API did not return a valid list of items.");
+          }
 
           const rows = [];
           const districtOptions = new Set();
-
-          data.content.forEach((item, index) => {
+          console.log(data.content)
+          for (let index = 0; index < data.content.length; index++) {
+            const item = data.content[index];
             const row = `
         <tr>
           <td class='infor-${index}'>${item.id}</td>
@@ -182,26 +182,31 @@
             ${item.apartment.addressEntity?.district ?? ''}, 
             ${item.apartment.addressEntity?.city ?? ''}
           </td>
-          <td class='infor-${index}'>${item.startNumber}</td>
-          <td class='infor-${index}'>${item.endNumber}</td>
-          <td class='infor-${index}'>${item.endNumber - item.startNumber}</td>
+          <td class='infor-${index}' style="text-align:right">${item.startNumber}</td>
+          <td class='infor-${index}'  style="text-align:right">${item.endNumber}</td>
+          <td class='infor-${index}'  style="text-align:right">${item.endNumber - item.startNumber}</td>
           <td class='infor-${index}' style='white-space: nowrap'>${item.submitTimeResponse ?? ''}</td>
-          <td class='infor-${index}'>${item.price}</td>
+          <td class='infor-${index}' style="text-align:right">${item.price.toLocaleString('vi-VN')}</td>
           <td><input type="checkbox" class="select-checkbox" style="width: 25px; height: 25px" /></td>
         </tr>`;
-            const option = document.createElement("option");
-            option.textContent = item.apartment.addressEntity.district;
-            option.value = item.apartment.addressEntity.district;
 
             rows.push(row);
-            districtOptions.add(item.apartment.addressEntity?.district ?? '');
-          });
+            if (item.apartment.addressEntity?.district) {
+              districtOptions.add(item.apartment.addressEntity.district);
+            }
+            table.row.add($(row)).draw();
+          }
+
 
           // Append rows to the table
-          table.row.add($(rows.join(''))).draw();
 
           // Populate districtSelect options
-          districtSelect.innerHTML = "";  // Clear existing options
+          districtSelect.innerHTML = ""; // Clear existing options
+          const option = document.createElement("option");
+          option.textContent = "chọn tất cả";
+          option.value = "";
+          districtSelect.appendChild(option);
+          console.log(districtOptions)
           districtOptions.forEach(district => {
             const option = document.createElement("option");
             option.textContent = district;
@@ -243,7 +248,6 @@
           console.error("Error:", error);
         }
       }
-
       //API call
       fetchApi("http://localhost:8080/api/v1/bill/list/after");
       $("#search-btn").click(function () {
@@ -335,10 +339,10 @@
         sumSoNuocSuDung = isNaN(sumSoNuocSuDung) ? 0 : sumSoNuocSuDung;
         sumThanhTien = isNaN(sumThanhTien) ? 0 : sumThanhTien;
 
-        $("#old_water").text(sumSoNuocCu.toFixed(2));
-        $("#new_water").text(sumSoNuocMoi.toFixed(2));
-        $("#final_water").text(sumSoNuocSuDung.toFixed(2));
-        $("#total_amount").text(sumThanhTien.toFixed(2));
+        $("#old_water").text(sumSoNuocCu.toFixed(2).toLocaleString('vi-VN'));
+        $("#new_water").text(sumSoNuocMoi.toFixed(2).toLocaleString('vi-VN'));
+        $("#final_water").text(sumSoNuocSuDung.toFixed(2).toLocaleString('vi-VN'));
+        $("#total_amount").text(sumThanhTien.toFixed(2).toLocaleString('vi-VN'));
       }
     });
 
