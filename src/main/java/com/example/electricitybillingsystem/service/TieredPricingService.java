@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -33,6 +34,19 @@ public class TieredPricingService {
     public Object updatePrice(UpdatePriceRequest request) {
         tieredPricingRepository.deleteAllByElectricityServiceId(request.getElectricityServiceId());
         tieredPricingRepository.saveAll(request.getNewPrices().stream().map(price -> {
+            if (price.getStartNumber() < 0) {
+                throw new IllegalArgumentException("Giá trị bắt đầu không được âm");
+            }
+            if (price.getEndNumber() < 0) {
+                throw new IllegalArgumentException("Giá trị kết thúc không được âm");
+            }
+            if (price.getValue().compareTo(BigDecimal.ZERO) < 0) {
+                throw new IllegalArgumentException("Giá tiền không được âm");
+            }
+            if (price.getStartNumber() >= price.getEndNumber()) {
+                throw new IllegalArgumentException("Giá trị bắt đầu phải nhỏ hơn giá trị kết thúc");
+            }
+
             TieredPricingEntity entity = tieredPricingMapper.toEntity(price);
             entity.setElectricityServiceId(request.getElectricityServiceId());
             entity.setIsStatus(true);

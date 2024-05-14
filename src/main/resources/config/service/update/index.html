@@ -24,15 +24,13 @@
         <!-- Add Tier Button -->
         <button type="button" id="addTierButton"
                 class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 focus:outline-none focus:bg-blue-600">
-            Thêm
-            bậc mới
+            Thêm bậc mới
         </button>
 
         <!-- Submit Button -->
         <button type="submit"
                 class="bg-green-500 text-white px-4 py-2 rounded mt-4 hover:bg-green-600 focus:outline-none focus:bg-green-600">
-            Cập
-            nhật giá tiền nước
+            Cập nhật giá tiền nước
         </button>
     </form>
 </div>
@@ -64,7 +62,7 @@
             const values = formData.getAll('value[]')
             const newPrices = startNumbers.map((_, index) => ({
                 startNumber: Number(startNumbers[index]),
-                endNumber: Number(endNumbers[index]) || null,
+                endNumber: endNumbers[index] !== '' ? Number(endNumbers[index]) : null,
                 value: Number(values[index]),
             }))
             const body = {electricityServiceId: waterService.id, newPrices}
@@ -78,11 +76,11 @@
             })
                 .then(res => res.json())
                 .then((data) => {
-                    if (data) {
+                    if (data.message) {
+                        alert(data.message)
+                    } else {
                         alert("Thành công")
                         history.back()
-                    } else {
-                        alert("Thất bại")
                     }
                 })
                 .catch(e => {
@@ -96,9 +94,9 @@
         const newTier = document.createElement('div');
         newTier.className = 'grid grid-cols-4 gap-4 mb-4';
         newTier.innerHTML = `
-                <input type="number" name="startNumber[]" class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500" placeholder="Bắt đầu" value=${startNumber} required="">
+                <input type="number" name="startNumber[]" class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500" placeholder="Bắt đầu" value=${startNumber} required>
                 <input type="number" name="endNumber[]" class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500" placeholder="Kết thúc" value=${endNumber}>
-                <input type="number" name="value[]" class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500" placeholder="Giá trị" value=${value} required="">
+                <input type="number" name="value[]" class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500" placeholder="Giá trị" value=${value} required>
                 <button type="button" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 focus:outline-none focus:bg-red-600" onclick="removeTier(this)">Xoá</button>
             `;
         tierContainer.appendChild(newTier);

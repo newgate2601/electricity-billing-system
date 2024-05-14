@@ -27,10 +27,11 @@ public class TaxService {
 
     public TaxEntity save(Long id, BigDecimal tax) {
         TaxEntity entity = taxRepo.findById(id).orElseThrow();
-        if (tax.compareTo(BigDecimal.valueOf(0)) <= 0 || tax.compareTo(BigDecimal.valueOf(100)) >= 0) {
-            throw new IllegalArgumentException("Giá trị thuế phải lớn hơn 0 và nhỏ hơn 100");
+        if (tax.compareTo(BigDecimal.valueOf(0)) >= 0 && tax.compareTo(BigDecimal.valueOf(100)) <= 0) {
+            entity.setTax(tax);
+        } else {
+            throw new IllegalArgumentException("Giá trị thuế phải trong khoảng 0 - 100");
         }
-        entity.setTax(tax);
         return taxRepo.save(entity);
     }
 

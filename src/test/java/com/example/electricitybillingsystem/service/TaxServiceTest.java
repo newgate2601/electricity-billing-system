@@ -42,7 +42,8 @@ class TaxServiceTest {
                 BigDecimal.valueOf(12.5),
                 BigDecimal.valueOf(100),
                 BigDecimal.valueOf(101),
-                "Kí tự không phải số"
+                "Kí tự không phải số",
+                null
         );
     }
 
@@ -58,11 +59,13 @@ class TaxServiceTest {
         TaxEntity entity = taxRepository.save(TaxEntity.builder().id(1L).name("VAT").tax(BigDecimal.valueOf(10)).build());
         entityManager.flush();
 
-        if (tax instanceof BigDecimal && ((BigDecimal) tax).compareTo(BigDecimal.ZERO) > 0 && ((BigDecimal) tax).compareTo(BigDecimal.valueOf(100)) < 0) {
+        if (tax instanceof BigDecimal && ((BigDecimal) tax).compareTo(BigDecimal.ZERO) >= 0 && ((BigDecimal) tax).compareTo(BigDecimal.valueOf(100)) <= 0) {
             taxService.save(entity.getId(), (BigDecimal) tax);
 
             TaxEntity savedTaxEntity = taxRepository.findById(entity.getId()).orElseThrow();
             assertEquals(tax, savedTaxEntity.getTax());
+        } else if (tax == null) {
+            assertThrows(NullPointerException.class, () -> taxService.save(entity.getId(), (BigDecimal) tax));
         } else if (!(tax instanceof BigDecimal)) {
             assertThrows(ClassCastException.class, () -> taxService.save(entity.getId(), (BigDecimal) tax));
         } else {
