@@ -150,6 +150,7 @@
           const rows = [];
           const districtOptions = new Set();
           console.log(data.content)
+          let sumThanhTien = 0;
           for (let index = 0; index < data.content.length; index++) {
             const item = data.content[index];
             const row = `
@@ -171,14 +172,17 @@
           <td class='infor-${index}' style="text-align:right">${item.price.toLocaleString('vi-VN')}</td>
           <td><input type="checkbox" class="select-checkbox" style="width: 25px; height: 25px" /></td>
         </tr>`;
-
+            sumThanhTien += item.price;
             rows.push(row);
             if (item.apartment.addressEntity?.district) {
               districtOptions.add(item.apartment.addressEntity.district);
             }
+
             table.row.add($(row)).draw();
           }
-
+          $("#total_amount").text(`${sumThanhTien.toLocaleString('vi-VN', {
+            type: 'currency',
+          })} VNĐ`);
 
           // Append rows to the table
 
