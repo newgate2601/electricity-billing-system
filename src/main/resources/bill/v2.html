@@ -1,103 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Bill List</title>
-    <style>
-      body {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        margin: 0;
-      }
 
-      #billTable {
-        border-collapse: collapse;
-        width: 80%; /* Adjust the width as needed */
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bill List</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
 
-      #billTable th,
-      #billTable td {
-        border: 1px solid #ddd;
-        padding: 5px;
-        text-align: center;
-      }
+    #searchTable,
+    #billTable {
+      border-collapse: collapse;
+      width: 80%;
+    }
 
-      #billTable th {
-        background-color: #f2f2f2;
-      }
+    #searchTable th,
+    #searchTable td,
+    #billTable th,
+    #billTable td {
+      border: 1px solid #ddd;
+      padding: 5px;
+      text-align: center;
+    }
 
-      #monthInput,
-      #yearInput {
-        width: 40%;
-      }
+    #searchTable th,
+    #billTable th {
+      background-color: #f2f2f2;
+    }
 
-      #searchButton {
-        margin-top: 10px;
-      }
+    #monthInput,
+    #yearInput {
+      width: 80%;
+    }
 
-      .content {
-        width: 80vw;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-content: space-around;
-      }
+    #searchButton {
+      margin-top: 10px;
+    }
 
-      #billTable {
-        width: 100%;
-      }
+    .content {
+      width: 80vw;
+      display: flex;
+      flex-direction: column;
+      align-content: space-around;
+    }
 
-      #sortSelect {
-        width: 80%;
-      }
+    #sortSelect {
+      width: 80%;
+    }
 
-      #status {
-        width: 80%;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="content">
-      <h2 class="text-center">Theo dõi danh sách</h2>
-      <table id="billTable">
-        <thead>
-          <tr>
-            <th colspan="1">Tháng</th>
-            <th colspan="1">Năm</th>
-            <th colspan="1">Sắp xếp theo Số tiền cần đóng</th>
-            <th colspan="1">Trạng thái KH</th>
-            <th colspan="2">Tên khách hàng</th>
-            <th colspan="1">Tìm kiếm</th>
-          </tr>
-          <tr>
-            <td colspan="1">
-              <input type="number" id="monthInput" min="1" max="12" />
-            </td>
-            <td colspan="1">
-              <input type="number" id="yearInput" min="2000" max="2025" />
-            </td>
-            <td colspan="1">
-              <select id="sortSelect">
-                <option value="asc">Tăng dần</option>
-                <option value="desc">Giảm dần</option>
-              </select>
-            </td>
-            <td colspan="1">
-              <select id="status">
-                <option value="DONE">Đã đóng</option>
-                <option value="YET">Chưa đóng</option>
-              </select>
-            </td>
-            <td colspan="2"><input type="text" id="name" /></td>
-            <td colspan="1">
-              <button id="searchButton">Tìm kiếm</button>
-            </td>
-          </tr>
-        </thead>
-      </table>
+    #status {
+      width: 80%;
+    }
+
+    .table-container {
+      width: 100%;
+      overflow-y: auto;
+      max-height: 60vh;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="content">
+    <h2 class="text-center">Theo dõi danh sách</h2>
+    <table id="searchTable">
+      <thead>
+        <tr>
+          <th>Tháng</th>
+          <th>Năm</th>
+          <th>Sắp xếp theo Số tiền cần đóng</th>
+          <th>Trạng thái KH</th>
+          <th colspan="2">Tên khách hàng</th>
+          <th>Tìm kiếm</th>
+        </tr>
+        <tr>
+          <td>
+            <input type="number" id="monthInput" min="1" max="12" />
+          </td>
+          <td>
+            <input type="number" id="yearInput" min="2000" max="2025" />
+          </td>
+          <td>
+            <select id="sortSelect">
+              <option value="asc">Tăng dần</option>
+              <option value="desc">Giảm dần</option>
+            </select>
+          </td>
+          <td>
+            <select id="status">
+              <option value="DONE">Đã đóng</option>
+              <option value="NONE">Chưa đóng</option>
+            </select>
+          </td>
+          <td colspan="2"><input type="text" id="name" /></td>
+          <td>
+            <button id="searchButton">Tìm kiếm</button>
+          </td>
+        </tr>
+      </thead>
+    </table>
+    <div class="table-container">
       <table id="billTable">
         <thead>
           <tr>
@@ -136,129 +145,116 @@
         </tfoot>
       </table>
     </div>
+  </div>
 
-    <script>
-      const ENDPOINT = "http://localhost:8080/api/v1/bill";
+  <script>
+    const ENDPOINT = "http://localhost:8080/api/v1/bill";
 
-      function search() {
-        const monthInput = document.getElementById("monthInput").value;
-        const yearInput = document.getElementById("yearInput").value;
-        const sort = document.getElementById("sortSelect").value;
-        const status = document.getElementById("status").value;
-        const name = document.getElementById("name").value;
+    function search() {
+      const monthInput = document.getElementById("monthInput").value;
+      const yearInput = document.getElementById("yearInput").value;
+      const sort = document.getElementById("sortSelect").value;
+      const status = document.getElementById("status").value;
+      const name = document.getElementById("name").value;
 
-        const urlBill = new URL(ENDPOINT, window.location.origin);
+      const urlBill = new URL(ENDPOINT, window.location.origin);
 
-
-
-        if (monthInput !== "") {
-          urlBill.searchParams.append("month", monthInput);
-        }
-
-        if (yearInput !== "") {
-          urlBill.searchParams.append("year", yearInput);
-        }
-
-        urlBill.searchParams.append("order", sort);
-
-        if (name !== "") {
-          urlBill.searchParams.append("name", name);
-        }
-
-        if (status !== "") {
-          urlBill.searchParams.append("statusValue", status);
-        }
-
-
-        fetch(urlBill)
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error("Error system!!!");
-            }
-            return response.json();
-          })
-          .then((data) => {
-            var billTableBody = document.getElementById("billTableBody");
-            var counter = 1;
-            var totalDue = 0;
-            var totalPaid = 0;
-
-            billTableBody.innerHTML = ""; // Clear previous data
-
-            data.content.forEach(function (bill) {
-              var actionButtons = "";
-              if (bill.status === "DONE") {
-                actionButtons =
-                  '<button onclick="viewDetail(' +
-                  bill.id +
-                  ')">Xem chi tiết</button>';
-                totalPaid += bill.price;
-              } else if (bill.status === "YET") {
-                actionButtons =
-                  '<button onclick="viewDetail(' +
-                  bill.id +
-                  ')">Chi tiết</button>'
-                totalDue += bill.price;
-              }
-
-              var row =
-                "<tr>" +
-                "<td>" +
-                counter++ +
-                "</td>" +
-                "<td>" +
-                (bill.customerName ? bill.customerName : "N/A") +
-                "</td>" +
-                "<td>" +
-                bill.price +
-                "</td>" +
-                "<td>" +
-                bill.status +
-                "</td>" +
-                "<td>" +
-                actionButtons +
-                "</td>" +
-                "</tr>";
-              billTableBody.innerHTML += row;
-            });
-
-            // Update totals in the table footer
-            document.getElementById("totalDue").innerText = totalDue;
-            document.getElementById("totalPaid").innerText = totalPaid;
-            document.getElementById("totalRemaining").innerText =
-                    totalDue;
-          })
-          .catch((error) => {
-            console.error("Failed to fetch bill data:", error);
-          });
+      if (monthInput !== "") {
+        urlBill.searchParams.append("month", monthInput);
       }
 
-      document.addEventListener("DOMContentLoaded", function () {
-        search();
-      });
+      if (yearInput !== "") {
+        urlBill.searchParams.append("year", yearInput);
+      }
 
-      document
-        .getElementById("searchButton")
-        .addEventListener("click", function () {
-          const monthInput = document.getElementById("monthInput").value;
-          const yearInput = document.getElementById("yearInput").value;
+      if (name !== "") {
+        urlBill.searchParams.append("name", name);
+      }
 
-          if((monthInput!="" && +monthInput<=0) || (yearInput!=""&&+yearInput<=0)){
-            alert("Năm hoặc tháng phải lớn hơn 0!")
-            return;
+      urlBill.searchParams.append("order", sort);
+      urlBill.searchParams.append("status", status);
+
+      fetch(urlBill)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Error system!!!");
           }
-          search();
+          return response.json();
+        })
+        .then((data) => {
+          var billTableBody = document.getElementById("billTableBody");
+          var counter = 1;
+          var totalDue = 0;
+          var totalPaid = 0;
+
+          billTableBody.innerHTML = ""; // Clear previous data
+
+          data.content.forEach(function (bill) {
+            var actionButtons =
+              '<button onclick="viewDetail(' +
+              bill.id +
+              ')">Chi tiết</button>';
+            if (bill.status === "DONE") {
+              totalPaid += bill.price;
+            } else if (bill.status === "YET") {
+              totalDue += bill.price;
+            }
+
+            var row =
+              "<tr>" +
+              "<td>" +
+              counter++ +
+              "</td>" +
+              "<td>" +
+              (bill.customerName ? bill.customerName : "N/A") +
+              "</td>" +
+              "<td>" +
+              bill.price +
+              "</td>" +
+              "<td>" +
+              bill.status +
+              "</td>" +
+              "<td>" +
+              actionButtons +
+              "</td>" +
+              "</tr>";
+            billTableBody.innerHTML += row;
+          });
+
+          // Calculate remaining total
+          var totalRemaining = totalDue - totalPaid;
+
+          // Update totals in the table footer
+          document.getElementById("totalDue").innerText = totalDue;
+          document.getElementById("totalPaid").innerText = totalPaid;
+          document.getElementById("totalRemaining").innerText = totalRemaining;
+        })
+        .catch((error) => {
+          console.error("Failed to fetch bill data:", error);
         });
+    }
 
-      function viewDetail(billId) {
-        // Implement your logic to view detail for the given bill ID
-        console.log("View detail for bill ID:", billId);
-      }
+    document.addEventListener("DOMContentLoaded", function () {
+      search();
+    });
 
-      function sendEmail(billId) {
-        // Implement your logic to send email for the given bill ID
-        console.log("Send email for bill ID:", billId);
-      }
-    </script>
-  </body>
+    document.getElementById("searchButton").addEventListener("click", function () {
+      search();
+    });
+
+    function viewDetail(billId) {
+      // Implement your logic to view detail for the given bill ID
+      // window.location.href = `detail-info.html?billId=${billId}`;
+      window.location.replace(
+        "detail-info.html?billId=" + encodeURIComponent(billId)
+      );
+    }
+
+    function sendEmail(billId) {
+      // Implement your logic to send email for the given bill ID
+      console.log("Send email for bill ID:", billId);
+    }
+  </script>
+</body>
+
 </html>

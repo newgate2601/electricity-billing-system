@@ -66,7 +66,7 @@ public class EmailService {
         }
 
         List<CustomerEntity> customers = addressService.getAllCustomerByWard(turnOffWaterInfoRequest.getWard());
-        if (customers == null || customers.size() == 0) {
+        if (customers == null || customers.size() == 0 ) {
             return "Không tồn tại khách hàng nào";
         }
 

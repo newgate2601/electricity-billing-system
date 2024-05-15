@@ -23,6 +23,10 @@ public class TieredPricingEntity extends BaseEnt {
     @Column(name = "_value")
     private BigDecimal value;
 
+    private BigDecimal price;
+
+    private String name;
+
     private Long startNumber;
 
     private Long endNumber;

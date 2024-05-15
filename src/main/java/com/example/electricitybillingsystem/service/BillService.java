@@ -41,15 +41,15 @@ public class BillService {
         Page<BillEntity> billEntities = billRepository.findBillOverLimitedTime(pageable);
 
         List<BillEntity> filteredBillEntities = new ArrayList<>();
-        if (!startTime.equals("") && !endTime.equals("")) {
+        if (Objects.nonNull(startTime) && Objects.nonNull(endTime)) {
             filteredBillEntities =
-                    billEntities.stream().filter(bill -> !bill.getSubmitTime().isBefore(OffsetDateTime.parse(startTime)) && !bill.getSubmitTime().isAfter(OffsetDateTime.parse(endTime))).collect(Collectors.toList());
-        } else if (startTime.equals("") && !endTime.equals("")) {
+                    billEntities.stream().filter(bill -> !bill.getLimitedTime().isBefore(parseToOffsetDateTime(startTime)) && !bill.getLimitedTime().isAfter(parseToOffsetDateTime(endTime))).collect(Collectors.toList());
+        } else if (Objects.isNull(startTime) && Objects.nonNull(endTime)) {
             filteredBillEntities =
-                    billEntities.stream().filter(bill -> bill.getSubmitTime().isBefore(OffsetDateTime.parse(endTime))).collect(Collectors.toList());
-        } else if (!startTime.equals("") && endTime.equals("")) {
+                    billEntities.stream().filter(bill -> bill.getLimitedTime().isBefore(parseToOffsetDateTime(endTime))).collect(Collectors.toList());
+        } else if (Objects.nonNull(startTime) && Objects.isNull(startTime)) {
             filteredBillEntities =
-                    billEntities.stream().filter(bill -> bill.getSubmitTime().isAfter(OffsetDateTime.parse(startTime))).collect(Collectors.toList());
+                    billEntities.stream().filter(bill -> bill.getLimitedTime().isAfter(parseToOffsetDateTime(startTime))).collect(Collectors.toList());
         }
         if(filteredBillEntities.size()!=0){
             Page<BillEntity> filteredPage = new PageImpl<>(filteredBillEntities, billEntities.getPageable(), billEntities.getTotalElements());
@@ -149,21 +149,24 @@ public class BillService {
                 }
         );
     }
+    private static OffsetDateTime parseToOffsetDateTime(String date) {
+        return OffsetDateTime.parse(date + "T00:00:00Z");
+    }
 
     @Transactional(readOnly = true)
     public Page<BillAfterPaymentResponse> getAllBillAfterPayment(Pageable pageable, String startTime, String endTime) {
         Page<BillEntity> billEntities = billRepository.findAllByStatus(true, pageable);
 
         List<BillEntity> filteredBillEntities = new ArrayList<>();
-        if (!startTime.equals("") && !endTime.equals("")) {
+        if (Objects.nonNull(startTime) && Objects.nonNull(endTime)) {
             filteredBillEntities =
-                     billEntities.stream().filter(bill -> !bill.getSubmitTime().isBefore(OffsetDateTime.parse(startTime)) && !bill.getSubmitTime().isAfter(OffsetDateTime.parse(endTime))).collect(Collectors.toList());
-        } else if (startTime.equals("") && !endTime.equals("")) {
+                     billEntities.stream().filter(bill -> !bill.getSubmitTime().isBefore(parseToOffsetDateTime(startTime)) && !bill.getSubmitTime().isAfter(parseToOffsetDateTime(endTime))).collect(Collectors.toList());
+        } else if (Objects.isNull(startTime) && Objects.nonNull(endTime)) {
             filteredBillEntities =
-                    billEntities.stream().filter(bill -> bill.getSubmitTime().isBefore(OffsetDateTime.parse(endTime))).collect(Collectors.toList());
-        } else if (!startTime.equals("") && endTime.equals("")) {
+                    billEntities.stream().filter(bill -> bill.getSubmitTime().isBefore(parseToOffsetDateTime(endTime))).collect(Collectors.toList());
+        } else if (Objects.nonNull(startTime) && Objects.isNull(startTime)) {
             filteredBillEntities =
-                    billEntities.stream().filter(bill -> bill.getSubmitTime().isAfter(OffsetDateTime.parse(startTime))).collect(Collectors.toList());
+                    billEntities.stream().filter(bill -> bill.getSubmitTime().isAfter(parseToOffsetDateTime(startTime))).collect(Collectors.toList());
         }
         if(filteredBillEntities.size()!=0){
             Page<BillEntity> filteredPage = new PageImpl<>(filteredBillEntities, billEntities.getPageable(), billEntities.getTotalElements());
@@ -216,55 +219,6 @@ public class BillService {
         );
     }
 
-    @Transactional(readOnly = true)
-    public Page<BillAfterPaymentResponse> getAllBillAfterPaymentBySubmitTime(Pageable pageable, OffsetDateTime fromDate,
-                                                                             OffsetDateTime toDate) {
-        Page<BillEntity> billEntities = billRepository.findBillsBySubmitTimeRange(fromDate, toDate, pageable);
-        return billEntities.map(
-                billEntity -> {
-                    ApartmentEntity apartmentEntity = apartmentRepository.findById(billEntity.getApartmentId())
-                            .orElseThrow(() -> new RuntimeException("NOT FOUND APARTMENT"));
-
-                    AddressEntity addressEntity = addressRepository.findById(apartmentEntity.getAddressId())
-                            .orElseThrow(() -> new RuntimeException("NOT FOUND ADDRESS"));
-                    CustomerEntity customerEntity = customerRepository.findById(apartmentEntity.getCustomerId())
-                            .orElseThrow(() -> new RuntimeException("NOT FOUND USER"));
-                    List<TimelineEntity> timelineEntities = timelineRepository.findAllByApartmentId(apartmentEntity.getId());
-
-                    List<TaxBillEntity> taxBillEntities = taxBillRepository.findAllByBillId(billEntity.getId());
-                    List<TaxBillDTO> taxBillDTOS = new ArrayList<>();
-
-                    taxBillEntities.forEach(taxBillEntity -> {
-                        Optional<TaxEntity> taxEntity = taxRepository.findById(taxBillEntity.getTaxId());
-                        String taxName = taxEntity.get().getName();
-
-                        TaxBillDTO taxBillDTO = TaxBillDTO.builder()
-                                .name(taxName)
-                                .price(taxBillEntity.getTax())
-                                .build();
-                        taxBillDTOS.add(taxBillDTO);
-                    });
-
-                    ApartmentDTO apartmentDTO = ApartmentDTO.builder()
-                            .id(apartmentEntity.getId())
-                            .des(apartmentEntity.getDescription())
-                            .codeHome(apartmentEntity.getCode())
-                            .addressEntity(addressEntity)
-                            .customerEntity(customerEntity)
-                            .timelineEntities(timelineEntities).build();
-
-                    BillAfterPaymentResponse billAfterPaymentResponse = billMapper.getResponseAfterFromEntity(billEntity);
-                    String limittimeConvert = convertOffsetToDate(billEntity.getLimitedTime());
-                    String submittimeConvert = convertOffsetToDate(billEntity.getSubmitTime());
-                    billAfterPaymentResponse.setLimitedTimeResponse(limittimeConvert);
-                    billAfterPaymentResponse.setSubmitTimeResponse(submittimeConvert);
-                    billAfterPaymentResponse.setTaxs(taxBillDTOS);
-                    billAfterPaymentResponse.setApartment(apartmentDTO);
-
-                    return billAfterPaymentResponse;
-                }
-        );
-    }
 
     @Transactional(readOnly = true)
     public List<DetailBillResponse> intoMoney(Long billId) {
