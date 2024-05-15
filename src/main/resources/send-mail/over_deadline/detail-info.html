@@ -203,7 +203,7 @@
                 <td>${detail.newNumber !== null ? detail.newNumber : ""}</td>
                 <td>${detail.usedWater !== null ? detail.usedWater : ""}</td>
                 <td>${detail.waterConsumption !== null
-                  ? detail.waterConsumption
+                  ? detail.waterConsumption.toLocaleString('vi-VN')
                   : ""
                 }</td>
                 <td>${detail.piceWater !== null ? detail.piceWater.toLocaleString('vi-VN') : ""}</td>

@@ -150,6 +150,7 @@
           const rows = [];
           const districtOptions = new Set();
           console.log(data.content)
+          let sumThanhTien = 0;
           for (let index = 0; index < data.content.length; index++) {
             const item = data.content[index];
             const row = `
@@ -173,12 +174,16 @@
         </tr>`;
 
             rows.push(row);
+            sumThanhTien += item.price;
             if (item.apartment.addressEntity?.district) {
               districtOptions.add(item.apartment.addressEntity.district);
             }
+
             table.row.add($(row)).draw();
           }
-
+          $("#total_amount").text(`${sumThanhTien.toLocaleString('vi-VN', {
+            type: 'currency',
+          })} VNĐ`);
 
           // Append rows to the table
 
@@ -307,24 +312,20 @@
         var sumSoNuocCu = 0;
         var sumSoNuocMoi = 0;
         var sumSoNuocSuDung = 0;
-        var sumThanhTien = 0;
 
         $("#myTable tbody tr").each(function () {
           sumSoNuocCu += parseFloat($(this).find("td:eq(3)").text());
           sumSoNuocMoi += parseFloat($(this).find("td:eq(4)").text());
           sumSoNuocSuDung += parseFloat($(this).find("td:eq(6)").text());
-          sumThanhTien += parseFloat($(this).find("td:eq(8)").text());
         });
 
         sumSoNuocCu = isNaN(sumSoNuocCu) ? 0 : sumSoNuocCu;
         sumSoNuocMoi = isNaN(sumSoNuocMoi) ? 0 : sumSoNuocMoi;
         sumSoNuocSuDung = isNaN(sumSoNuocSuDung) ? 0 : sumSoNuocSuDung;
-        sumThanhTien = isNaN(sumThanhTien) ? 0 : sumThanhTien;
 
-        $("#old_water").text(sumSoNuocCu.toFixed(2).toLocaleString('vi-VN'));
-        $("#new_water").text(sumSoNuocMoi.toFixed(2).toLocaleString('vi-VN'));
-        $("#final_water").text(sumSoNuocSuDung.toFixed(2).toLocaleString('vi-VN'));
-        $("#total_amount").text(sumThanhTien.toFixed(2).toLocaleString('vi-VN'));
+        $("#old_water").text(sumSoNuocCu.toLocaleString('vi-VN'));
+        $("#new_water").text(sumSoNuocMoi.toLocaleString('vi-VN'));
+        $("#final_water").text(sumSoNuocSuDung.toLocaleString('vi-VN'));
       }
     });
 
