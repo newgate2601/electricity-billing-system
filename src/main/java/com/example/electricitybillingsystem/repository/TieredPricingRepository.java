@@ -11,7 +11,7 @@ public interface TieredPricingRepository extends JpaRepository<TieredPricingEnti
 
     List<TieredPricingEntity> findAllById(Long serviceId);
     List<TieredPricingEntity> findAllByIsStatus(Boolean status);
-    List<TieredPricingEntity> findAllByElectricityServiceId(Long serviceId);
+    List<TieredPricingEntity> findAllByElectricityServiceIdOrderByStartNumber(Long serviceId);
 
     void deleteAllByElectricityServiceId(Long id);
 

@@ -27,7 +27,7 @@ public class TieredPricingService {
     private final WaterServiceRepository waterServiceRepository;
 
     public List<TieredPricingEntity> getAllByServiceId(Long id) {
-        return tieredPricingRepository.findAllByElectricityServiceId(id);
+        return tieredPricingRepository.findAllByElectricityServiceIdOrderByStartNumber(id);
     }
 
     @Transactional
