@@ -19,6 +19,7 @@
 <body>
   <div class="container mt-5">
     <h3>Thông báo hóa đơn quá hạn</h3>
+    <h5><span>Trạng thái:</span> Quá hạn</h5>
 
     <div class="form-group">
       <label for="start-time">Thời gian bắt đầu:</label>
@@ -35,7 +36,7 @@
       <label for="districtSelect">Chọn phường:</label>
       <select class="form-control" id="districtSelect"></select>
     </div>
-    <div class="form-group d-flex align-center">
+    <div class="form-group d-flex align-center my-4">
       <input type="checkbox" id="select-all" style="width: 25px; height: 25px" />
       Chọn tất cả
     </div>
@@ -45,35 +46,34 @@
           <th scope="col">#</th>
           <th scope="col">Tên hộ gia đình</th>
           <th scope="col">Mã hộ gia đình</th>
-          <th scope="col">Địa chỉ</th>
+          <th scope="col" style="width: 25%; text-align: center">Địa chỉ</th>
           <th scope="col">Số nước cũ(m<sup>3</sup>)</th>
           <th scope="col">Số nước mới(m<sup>3</sup>)</th>
           <th scope="col">Số nước sử dụng(m<sup>3</sup>)</th>
           <th scope="col">Hạn đóng</th>
           <th scope="col">Thành tiền(đồng)</th>
-          <th scope="col">Trạng thái</th>
           <th scope="col">Select</th>
         </tr>
       </thead>
       <tbody>
-        <!-- Dữ liệu từ API sẽ được điền vào đây -->
       </tbody>
       <tfoot>
         <tr>
-          <th colspan="8">Tổng</th>
-          <!-- <th id="old_water"></th>
-          <th id="new_water"></th>
-          <th id="final_water"></th> -->
-          <th id="total_amount"></th>
+          <th colspan="4">Tổng</th>
           <th></th>
+          <th id="new_water"></th>
+          <th id="final_water"></th>
+          <th id="old_water"></th>
+          <th id="total_amount"></th>
           <th></th>
         </tr>
       </tfoot>
     </table>
-    <button type="button" class="btn btn-primary" id="submit-btn" data-toggle="modal" data-target="#confirmModal">
+    <button type="button" class="btn btn-primary my-4" id="submit-btn" data-toggle="modal" data-target="#confirmModal">
       Gửi
     </button>
   </div>
+
   <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel"
     aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -91,17 +91,19 @@
           <button type="button" class="btn btn-secondary" data-dismiss="modal">
             Hủy
           </button>
-          <button type="button" class="btn btn-primary" id="confirm-send-btn">
+          <button type="button" class="btn btn-primary btn_confirm">
             Xác nhận
           </button>
         </div>
       </div>
     </div>
   </div>
+
   <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-  <!-- DataTables JavaScript -->
   <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
   <script>
     $(document).ready(function () {
       var table = $("#myTable").DataTable({
@@ -120,10 +122,7 @@
       });
 
       const districtSelect = document.getElementById("districtSelect");
-      const option = document.createElement("option");
-      option.textContent = "chọn tất cả";
-      option.value = "";
-      districtSelect.appendChild(option);
+
 
       $("#districtSelect").change(function () {
         var selectedDistrict = $(this).val();
@@ -144,43 +143,52 @@
           }
 
           const data = await response.json();
+          if (!Array.isArray(data.content) || data.content.length === 0) {
+            throw new Error("API did not return a valid list of items.");
+          }
 
           const rows = [];
           const districtOptions = new Set();
-
-          data.content.forEach((item, index) => {
+          console.log(data.content)
+          for (let index = 0; index < data.content.length; index++) {
+            const item = data.content[index];
             const row = `
         <tr>
           <td class='infor-${index}'>${item.id}</td>
-          <td class='infor-${index}'>${item.apartment?.customerEntity?.name ?? ''}</td>
-          <td class='infor-${index}'>${item.apartment?.codeHome ?? ''}</td>
+          <td class='infor-${index}'>${item.apartment.customerEntity?.name ?? ''}</td>
+          <td class='infor-${index}'>${item.apartment.codeHome ?? ''}</td>
           <td class='infor-${index}'>
-            ${item.apartment?.addressEntity?.homeNumber ?? ''}, 
-            ${item.apartment?.addressEntity?.streetName ?? ''}, 
-            ${item.apartment?.addressEntity?.ward ?? ''}, 
-            ${item.apartment?.addressEntity?.district ?? ''}, 
-            ${item.apartment?.addressEntity?.city ?? ''}
+            ${item.apartment.addressEntity?.homeNumber ?? ''}, 
+            ${item.apartment.addressEntity?.streetName ?? ''}, 
+            ${item.apartment.addressEntity?.ward ?? ''}, 
+            ${item.apartment.addressEntity?.district ?? ''}, 
+            ${item.apartment.addressEntity?.city ?? ''}
           </td>
-          <td class='infor-${index}'>${item.startNumber}</td>
-          <td class='infor-${index}'>${item.endNumber}</td>
-          <td class='infor-${index}'>${item.endNumber - item.startNumber}</td>
+          <td class='infor-${index}' style="text-align:right">${item.startNumber}</td>
+          <td class='infor-${index}'  style="text-align:right">${item.endNumber}</td>
+          <td class='infor-${index}'  style="text-align:right">${item.endNumber - item.startNumber}</td>
           <td class='infor-${index}' style='white-space: nowrap'>${item.limitedTimeResponse ?? ''}</td>
-          <td class='infor-${index}'>${item.price}</td>
-          <td class='infor-${index}'>${item.status ? "Đã thanh toán" : "Chưa thanh toán"}</td>
+          <td class='infor-${index}' style="text-align:right">${item.price.toLocaleString('vi-VN')}</td>
           <td><input type="checkbox" class="select-checkbox" style="width: 25px; height: 25px" /></td>
         </tr>`;
-            const option = document.createElement("option");
-            option.textContent = item.apartment.addressEntity.district;
-            option.value = item.apartment.addressEntity.district;
 
             rows.push(row);
-            districtOptions.add(item.apartment.addressEntity?.district ?? '');
-          });
+            if (item.apartment.addressEntity?.district) {
+              districtOptions.add(item.apartment.addressEntity.district);
+            }
+            table.row.add($(row)).draw();
+          }
+
 
           // Append rows to the table
-          table.row.add($(rows.join(''))).draw();
+
           // Populate districtSelect options
-          districtSelect.innerHTML = "";  // Clear existing options
+          districtSelect.innerHTML = ""; // Clear existing options
+          const option = document.createElement("option");
+          option.textContent = "chọn tất cả";
+          option.value = "";
+          districtSelect.appendChild(option);
+          console.log(districtOptions)
           districtOptions.forEach(district => {
             const option = document.createElement("option");
             option.textContent = district;
@@ -222,10 +230,8 @@
           console.error("Error:", error);
         }
       }
-
-      // Example API call
+      //API call
       fetchApi("http://localhost:8080/api/v1/bill/list/over-time");
-
       $("#search-btn").click(function () {
         const startTime = $("#start-time").val();
         const endTime = $("#end-time").val();
@@ -258,7 +264,7 @@
       });
 
       // Xử lý sự kiện khi nút xác nhận gửi được nhấn
-      $("#confirm-send-btn").click(function () {
+      $(".btn_confirm").click(function () {
         var selectedItems = [];
         $(".select-checkbox:checked").each(function () {
           selectedItems.push($(this).closest("tr").find("td:eq(0)").text()); // Lấy ID của hóa đơn
@@ -315,12 +321,13 @@
         sumSoNuocSuDung = isNaN(sumSoNuocSuDung) ? 0 : sumSoNuocSuDung;
         sumThanhTien = isNaN(sumThanhTien) ? 0 : sumThanhTien;
 
-        $("#old_water").text(sumSoNuocCu.toFixed(2));
-        $("#new_water").text(sumSoNuocMoi.toFixed(2));
-        $("#final_water").text(sumSoNuocSuDung.toFixed(2));
-        $("#total_amount").text(sumThanhTien.toFixed(2));
+        $("#old_water").text(sumSoNuocCu.toFixed(2).toLocaleString('vi-VN'));
+        $("#new_water").text(sumSoNuocMoi.toFixed(2).toLocaleString('vi-VN'));
+        $("#final_water").text(sumSoNuocSuDung.toFixed(2).toLocaleString('vi-VN'));
+        $("#total_amount").text(sumThanhTien.toFixed(2).toLocaleString('vi-VN'));
       }
     });
+
   </script>
 </body>
 
