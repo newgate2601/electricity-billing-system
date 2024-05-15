@@ -188,10 +188,13 @@
               '<button onclick="viewDetail(' +
               bill.id +
               ')">Chi tiết</button>';
+            var actionStatus = '';
             if (bill.status === "DONE") {
               totalPaid += bill.price;
+              actionStatus = "Đã Thanh Toán"
             } else if (bill.status === "YET") {
               totalDue += bill.price;
+              actionStatus = "Chưa Thanh Toán"
             }
 
             var row =
@@ -206,7 +209,7 @@
               bill.price +
               "</td>" +
               "<td>" +
-              bill.status +
+              actionStatus +
               "</td>" +
               "<td>" +
               actionButtons +

@@ -112,6 +112,7 @@
       option.value = "";
       districtSelect.appendChild(option);
 
+      const districtOptions = new Set();
       $("#districtSelect").change(function () {
         var selectedDistrict = $(this).val();
         // Thực hiện các hành động dựa trên quận được chọn
@@ -124,6 +125,8 @@
       )
         .then((response) => response.json())
         .then((data) => {
+          let sumThanhTien = 0;
+
           // Xử lý dữ liệu và thêm vào bảng
           data.content.forEach((item, index) => {
             var row = `<tr>
@@ -135,27 +138,35 @@
               }, ${item.apartment.addressEntity.streetName}, ${item.apartment.addressEntity.ward
               }, ${item.apartment.addressEntity.district}, ${item.apartment.addressEntity.city
               }</td>
-                <td class='infor-${index}'>${item.startNumber}</td>
-                <td class='infor-${index}'>${item.endNumber}</td>
-                <td class='infor-${index}'>${item.endNumber - item.startNumber
+                <td class='infor-${index}' style="text-align:right">${item.startNumber}</td>
+                <td class='infor-${index}' style="text-align:right">${item.endNumber}</td>
+                <td class='infor-${index}' style="text-align:right">${item.endNumber - item.startNumber
               }</td>
-                <td class='infor-${index}'>${item.price}</td>
+                <td class='infor-${index}' style="text-align:right">${item.price.toLocaleString('vi-VN')}</td>
                 <td><input type="checkbox" class="select-checkbox" style="width: 25px; height: 25px" /></td>
             </tr>`;
 
-            const option = document.createElement("option");
-            option.textContent = item.apartment.addressEntity.district;
-            option.value = item.apartment.addressEntity.district;
-            districtSelect.appendChild(option);
+            sumThanhTien += item.price;
+            districtOptions.add(item.apartment.addressEntity.district);
             table.row.add($(row)).draw();
           });
 
+          $("#total_amount").text(`${sumThanhTien.toLocaleString('vi-VN', {
+            type: 'currency',
+          })} VNĐ`);
+
+          districtOptions.forEach(district => {
+            const option = document.createElement("option");
+            option.textContent = district;
+            option.value = district;
+            districtSelect.appendChild(option);
+          });
           return data;
         })
         .then((data) => {
           $("#limitedTimeResponse").text(data.content[0].limitedTimeResponse);
-
           data.content.forEach((item, index) => {
+
             $(`.infor-${index}`).click(function () {
               let vatPrice = 0;
               let bvmtPrice = 0;
@@ -253,24 +264,20 @@
         var sumSoNuocCu = 0;
         var sumSoNuocMoi = 0;
         var sumSoNuocSuDung = 0;
-        var sumThanhTien = 0;
 
         $("#myTable tbody tr").each(function () {
           sumSoNuocCu += parseFloat($(this).find("td:eq(3)").text());
           sumSoNuocMoi += parseFloat($(this).find("td:eq(4)").text());
           sumSoNuocSuDung += parseFloat($(this).find("td:eq(5)").text());
-          sumThanhTien += parseFloat($(this).find("td:eq(7)").text());
         });
 
         sumSoNuocCu = isNaN(sumSoNuocCu) ? 0 : sumSoNuocCu;
         sumSoNuocMoi = isNaN(sumSoNuocMoi) ? 0 : sumSoNuocMoi;
         sumSoNuocSuDung = isNaN(sumSoNuocSuDung) ? 0 : sumSoNuocSuDung;
-        sumThanhTien = isNaN(sumThanhTien) ? 0 : sumThanhTien;
 
-        $("#old_water").text(sumSoNuocCu.toFixed(2));
-        $("#new_water").text(sumSoNuocMoi.toFixed(2));
-        $("#final_water").text(sumSoNuocSuDung.toFixed(2));
-        $("#total_amount").text(sumThanhTien.toFixed(2));
+        $("#old_water").text(sumSoNuocCu.toFixed(2).toLocaleString('vi-VN'));
+        $("#new_water").text(sumSoNuocMoi.toFixed(2).toLocaleString('vi-VN'));
+        $("#final_water").text(sumSoNuocSuDung.toFixed(2).toLocaleString('vi-VN'));
       }
     });
   </script>
